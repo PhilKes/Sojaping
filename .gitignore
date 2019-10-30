@@ -4,7 +4,7 @@
 /dist
 /tmp
 /out-tsc
-
+/target
 
 /e2e
 

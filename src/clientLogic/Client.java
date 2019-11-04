@@ -23,7 +23,7 @@ public class Client {
 		this.loginUser = new LoginUser();
 	}
 	public static void main(String[] args) throws IOException {
-		new Client("127.0.0.1", 9999).run();
+		new Client("141.59.135.57", 443).run();
 	}
 	public void run() throws IOException {
 		Socket client = new Socket(host, port);

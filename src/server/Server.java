@@ -1,6 +1,8 @@
 package server;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ public class Server {
 	private ServerSocket server;
 
 	public static void main(String[] args) throws IOException {
-		new Server(9999).run();
+		new Server(443).run();
 	}
 
 	private Server(int port) {
@@ -27,12 +29,13 @@ public class Server {
 	}
 
 	private void run() throws IOException {
-		server = new ServerSocket(port) {
+		server = new ServerSocket(port,50, InetAddress.getByName("141.59.135.57")) {
 			protected void finalize() throws IOException {
 				this.close();
 			}
 		};
-		System.out.println("Port 9999 is now open.");
+		//server.bind(new InetSocketAddress(" 141.59.135.57", 443));
+		System.out.println("Port"+ port+" is now open.");
 
 		while (true) {
 			Socket client = server.accept();

@@ -104,6 +104,7 @@ public class DatabaseService {
             pstmt.setInt(2, status);
             pstmt.setString(3, aboutMe);
             pstmt.setString(4, profilePicture);
+            pstmt.executeUpdate();
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
@@ -118,7 +119,7 @@ public class DatabaseService {
         Account account = new Account();
         account.setUserName("Sophie");
         account.setStatus(1);
-        account.setAboutMe("I#m not happy.");
+        account.setAboutMe("I'm not happy.");
         db.insert(account);
         db.selectAll();
 

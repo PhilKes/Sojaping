@@ -2,7 +2,7 @@ package presentation;
 
 import clientLogic.Client;
 
-public class Controller {
+public class GUIController {
 
 	private Client client;
 }

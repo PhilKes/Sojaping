@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.util.Vector;
 
 public class DatabaseService {
+    static int lastRow;
     public static void createNewDatabase(String fileName) {
 
         String url = "jdbc:sqlite:assets/" + fileName;
@@ -24,27 +25,15 @@ public class DatabaseService {
         }
     }
 
-    public static void connect() {
+    private Connection connect(){
+        String url = "jdbc:sqlite:assets/sojaping.db";
         Connection conn = null;
         try {
-            // db parameters
-            String url = "jdbc:sqlite:assets/sojaping.db";
-            // create a connection to the database
             conn = DriverManager.getConnection(url);
-
-            System.out.println("Connection to SQLite has been established.");
-
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-            }
         }
+        return conn;
     }
 
     public static void createNewTable() {
@@ -72,8 +61,7 @@ public class DatabaseService {
     public void selectAll(){
         String sql = "SELECT aid, userName, status, " +
                 "aboutMe, profilePicture FROM account";
-        String url = "jdbc:sqlite:assets/sojaping.db";
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = this.connect();
              Statement stmt  = conn.createStatement();
              ResultSet rs    = stmt.executeQuery(sql)){
 
@@ -91,28 +79,72 @@ public class DatabaseService {
     }
 
     public void insert(Account acc){
-        insert(acc.getUserName(), acc.getStatus(), acc.getAboutMe(), acc.getProfilePicture());
+        String sql = "INSERT INTO account(aid, userName, status, aboutMe, profilePicture) VALUES(NULL,?,?,?,?)";
+        try(Connection conn = this.connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+            pstmt.setString(1, acc.getUserName());
+            pstmt.setInt(2, acc.getStatus());
+            pstmt.setString(3, acc.getAboutMe());
+            pstmt.setString(4, acc.getProfilePicture());
+            pstmt.executeUpdate();
+            ResultSet rs=pstmt.getGeneratedKeys();
+            if(rs.next()){
+                acc.setAid(rs.getInt(1));
+                lastRow = rs.getInt(1);
+                System.out.println(rs.getInt(1));
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
     }
 
-
-    private void insert(String userName, int status, String aboutMe, String profilePicture){
-        String sql = "INSERT INTO account(aid, userName, status, aboutMe, profilePicture) VALUES(NULL,?,?,?,?)";
-        String url = "jdbc:sqlite:assets/sojaping.db";
-        try(Connection conn = DriverManager.getConnection(url);
+    public void update(Account acc){
+        String sql ="UPDATE account SET userName = ? , "
+                + "status = ? , "
+                + "aboutMe = ?, "
+                + "profilePicture = ? "
+                + "WHERE aid = ?";
+        try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
-            pstmt.setString(1, userName);
-            pstmt.setInt(2, status);
-            pstmt.setString(3, aboutMe);
-            pstmt.setString(4, profilePicture);
+            pstmt.setString(1, acc.getUserName());
+            pstmt.setInt(2, acc.getStatus());
+            pstmt.setString(3, acc.getAboutMe());
+            pstmt.setString(4, acc.getProfilePicture());
+            pstmt.setInt(5, acc.getAid());
+            pstmt.executeUpdate();
+        }catch(SQLException  e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void delete(Account acc){
+        String sql= "DELETE FROM account WHERE aid = ?";
+
+        try(Connection conn = this.connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, acc.getAid());
             pstmt.executeUpdate();
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
     }
 
+    private void resetTable(){
+        String sql = "DELETE FROM account WHERE aid = ?";
+        try(Connection conn = this.connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+            for(int i = 1 ; i <= lastRow; i++) {
+                pstmt.setInt(1,i);
+                pstmt.executeUpdate();
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
     public static void main(String[] args) {
         //createNewDatabase("sojaping.db");
-        connect();
         createNewTable();
         DatabaseService db = new DatabaseService();
         System.out.println("Insert");
@@ -122,7 +154,16 @@ public class DatabaseService {
         account.setAboutMe("I'm not happy.");
         db.insert(account);
         db.selectAll();
-
+        System.out.println(account.getAid());
+        account.setUserName("Irina");
+        db.update(account);
+        System.out.println();
+        db.selectAll();
+        db.delete(account);
+        System.out.println();
+        db.selectAll();
+        db.resetTable();
+        db.selectAll();
     }
 
 

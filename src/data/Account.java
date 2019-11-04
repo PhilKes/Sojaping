@@ -1,10 +1,15 @@
 package data;
 
 public class Account {
+    int aid;
     String userName;
     int status;
     String aboutMe;
     String profilePicture;
+
+    public void setAid(int aid) {
+        this.aid = aid;
+    }
 
     public void setUserName(String userName) {
         this.userName = userName;
@@ -20,6 +25,10 @@ public class Account {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+    public int getAid() {
+        return aid;
     }
 
     public String getUserName() {

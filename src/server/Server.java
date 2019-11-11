@@ -14,8 +14,10 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Server {
-	public static String SERVER_HOST="141.59.129.236";
-	public static int SERVER_PORT=443;
+
+	public static String SERVER_HOST = "141.59.129.236";
+
+	public static int SERVER_PORT = 443;
 
 	private int port;
 
@@ -26,16 +28,14 @@ public class Server {
 	private ServerSocket server;
 
 	private DatabaseService dbService;
-	public static void main(String[] args) throws IOException {
-		new Server(SERVER_PORT).run();
-	}
-
 	private Server(int port) {
 		this.port = port;
 		this.clients = new ArrayList<>();
 		this.dbService = new DatabaseService();
 	}
-
+	public static void main(String[] args) throws IOException {
+		new Server(SERVER_PORT).run();
+	}
 	private void run() throws IOException {
 		String inetAddress = InetAddress.getLocalHost().getHostAddress();
 
@@ -58,7 +58,8 @@ public class Server {
 
 			System.out.println("New Client: " + accountOrLoginAsJson + " Host:" + client.getInetAddress().getHostAddress());
 
-			User newUser = null;
+			User newUser = new User(client, "Guest");
+			this.clients.add(newUser);
 
 			if (accountOrLoginAsJson.contains("aid")) { // register
 				try {
@@ -67,19 +68,20 @@ public class Server {
 				} catch (Exception e) {
 					// Send to client e.getMessage
 					e.printStackTrace();
+					newUser.getOutStream().println(JsonHelper.getJsonOfObject(e));
 				}
+
+				newUser.getOutStream().println("Hi new registered user " + newUser.getNickname());
+				// create a new thread for newUser incoming messages handling
+				new Thread(new UserHandler(this, newUser)).start();
 			} else {
 				System.out.println("Try Login Account");
 				//Login
 				LoginUser loginUser = JsonHelper.convertJsonToLoginUser(accountOrLoginAsJson);
-				// Check if loginUser exists in DB
+				//  TODO Check if loginUser exists in DB, else throw not authorizied exception
 				newUser = new User(client, loginUser.getUserName());
-			}
 
-			if(newUser !=null){
-				this.clients.add(newUser);
-				newUser.getOutStream().println("Hi  " + newUser.getNickname());
-
+				newUser.getOutStream().println("Hi welcome back  " + newUser.getNickname());
 				// create a new thread for newUser incoming messages handling
 				new Thread(new UserHandler(this, newUser)).start();
 			}

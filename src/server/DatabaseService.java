@@ -161,6 +161,7 @@ public class DatabaseService {
 
     public Account checkLogin(LoginUser user){
         String sql = "SELECT aid, userName, password, aboutMe, profilePicture FROM account WHERE userName = ? AND password = ?";
+        Account acc = null;
         try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
             pstmt.setString(1, user.getUserName());
@@ -168,7 +169,7 @@ public class DatabaseService {
             pstmt.executeUpdate();
             ResultSet rs = pstmt.getResultSet();
             while (rs.next()) {
-                Account acc = new AccountBuilder().setAid(rs.getInt("aid")).setUserName(rs.getString("userName"))
+                acc = new AccountBuilder().setAid(rs.getInt("aid")).setUserName(rs.getString("userName"))
                         .setPassword(rs.getString("password")).setStatus(rs.getInt("status"))
                         .setAboutMe(rs.getString("aboutMe")).setProfilePicture(rs.getString("profilePicture"))
                         .createAccount();
@@ -176,9 +177,7 @@ public class DatabaseService {
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
-
-
-        return null;
+        return acc;
     }
 
     public static void main(String[] args) {

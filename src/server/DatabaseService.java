@@ -42,7 +42,7 @@ public class DatabaseService {
         // SQL statement for creating a new table
         String sql = "CREATE TABLE IF NOT EXISTS account (\n"
                 + "    aid integer PRIMARY KEY,\n"
-                + "    userName text NOT NULL,\n"
+                + "    userName text NOT NULL UNIQUE,\n"
                 + "    status integer NOT NULL,\n"
                 + "    aboutMe text,\n"
                 + "    profilePicture text\n"
@@ -142,6 +142,21 @@ public class DatabaseService {
 
     }
 
+    public void dropTable(){
+        String sql = "DROP TABLE account";
+        try(Connection conn = this.connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.executeUpdate();
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    public void checkLogin(Account acc){
+
+    }
+
     public static void main(String[] args) {
         //createNewDatabase("sojaping.db");
         createNewTable();
@@ -158,11 +173,11 @@ public class DatabaseService {
         db.update(account);
         System.out.println();
         db.selectAll();
-        db.delete(account);
+        //db.delete(account);
         System.out.println();
-        db.selectAll();
-        db.resetTable();
-        db.selectAll();
+        //db.selectAll();
+        //db.resetTable();
+        //db.selectAll();
     }
 
 

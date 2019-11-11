@@ -164,7 +164,7 @@ public class DatabaseService {
 
     }
 
-    public Account checkLogin(LoginUser user){
+    public Account getAccountByLoginUser(LoginUser user){
         String sql = "SELECT aid, userName, password, aboutMe, profilePicture FROM account WHERE userName = ? AND password = ?";
         Account acc = null;
         try(Connection conn = this.connect();

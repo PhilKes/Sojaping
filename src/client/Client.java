@@ -1,7 +1,6 @@
 package client;
 
 import common.data.Account;
-import server.Server;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -10,8 +9,8 @@ import java.util.Scanner;
 
 public class Client {
 
-	private static Client client;
 	private LoginUser loginUser;
+
 	private Account account;
 
 	private String host;
@@ -29,6 +28,7 @@ public class Client {
 		//this.loginUser = new LoginUser();
 	}
 	public static void main(String[] args) throws IOException {
+		//		new Client("141.59.135.57", 443).run();
 		getInstance(Server.SERVER_HOST, Server.SERVER_PORT).run();
 	}
 	public void run() throws IOException {
@@ -40,10 +40,18 @@ public class Client {
 		Scanner sc = new Scanner(System.in);
 		System.out.print("Enter your name: ");
 
-		this.loginUser.setUserName(sc.nextLine());
+		Account registerAccount = new Account();
+		registerAccount.setUserName(sc.nextLine());
+
+
+		System.out.print("Enter your password: ");
+		registerAccount.setPassword(sc.nextLine());
+
+		//this.loginUser.setUserName(sc.nextLine());
 
 		//send to server
-		output.println(loginUser.getUserName());
+		output.println(getJsonOfObject(registerAccount));
+//		output.println(loginUser.getUserName());
 
 		// create a new thread for server messages handling
 		new Thread(new ReceivedMessagesHandler(client.getInputStream())).start();
@@ -58,6 +66,30 @@ public class Client {
 		output.close();
 		sc.close();
 		client.close();
+	}
+
+	private String getJsonOfObject (Object object){
+
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonString = "";
+
+		try {
+
+			// Java objects to JSON string - compact-print
+			jsonString = mapper.writeValueAsString(object);
+
+			System.out.println(jsonString);
+
+			// Java objects to JSON string - pretty-print
+			String jsonInString2 = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
+
+			System.out.println(jsonInString2);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return jsonString;
 	}
 }
 

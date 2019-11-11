@@ -1,6 +1,7 @@
 package server;
 
 
+import client.LoginUser;
 import common.data.Account;
 import common.data.AccountBuilder;
 
@@ -44,6 +45,7 @@ public class DatabaseService {
         String sql = "CREATE TABLE IF NOT EXISTS account (\n"
                 + "    aid integer PRIMARY KEY,\n"
                 + "    userName text NOT NULL UNIQUE,\n"
+                + "    password text NOT NULL,\n"
                 + "    status integer NOT NULL,\n"
                 + "    aboutMe text,\n"
                 + "    profilePicture text\n"
@@ -79,13 +81,14 @@ public class DatabaseService {
     }
 
     public void insert(Account acc){
-        String sql = "INSERT INTO account(aid, userName, status, aboutMe, profilePicture) VALUES(NULL,?,?,?,?)";
+        String sql = "INSERT INTO account(aid, userName, password, status, aboutMe, profilePicture) VALUES(NULL,?,?,?,?,?)";
         try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
             pstmt.setString(1, acc.getUserName());
-            pstmt.setInt(2, acc.getStatus());
-            pstmt.setString(3, acc.getAboutMe());
-            pstmt.setString(4, acc.getProfilePicture());
+            pstmt.setString(2, acc.getPassword());
+            pstmt.setInt(3, acc.getStatus());
+            pstmt.setString(4, acc.getAboutMe());
+            pstmt.setString(5, acc.getProfilePicture());
             pstmt.executeUpdate();
             ResultSet rs=pstmt.getGeneratedKeys();
             if(rs.next()){
@@ -100,6 +103,7 @@ public class DatabaseService {
 
     public void update(Account acc){
         String sql ="UPDATE account SET userName = ? , "
+                + "password = ? , "
                 + "status = ? , "
                 + "aboutMe = ?, "
                 + "profilePicture = ? "
@@ -107,10 +111,11 @@ public class DatabaseService {
         try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
             pstmt.setString(1, acc.getUserName());
-            pstmt.setInt(2, acc.getStatus());
-            pstmt.setString(3, acc.getAboutMe());
-            pstmt.setString(4, acc.getProfilePicture());
-            pstmt.setInt(5, acc.getAid());
+            pstmt.setString(2, acc.getPassword());
+            pstmt.setInt(3, acc.getStatus());
+            pstmt.setString(4, acc.getAboutMe());
+            pstmt.setString(5, acc.getProfilePicture());
+            pstmt.setInt(6, acc.getAid());
             pstmt.executeUpdate();
         }catch(SQLException  e){
             System.out.println(e.getMessage());
@@ -154,8 +159,26 @@ public class DatabaseService {
 
     }
 
-    public void checkLogin(Account acc){
+    public Account checkLogin(LoginUser user){
+        String sql = "SELECT aid, userName, password, aboutMe, profilePicture FROM account WHERE userName = ? AND password = ?";
+        try(Connection conn = this.connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setString(1, user.getUserName());
+            pstmt.setString(2, user.getPassword());
+            pstmt.executeUpdate();
+            ResultSet rs = pstmt.getResultSet();
+            while (rs.next()) {
+                Account acc = new AccountBuilder().setAid(rs.getInt("aid")).setUserName(rs.getString("userName"))
+                        .setPassword(rs.getString("password")).setStatus(rs.getInt("status"))
+                        .setAboutMe(rs.getString("aboutMe")).setProfilePicture(rs.getString("profilePicture"))
+                        .createAccount();
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
 
+
+        return null;
     }
 
     public static void main(String[] args) {
@@ -163,10 +186,7 @@ public class DatabaseService {
         createNewTable();
         DatabaseService db = new DatabaseService();
         System.out.println("Insert");
-        Account account = new AccountBuilder().createAccount();
-        account.setUserName("Sophie");
-        account.setStatus(1);
-        account.setAboutMe("I'm not happy.");
+        Account account = new AccountBuilder().setUserName("Sophie").setPassword("abc").setAboutMe("I'm not happy.").createAccount();
         db.insert(account);
         db.selectAll();
         System.out.println(account.getAid());
@@ -179,6 +199,8 @@ public class DatabaseService {
         //db.selectAll();
         //db.resetTable();
         //db.selectAll();
+        //db.dropTable();
+
     }
 
 

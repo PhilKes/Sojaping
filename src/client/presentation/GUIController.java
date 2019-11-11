@@ -1,6 +1,6 @@
-package presentation;
+package client.presentation;
 
-import clientLogic.Client;
+import client.Client;
 
 public class GUIController {
 

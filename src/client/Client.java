@@ -1,6 +1,6 @@
-package clientLogic;
+package client;
 
-import data.Account;
+import common.data.Account;
 
 import java.io.IOException;
 import java.io.PrintStream;

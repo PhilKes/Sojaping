@@ -1,4 +1,4 @@
-package clientLogic;
+package client;
 
 import java.io.InputStream;
 import java.util.ArrayList;

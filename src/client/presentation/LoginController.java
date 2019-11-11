@@ -1,4 +1,4 @@
-package presentation;
+package client.presentation;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,7 +18,7 @@ public class LoginController {
     private void initialize(){
         btnRegister.setOnMouseClicked(ev->{
             try {
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../presentation/register.fxml"));
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/register.fxml"));
                 Parent root1 = (Parent) fxmlLoader.load();
                 Stage stage = new Stage();
                 stage.initModality(Modality.APPLICATION_MODAL);

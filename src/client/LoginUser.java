@@ -1,4 +1,4 @@
-package clientLogic;
+package client;
 
 public class LoginUser {
 

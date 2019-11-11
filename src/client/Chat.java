@@ -1,6 +1,6 @@
-package clientLogic;
+package client;
 
-import data.Message;
+import common.data.Message;
 
 import java.util.List;
 

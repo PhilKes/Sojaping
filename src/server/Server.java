@@ -29,13 +29,15 @@ public class Server {
 	}
 
 	private void run() throws IOException {
-		server = new ServerSocket(port,50, InetAddress.getByName("141.59.135.57")) {
+		String inetAddress = InetAddress.getLocalHost().getHostAddress();
+
+		server = new ServerSocket(port,50, InetAddress.getByName(inetAddress)) {
 			protected void finalize() throws IOException {
 				this.close();
 			}
 		};
 		//server.bind(new InetSocketAddress(" 141.59.135.57", 443));
-		System.out.println("Port"+ port+" is now open.");
+		System.out.println("Host "+ inetAddress + " port:"+ port + "is now open.");
 
 		while (true) {
 			Socket client = server.accept();

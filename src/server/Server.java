@@ -1,6 +1,7 @@
 package server;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import client.LoginUser;
+import common.JsonHelper;
 import common.data.Account;
 
 import java.io.IOException;
@@ -45,53 +46,44 @@ public class Server {
 
 		while (true) {
 			Socket client = server.accept();
-			String accountAsJson = (new Scanner(client.getInputStream())).nextLine();
-			// Hier kriegen wir ein JSON von Account User + PW
 
-			System.out.println("New Client: " + accountAsJson + " Host:" + client.getInetAddress().getHostAddress());
+			String accountOrLoginAsJson = (new Scanner(client.getInputStream())).nextLine();
+			// Hier kriegen wir ein JSON von Account User + PW oder Login
 
-			Account account = this.convertJsonToAccount(accountAsJson);
+			System.out.println("New Client: " + accountOrLoginAsJson + " Host:" + client.getInetAddress().getHostAddress());
 
-			// check if account exist in DB
-			// if not create new
-			// else get existing
+			User newUser = null;
 
-			try {
-				this.dbService.insert(account);
-			} catch (Exception e) {
-				e.printStackTrace();
+			if (accountOrLoginAsJson.contains("aid")) { // register
+				try {
+					this.registerUser(client, accountOrLoginAsJson);
+				} catch (Exception e) {
+					// Send to client e.getMessage
+					e.printStackTrace();
+				}
+			} else {
+				//Login
+				LoginUser loginUser = JsonHelper.convertJsonToLoginUser(accountOrLoginAsJson);
+				// Check if loginUser exists in DB
+				newUser = new User(client, loginUser.getUserName());
 			}
 
-			User newUser = new User(client, account.getUserName());
+			if(newUser !=null){
+				this.clients.add(newUser);
+				newUser.getOutStream().println("Hi  " + newUser.getNickname());
 
-			this.clients.add(newUser);
-			newUser.getOutStream().println("Hi  " + newUser.getNickname());
-
-			// create a new thread for newUser incoming messages handling
-			new Thread(new UserHandler(this, newUser)).start();
+				// create a new thread for newUser incoming messages handling
+				new Thread(new UserHandler(this, newUser)).start();
+			}
 		}
 	}
 
-	private void loginOrRegisterAccount() {
+	private User registerUser(Socket client, String accountOrLoginAsJson) throws Exception {
+		Account account = JsonHelper.convertJsonToAccount(accountOrLoginAsJson);
 
-	}
+		this.dbService.insert(account);
 
-	private Account convertJsonToAccount(String jsonInString) {
-		ObjectMapper mapper = new ObjectMapper();
-		Account account = null;
-		try {
-			// JSON string to Java object
-			account = mapper.readValue(jsonInString, Account.class);
-
-			// compact print
-			System.out.println("Received Json from client: " + account);
-			// pretty print
-			String prettyStaff1 = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(account);
-			System.out.println(prettyStaff1);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return account;
+		return new User(client, account.getUserName());
 	}
 
 	public void removeUser(User user) {

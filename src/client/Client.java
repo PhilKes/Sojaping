@@ -11,6 +11,8 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Scanner;
 
+import static common.JsonHelper.getJsonOfObject;
+
 public class Client {
 
 	private static Client instance;

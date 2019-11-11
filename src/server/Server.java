@@ -1,6 +1,8 @@
 package server;
 
+import client.LoginUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import common.JsonHelper;
 import common.data.Account;
 
 import java.io.IOException;
@@ -33,10 +35,7 @@ public class Server {
 		this.clients = new ArrayList<>();
 		this.dbService = new DatabaseService();
 	}
-	public static void main(String[] args) throws IOException {
-		new Server(9900).run();
-		//		new Server(443).run();
-	}
+
 	private void run() throws IOException {
 		String inetAddress = InetAddress.getLocalHost().getHostAddress();
 
@@ -50,7 +49,8 @@ public class Server {
 
 		while (true) {
 			Socket client = server.accept();
-			String accountAsJson = (new Scanner(client.getInputStream())).nextLine();
+
+			/*String accountAsJson = (new Scanner(client.getInputStream())).nextLine();*/
 			// Hier kriegen wir ein JSON von Account User + PW
 
 			String accountOrLoginAsJson = (new Scanner(client.getInputStream())).nextLine();
@@ -62,12 +62,14 @@ public class Server {
 
 			if (accountOrLoginAsJson.contains("aid")) { // register
 				try {
+					System.out.println("Try Register Account");
 					this.registerUser(client, accountOrLoginAsJson);
 				} catch (Exception e) {
 					// Send to client e.getMessage
 					e.printStackTrace();
 				}
 			} else {
+				System.out.println("Try Login Account");
 				//Login
 				LoginUser loginUser = JsonHelper.convertJsonToLoginUser(accountOrLoginAsJson);
 				// Check if loginUser exists in DB
@@ -112,7 +114,13 @@ public class Server {
 			client.getOutStream().println(userSender.getNickname() + ": " + msg);
 		}
 	}
+	private User registerUser(Socket client, String accountOrLoginAsJson) throws Exception {
+		Account account = JsonHelper.convertJsonToAccount(accountOrLoginAsJson);
 
+		this.dbService.insert(account);
+
+		return new User(client, account.getUserName());
+	}
 	// send list of clients to all Users
 	public void broadcastAllUsers() {
 		for (User client : this.clients) {

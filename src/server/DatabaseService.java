@@ -148,7 +148,7 @@ public class DatabaseService {
 
     }
 
-    public void dropTable(){
+    private void dropTable(){
         String sql = "DROP TABLE account";
         try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -182,8 +182,10 @@ public class DatabaseService {
 
     public static void main(String[] args) {
         //createNewDatabase("sojaping.db");
-        createNewTable();
         DatabaseService db = new DatabaseService();
+        db.dropTable();
+        createNewTable();
+        /*
         System.out.println("Insert");
         Account account = new AccountBuilder().setUserName("Sophie").setPassword("abc").setAboutMe("I'm not happy.").createAccount();
         db.insert(account);
@@ -198,8 +200,7 @@ public class DatabaseService {
         //db.selectAll();
         //db.resetTable();
         //db.selectAll();
-        //db.dropTable();
-
+        */
     }
 
 

@@ -88,24 +88,6 @@ public class Server {
 		}
 	}
 
-	private Account convertJsonToAccount(String jsonInString) {
-		ObjectMapper mapper = new ObjectMapper();
-		Account account = null;
-		try {
-			// JSON string to Java object
-			account = mapper.readValue(jsonInString, Account.class);
-
-			// compact print
-			System.out.println("Received Json from client: " + account);
-			// pretty print
-			String prettyStaff1 = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(account);
-			System.out.println(prettyStaff1);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return account;
-	}
-
 	public void removeUser(User user) {
 		this.clients.remove(user);
 	}

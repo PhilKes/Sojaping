@@ -1,7 +1,6 @@
 package server;
 
 import client.LoginUser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import common.JsonHelper;
 import common.data.Account;
 
@@ -66,25 +65,40 @@ public class Server {
 					System.out.println("Try Register Account");
 					this.registerUser(client, accountOrLoginAsJson);
 				} catch (Exception e) {
-					// Send to client e.getMessage
-					e.printStackTrace();
 					newUser.getOutStream().println(JsonHelper.getJsonOfObject(e));
 				}
-
 				newUser.getOutStream().println("Hi new registered user " + newUser.getNickname());
+
 				// create a new thread for newUser incoming messages handling
 				new Thread(new UserHandler(this, newUser)).start();
 			} else {
 				System.out.println("Try Login Account");
-				//Login
-				LoginUser loginUser = JsonHelper.convertJsonToLoginUser(accountOrLoginAsJson);
-				//  TODO Check if loginUser exists in DB, else throw not authorizied exception
+				loginUser(client, accountOrLoginAsJson, newUser);
+			}
+		}
+	}
+
+	private void loginUser(final Socket client, final String accountOrLoginAsJson, User newUser) throws IOException {
+		LoginUser loginUser = JsonHelper.convertJsonToLoginUser(accountOrLoginAsJson);
+
+		Account account = this.dbService.getAccountByLoginUser(loginUser);
+		if (account != null) {
+			if (account.getPassword().equals(loginUser.getPassword())) {
+				// successful auth
+				newUser.getOutStream().println(JsonHelper.getJsonOfObject(account));
+
 				newUser = new User(client, loginUser.getUserName());
 
 				newUser.getOutStream().println("Hi welcome back  " + newUser.getNickname());
 				// create a new thread for newUser incoming messages handling
 				new Thread(new UserHandler(this, newUser)).start();
+			} else {
+				Exception e = new Exception("Invalid password");
+				newUser.getOutStream().println(JsonHelper.getJsonOfObject(e));
 			}
+		} else {
+			Exception e = new Exception("Unknown username");
+			newUser.getOutStream().println(JsonHelper.getJsonOfObject(e));
 		}
 	}
 

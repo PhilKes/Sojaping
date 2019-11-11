@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Server {
+	public static String SERVER_HOST="141.59.129.236";
+	public static int SERVER_PORT=443;
 
 	private int port;
 
@@ -20,7 +22,7 @@ public class Server {
 	private ServerSocket server;
 
 	public static void main(String[] args) throws IOException {
-		new Server(443).run();
+		new Server(SERVER_PORT).run();
 	}
 
 	private Server(int port) {
@@ -37,7 +39,7 @@ public class Server {
 			}
 		};
 		//server.bind(new InetSocketAddress(" 141.59.135.57", 443));
-		System.out.println("Host "+ inetAddress + " port:"+ port + "is now open.");
+		System.out.println("Host "+ inetAddress + " port: "+ port + "is now open.");
 
 		while (true) {
 			Socket client = server.accept();

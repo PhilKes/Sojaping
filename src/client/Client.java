@@ -1,6 +1,7 @@
 package client;
 
 import common.data.Account;
+import server.Server;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -9,21 +10,26 @@ import java.util.Scanner;
 
 public class Client {
 
+	private static Client client;
 	private LoginUser loginUser;
-
 	private Account account;
 
 	private String host;
 
 	private int port;
 
-	public Client(String host, int port) {
+	public static Client getInstance(String host, int port) {
+		if(client==null)
+			client=new Client(host,port);
+		return client;
+	}
+	private Client(String host,int port){
 		this.host = host;
 		this.port = port;
 		//this.loginUser = new LoginUser();
 	}
 	public static void main(String[] args) throws IOException {
-		new Client("141.59.135.57", 443).run();
+		getInstance(Server.SERVER_HOST, Server.SERVER_PORT).run();
 	}
 	public void run() throws IOException {
 		Socket client = new Socket(host, port);

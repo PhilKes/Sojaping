@@ -64,4 +64,17 @@ public class Account {
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
     }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "aid=" + aid +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", status=" + status +
+                ", aboutMe='" + aboutMe + '\'' +
+                ", profilePicture='" + profilePicture + '\'' +
+                '}';
+    }
+
 }

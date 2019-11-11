@@ -5,7 +5,6 @@ import common.data.Account;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -34,7 +33,10 @@ public class Server {
 		this.clients = new ArrayList<>();
 		this.dbService = new DatabaseService();
 	}
-
+	public static void main(String[] args) throws IOException {
+		new Server(9900).run();
+		//		new Server(443).run();
+	}
 	private void run() throws IOException {
 		String inetAddress = InetAddress.getLocalHost().getHostAddress();
 
@@ -44,35 +46,42 @@ public class Server {
 			}
 		};
 		//server.bind(new InetSocketAddress(" 141.59.135.57", 443));
-		System.out.println("Host "+ inetAddress + " port:"+ port + "is now open.");
+		System.out.println("Host " + inetAddress + " port:" + port + "is now open.");
 
 		while (true) {
 			Socket client = server.accept();
 			String accountAsJson = (new Scanner(client.getInputStream())).nextLine();
 			// Hier kriegen wir ein JSON von Account User + PW
 
-			System.out.println("New Client: " + accountAsJson + " Host:" + client.getInetAddress().getHostAddress());
+			String accountOrLoginAsJson = (new Scanner(client.getInputStream())).nextLine();
+			// Hier kriegen wir ein JSON von Account User + PW oder Login
 
-			Account account = this.convertJsonToAccount(accountAsJson);
+			System.out.println("New Client: " + accountOrLoginAsJson + " Host:" + client.getInetAddress().getHostAddress());
 
-			// check if account exist in DB
-			// if not create new
-			// else get existing
+			User newUser = null;
 
-			this.dbService.insert(account);
+			if (accountOrLoginAsJson.contains("aid")) { // register
+				try {
+					this.registerUser(client, accountOrLoginAsJson);
+				} catch (Exception e) {
+					// Send to client e.getMessage
+					e.printStackTrace();
+				}
+			} else {
+				//Login
+				LoginUser loginUser = JsonHelper.convertJsonToLoginUser(accountOrLoginAsJson);
+				// Check if loginUser exists in DB
+				newUser = new User(client, loginUser.getUserName());
+			}
 
-			User newUser = new User(client, account.getUserName());
+			if(newUser !=null){
+				this.clients.add(newUser);
+				newUser.getOutStream().println("Hi  " + newUser.getNickname());
 
-			this.clients.add(newUser);
-			newUser.getOutStream().println("Hi  " + newUser.getNickname());
-
-			// create a new thread for newUser incoming messages handling
-			new Thread(new UserHandler(this, newUser)).start();
+				// create a new thread for newUser incoming messages handling
+				new Thread(new UserHandler(this, newUser)).start();
+			}
 		}
-	}
-
-	private void loginOrRegisterAccount() {
-
 	}
 
 	private Account convertJsonToAccount(String jsonInString) {
@@ -81,6 +90,7 @@ public class Server {
 		try {
 			// JSON string to Java object
 			account = mapper.readValue(jsonInString, Account.class);
+
 			// compact print
 			System.out.println("Received Json from client: " + account);
 			// pretty print

@@ -1,6 +1,7 @@
 package client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import common.JsonHelper;
 import common.data.Account;
 import common.data.AccountBuilder;
 import server.Server;
@@ -51,7 +52,7 @@ public class Client {
 		//this.loginUser.setUserName(sc.nextLine());
 
 		//send to server
-		output.println(getJsonOfObject(registerAccount));
+		output.println(JsonHelper.getJsonOfObject(registerAccount));
 //		output.println(loginUser.getUserName());
 
 		// create a new thread for server messages handling
@@ -85,30 +86,6 @@ public class Client {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private String getJsonOfObject (Object object){
-
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonString = "";
-
-		try {
-
-			// Java objects to JSON string - compact-print
-			jsonString = mapper.writeValueAsString(object);
-
-			System.out.println(jsonString);
-
-			// Java objects to JSON string - pretty-print
-			String jsonInString2 = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
-
-			System.out.println(jsonInString2);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return jsonString;
 	}
 }
 

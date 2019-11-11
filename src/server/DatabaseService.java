@@ -1,11 +1,10 @@
 package server;
 
 
-import data.Account;
+import common.data.Account;
 
 import java.sql.*;
 import java.sql.ResultSet;
-import java.util.Vector;
 
 public class DatabaseService {
     static int lastRow;

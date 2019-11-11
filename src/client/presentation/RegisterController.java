@@ -1,5 +1,6 @@
 package client.presentation;
 
+import common.data.Account;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -21,7 +22,9 @@ public class RegisterController {
                 System.err.println("Invalid Input");
                 return;
             }
-
+           // Account acc = new Account();
+            System.out.printf("Register:\n" +
+                    "");
             //((Stage)btnRegister.getScene().getWindow()).close();
         });
     }

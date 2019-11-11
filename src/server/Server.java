@@ -1,5 +1,8 @@
 package server;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import common.data.Account;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -78,7 +81,6 @@ public class Server {
 		try {
 			// JSON string to Java object
 			account = mapper.readValue(jsonInString, Account.class);
-
 			// compact print
 			System.out.println("Received Json from client: " + account);
 			// pretty print

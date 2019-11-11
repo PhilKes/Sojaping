@@ -8,10 +8,6 @@ public class Account {
     String aboutMe;
     String profilePicture;
 
-    public Account (){
-
-    }
-
     public Account(int aid, String userName, String password, int status, String aboutMe, String profilePicture) {
         this.aid = aid;
         this.userName = userName;

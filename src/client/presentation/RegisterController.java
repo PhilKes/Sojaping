@@ -33,6 +33,7 @@ public class RegisterController {
         //TODO Get selected Languages from boxLanguages
         Account acc = new AccountBuilder().setUserName(txtUsername.getText()).setPassword(txtPassword.getText()).createAccount();
         System.out.println("Register:\n"+acc);
+        client.sendObject(acc);
         //((Stage)btnRegister.getScene().getWindow()).close();
     }
 

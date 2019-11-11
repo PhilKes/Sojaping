@@ -56,7 +56,11 @@ public class Server {
 			// if not create new
 			// else get existing
 
-			this.dbService.insert(account);
+			try {
+				this.dbService.insert(account);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 			User newUser = new User(client, account.getUserName());
 

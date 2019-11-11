@@ -4,6 +4,7 @@ package server;
 import client.LoginUser;
 import common.data.Account;
 import common.data.AccountBuilder;
+import org.sqlite.SQLiteException;
 
 import java.sql.*;
 import java.sql.ResultSet;
@@ -80,7 +81,7 @@ public class DatabaseService {
         }
     }
 
-    public void insert(Account acc){
+    public void insert(Account acc) throws Exception {
         String sql = "INSERT INTO account(aid, userName, password, status, aboutMe, profilePicture) VALUES(NULL,?,?,?,?,?)";
         try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
@@ -97,7 +98,11 @@ public class DatabaseService {
                 System.out.println(rs.getInt(1));
             }
         }catch(SQLException e){
-            System.out.println(e.getMessage());
+            if(e.getMessage().contains("[SQLITE_CONSTRAINT]  Abort due to constraint violation (UNIQUE constraint failed: account.userName)")){
+                throw new Exception("Username is already in use!");
+            }
+
+            e.printStackTrace();
         }
     }
 
@@ -180,12 +185,12 @@ public class DatabaseService {
         return acc;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         //createNewDatabase("sojaping.db");
         DatabaseService db = new DatabaseService();
-        db.dropTable();
+        //db.dropTable();
         createNewTable();
-        /*
+
         System.out.println("Insert");
         Account account = new AccountBuilder().setUserName("Sophie").setPassword("abc").setAboutMe("I'm not happy.").createAccount();
         db.insert(account);
@@ -200,7 +205,7 @@ public class DatabaseService {
         //db.selectAll();
         //db.resetTable();
         //db.selectAll();
-        */
+
     }
 
 

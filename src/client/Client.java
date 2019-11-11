@@ -20,7 +20,7 @@ public class Client {
 	public Client(String host, int port) {
 		this.host = host;
 		this.port = port;
-		this.loginUser = new LoginUser();
+		//this.loginUser = new LoginUser();
 	}
 	public static void main(String[] args) throws IOException {
 		new Client("141.59.135.57", 443).run();
@@ -34,10 +34,10 @@ public class Client {
 		Scanner sc = new Scanner(System.in);
 		System.out.print("Enter your name: ");
 
-		this.loginUser.setName(sc.nextLine());
+		this.loginUser.setUserName(sc.nextLine());
 
 		//send to server
-		output.println(loginUser.getName());
+		output.println(loginUser.getUserName());
 
 		// create a new thread for server messages handling
 		new Thread(new ReceivedMessagesHandler(client.getInputStream())).start();

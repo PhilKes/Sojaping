@@ -2,6 +2,7 @@ package server;
 
 
 import common.data.Account;
+import common.data.AccountBuilder;
 
 import java.sql.*;
 import java.sql.ResultSet;
@@ -162,7 +163,7 @@ public class DatabaseService {
         createNewTable();
         DatabaseService db = new DatabaseService();
         System.out.println("Insert");
-        Account account = new Account();
+        Account account = new AccountBuilder().createAccount();
         account.setUserName("Sophie");
         account.setStatus(1);
         account.setAboutMe("I'm not happy.");

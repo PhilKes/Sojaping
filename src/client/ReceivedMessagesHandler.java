@@ -9,17 +9,19 @@ import static common.JsonHelper.convertJsonToObject;
 class ReceivedMessagesHandler implements Runnable {
 
 	private InputStream server;
+	private boolean running;
 
 	ReceivedMessagesHandler(InputStream server) {
 		this.server = server;
+		this.running=true;
 	}
 
 	// TODO differenzieren wenn Userlist vom Server kommt oder eine Nachricht
 	// TODO Userlist schön anzeigen
 	public void run() {
-		Scanner s = new Scanner(server);
-		String usernameAndMessage = "";
-		while (s.hasNextLine()) {
+		//TODO Substitue Scanner with BufferedReader?
+		Scanner sc = new Scanner(server);
+		while (running && sc.hasNextLine()) {
 			/*
 			usernameAndMessage = s.nextLine();
 			if (usernameAndMessage.charAt(0) == '[') {
@@ -32,9 +34,13 @@ class ReceivedMessagesHandler implements Runnable {
 				}
 			}*/
 			//TODO receive proper responses from server
-			;
-            System.out.println("Received: \n"+convertJsonToObject(s.nextLine()));
+			String jsonReceived=sc.nextLine();
+			if(jsonReceived.isEmpty()){
+				System.err.println("Received empty message from Server");
+			}else{
+				System.out.println("SERVER: "+convertJsonToObject(jsonReceived));
+			}
 		}
-		s.close();
+		sc.close();
 	}
 }

@@ -1,6 +1,7 @@
 package common;
 
 import client.LoginUser;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -11,13 +12,14 @@ import java.util.Map;
 
 public class JsonHelper {
 
-
-	public static String getJsonOfObject(Object object) {
+	public static String convertObjectToJson(Object object) {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		String jsonString = "";
 		try {
 			ObjectNode node;
-			if(object instanceof String)
+			/** Wrap primitive types into value field*/
+			if(isPrimitiveOrWrapper(object.getClass()))
 				node = mapper.createObjectNode().put("value",object.toString());
 			else
 				node= mapper.convertValue(object, ObjectNode.class);
@@ -31,17 +33,16 @@ public class JsonHelper {
 
 	public static <T> T convertJsonToObject(String jsonInString){
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		Object object = null;
 		try {
-			// JSON string to Java object
+			/** Get alls Key-Value pairs of JSON String*/
 			Map<String, String> map = mapper.readValue(jsonInString, Map.class);
-			//TODO create ResponseEntity for any sent JSON WITH "_class"
 			if(!map.containsKey("_class"))
 				return null;
 			Class type=Class.forName(map.get("_class"));
 			/** Read primitive types (String,Integer,...)*/
 			if(map.containsKey("value"))
-				//object = mapper.readValue(map.get("value"), type);
 				return (T) map.get("value");
 			else
 				object = mapper.readValue(jsonInString, type);
@@ -54,5 +55,11 @@ public class JsonHelper {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public static boolean isPrimitiveOrWrapper(Class<?> type) {
+		return (type == Double.class || type == Float.class || type == Long.class ||
+				type == Integer.class || type == Short.class || type == Character.class ||
+				type == Byte.class || type == Boolean.class || type == String.class);
 	}
 }

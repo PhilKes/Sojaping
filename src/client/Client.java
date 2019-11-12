@@ -1,17 +1,13 @@
 package client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import common.JsonHelper;
 import common.data.Account;
-import common.data.AccountBuilder;
 import server.Server;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.Scanner;
 
-import static common.JsonHelper.getJsonOfObject;
+import static common.JsonHelper.convertObjectToJson;
 
 public class Client {
 
@@ -43,6 +39,7 @@ public class Client {
 		client = new Socket(host, port);
 		System.out.println("Client successfully connected to server!");
 		output = new PrintStream(client.getOutputStream());
+		sendToServer(client.getInetAddress().getHostAddress());
 		/*
 		Scanner sc = new Scanner(System.in);
 		System.out.print("Enter your name: ");
@@ -81,8 +78,8 @@ public class Client {
 	}
 
 	/** Send Object as JSON to Server*/
-	public void sendObject(Object object){
-		output.println(getJsonOfObject(object));
+	public void sendToServer(Object object){
+		output.println(convertObjectToJson(object));
 		try {
 			new Thread(new ReceivedMessagesHandler(client.getInputStream())).start();
 		} catch (IOException e) {

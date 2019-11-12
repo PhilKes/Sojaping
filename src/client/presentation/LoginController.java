@@ -42,7 +42,7 @@ public class LoginController {
         }
         //TODO Tell client to send loginUser to Server -> Task with response?
         LoginUser loginUser= new LoginUser(txtUsername.getText(),txtPassword.getText());
-        client.sendObject(loginUser);
+        client.sendToServer(loginUser);
     }
 
     private void onRegisterClicked() {

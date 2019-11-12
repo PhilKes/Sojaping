@@ -95,7 +95,7 @@ public class DatabaseService {
             if(rs.next()){
                 acc.setAid(rs.getInt(1));
                 lastRow = rs.getInt(1);
-                System.out.println(rs.getInt(1));
+                System.out.println("Inserted to DB:\n"+acc);
             }
         }catch(SQLException e){
             if(e.getMessage().contains("[SQLITE_CONSTRAINT]  Abort due to constraint violation (UNIQUE constraint failed: account.userName)")){

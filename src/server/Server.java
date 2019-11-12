@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static common.JsonHelper.convertJsonToObject;
+import static common.JsonHelper.getJsonOfObject;
+
 public class Server {
 
 	public static String SERVER_HOST = "141.59.129.236";
@@ -59,19 +62,22 @@ public class Server {
 
 			User newUser = new User(client, "Guest");
 			this.clients.add(newUser);
+			Object receivedObj=convertJsonToObject(accountOrLoginAsJson);
+			/** Determine type of object sent*/
 
-			if (accountOrLoginAsJson.contains("aid")) { // register
+			if (receivedObj instanceof Account) { // register
 				try {
 					System.out.println("Try Register Account");
-					this.registerUser(client, accountOrLoginAsJson);
+					Account account = (Account) receivedObj;
+					this.registerUser(client, account);
 				} catch (Exception e) {
 					newUser.getOutStream().println(JsonHelper.getJsonOfObject(e));
 				}
-				newUser.getOutStream().println("Hi new registered user " + newUser.getNickname());
+				newUser.getOutStream().println(getJsonOfObject("Hi new registered user " + newUser.getNickname()));
 
 				// create a new thread for newUser incoming messages handling
 				new Thread(new UserHandler(this, newUser)).start();
-			} else {
+			} else if(receivedObj instanceof LoginUser) {
 				System.out.println("Try Login Account");
 				loginUser(client, accountOrLoginAsJson, newUser);
 			}
@@ -79,7 +85,7 @@ public class Server {
 	}
 
 	private void loginUser(final Socket client, final String accountOrLoginAsJson, User newUser) throws IOException {
-		LoginUser loginUser = JsonHelper.convertJsonToLoginUser(accountOrLoginAsJson);
+		LoginUser loginUser = JsonHelper.convertJsonToObject(accountOrLoginAsJson);
 
 		Account account = this.dbService.getAccountByLoginUser(loginUser);
 		if (account != null) {
@@ -112,11 +118,9 @@ public class Server {
 			client.getOutStream().println(userSender.getNickname() + ": " + msg);
 		}
 	}
-	private User registerUser(Socket client, String accountOrLoginAsJson) throws Exception {
-		Account account = JsonHelper.convertJsonToAccount(accountOrLoginAsJson);
+	private User registerUser(Socket client, Account account) throws Exception {
 
 		this.dbService.insert(account);
-
 		return new User(client, account.getUserName());
 	}
 	// send list of clients to all Users

@@ -1,9 +1,10 @@
 package client;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
+
+import static common.JsonHelper.convertJsonToObject;
+
 
 class ReceivedMessagesHandler implements Runnable {
 
@@ -19,6 +20,7 @@ class ReceivedMessagesHandler implements Runnable {
 		Scanner s = new Scanner(server);
 		String usernameAndMessage = "";
 		while (s.hasNextLine()) {
+			/*
 			usernameAndMessage = s.nextLine();
 			if (usernameAndMessage.charAt(0) == '[') {
 				usernameAndMessage = usernameAndMessage.substring(1, usernameAndMessage.length() - 1);
@@ -28,7 +30,10 @@ class ReceivedMessagesHandler implements Runnable {
 					System.out.println("\n" + usernameAndMessage);
 				} catch (Exception ignore) {
 				}
-			}
+			}*/
+			//TODO receive proper responses from server
+			;
+            System.out.println("Received: \n"+convertJsonToObject(s.nextLine()));
 		}
 		s.close();
 	}

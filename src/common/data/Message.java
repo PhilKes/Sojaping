@@ -1,9 +1,7 @@
 package common.data;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.sql.Timestamp;
 
-/*@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "_class")*/
 public class Message {
     //private String sendLanguage;
     //private String receiveLanguage;

@@ -4,10 +4,10 @@ package server;
 import client.LoginUser;
 import common.data.Account;
 import common.data.AccountBuilder;
-import org.sqlite.SQLiteException;
 
 import java.sql.*;
 import java.sql.ResultSet;
+import java.sql.Connection;
 
 public class DatabaseService {
     static int lastRow;
@@ -95,7 +95,7 @@ public class DatabaseService {
             if(rs.next()){
                 acc.setAid(rs.getInt(1));
                 lastRow = rs.getInt(1);
-                System.out.println("Inserted to DB:\n"+acc);
+                System.out.println("Inserted into DB:\t"+acc);
             }
         }catch(SQLException e){
             if(e.getMessage().contains("[SQLITE_CONSTRAINT]  Abort due to constraint violation (UNIQUE constraint failed: account.userName)")){

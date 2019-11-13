@@ -1,13 +1,15 @@
 package client;
 
 import common.data.Account;
+import common.data.Packet;
+import server.Connection;
 import server.Server;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 
-import static common.JsonHelper.convertObjectToJson;
+import static common.Constants.Contexts.*;
 
 public class Client {
 
@@ -17,7 +19,7 @@ public class Client {
 	private Account account;
 
 	private String host;
-	private Socket client;
+	private Connection client;
 	private int port;
 	private PrintStream output;
 
@@ -31,60 +33,49 @@ public class Client {
 		this.port = port;
 		//this.loginUser = new LoginUser();
 	}
+
 	public static void main(String[] args) throws IOException {
-		//		new Client("141.59.135.57", 443).run();
 		getInstance(Server.SERVER_HOST, Server.SERVER_PORT).run();
 	}
-	public void run() throws IOException {
-		client = new Socket(host, port);
-		System.out.println("Client successfully connected to server!");
-		output = new PrintStream(client.getOutputStream());
-		sendToServer(client.getInetAddress().getHostAddress());
-		/*
-		Scanner sc = new Scanner(System.in);
-		System.out.print("Enter your name: ");
-		Account registerAccount = new AccountBuilder().setUserName(sc.nextLine()).createAccount();
 
-		System.out.print("Enter your password: ");
-		registerAccount.setPassword(sc.nextLine());
-
-		//this.loginUser.setUserName(sc.nextLine());
-
-		//send to server
-		output.println(JsonHelper.getJsonOfObject(registerAccount));
-//		output.println(loginUser.getUserName());
-
-		// create a new thread for server messages handling
-		new Thread(new ReceivedMessagesHandler(client.getInputStream())).start();
-
-		System.out.println("Messages: \n");*/
-
-		// Read new messages and send them to server
-		/*while (sc.hasNextLine()) {
-			output.println(sc.nextLine());
-		}*/
-
-		//output.close();
-		//sc.close();
-		//client.close();
+	public void run()  {
+		/** Loop to try to connect to server*/
+		do {
+			try {
+				client=new Connection(host, port, host);
+				break;
+			}
+			catch(IOException e) {
+				//e.printStackTrace();
+				System.err.println("Connection failed\n retrying in 3 Seconds...");
+				try {
+					Thread.sleep(3000);
+				}
+				catch(InterruptedException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}while(true);
+		System.out.println("Socket successfully established to server("+host+")!");
+		output = client.getOutStream();
+		sendToServer(CONNECT,client.getSocket().getInetAddress().getHostAddress());
+		/** Start Thread to handle packets from the server*/
+		new Thread(new ClientHandler(client.getInputStream())).start();
 	}
 	public void stop(){
 		output.close();
 		try {
-			client.close();
+			client.getSocket().close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	/** Send Object as JSON to Server*/
-	public void sendToServer(Object object){
-		output.println(convertObjectToJson(object));
-		try {
-			new Thread(new ReceivedMessagesHandler(client.getInputStream())).start();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void sendToServer(String context,Object object){
+		Packet packet=new Packet(context,object);
+		output.println(packet.getJson());
+		System.out.println("to Server\t:\t"+packet);
 	}
 }
 

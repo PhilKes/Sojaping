@@ -1,10 +1,11 @@
 package server;
 
 import client.LoginUser;
-import common.JsonHelper;
 import common.data.Account;
+import common.data.Packet;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import static common.JsonHelper.convertJsonToObject;
-import static common.JsonHelper.convertObjectToJson;
+import static common.Constants.Contexts.*;
+import static common.JsonHelper.*;
 
 public class Server {
 
@@ -24,7 +25,7 @@ public class Server {
 
 	private int port;
 
-	private List<User> clients;
+	private List<Connection> clients;
 
 	private TranslationService translationService;
 
@@ -53,66 +54,62 @@ public class Server {
 		/** Continouesly accept new Socket connections, instanstiate new UserHandler for every new connection (newUser)*/
 		while (true) {
 			Socket clientSocket = server.accept();
-
-			String clientIP = convertJsonToObject(new Scanner(clientSocket.getInputStream()).nextLine());
-			// Hier kriegen wir ein JSON von Account User + PW oder Login
-			System.out.println("New Client: " + clientIP + " Nickname: " + clientIP);
-
-			User newUser = new User(clientSocket, clientSocket.getInetAddress().getHostAddress());
-			this.clients.add(newUser);
-			sendToUser(newUser,"Hello "+clientIP);
-			// create a new thread for newUser incoming messages handling
-			new Thread(new UserHandler(this, newUser)).start();
+			/** Receive connectPacket with Clients IP as data, add to client list*/
+            Packet connectPacket =getPacketFromJson(new Scanner(clientSocket.getInputStream()).nextLine());
+            if(connectPacket.getContext().equals(CONNECT)) {
+                String clientIP=(String) connectPacket.getData();
+                System.out.println("New Client: " + clientIP + " Nickname: " + clientIP);
+                //TODO Try to reconnect when connection failed
+                Connection newConnection= new Connection(clientSocket, clientSocket.getInetAddress().getHostAddress());
+                this.clients.add(newConnection);
+                sendToUser(newConnection,CONNECT_SUCCESS,"Hello "+clientIP);
+                /** Start Handler for the new client*/
+                new Thread(new ServerHandler(this, newConnection)).start();
+            }
 		}
 	}
 
-	public void loginUser(final Socket client, final String accountOrLoginAsJson, User newUser) throws IOException {
-		LoginUser loginUser = JsonHelper.convertJsonToObject(accountOrLoginAsJson);
+	/** Checks if loginUser has valid credentials, returns Account from DB
+     *  throws Exception if invalid credentials */
+	public Account loginUser(Connection newConnection, LoginUser loginUser) throws Exception {
+		//LoginUser loginUser = JsonHelper.convertJsonToObject(accountOrLoginAsJson);
 		Account account = this.dbService.getAccountByLoginUser(loginUser);
 		if (account != null) {
-			if (account.getPassword().equals(loginUser.getPassword())) {
-				// successful auth
-				sendToUser(newUser,account);
-
-				newUser = new User(client, loginUser.getUserName());
-
-				sendToUser(newUser,"Hi welcome back  " + newUser.getNickname());
-				// create a new thread for newUser incoming messages handling
-				new Thread(new UserHandler(this, newUser)).start();
-			} else {
-				Exception e = new Exception("Invalid password");
-				sendToUser(newUser,e);
-			}
-		} else {
-			Exception e = new Exception("Unknown username");
-			sendToUser(newUser,e);
-		}
+			if (account.getPassword().equals(loginUser.getPassword()))
+                return account;
+			else
+				throw new Exception("Invalid password");
+		} else
+			throw new Exception("Unknown username");
 	}
 
-	public void removeUser(User user) {
-		this.clients.remove(user);
+	public void removeUser(Connection connection) {
+		this.clients.remove(connection);
 	}
 
 	// send messages to all clients
-	public void broadcastMessages(String msg, User userSender) {
-		for (User client : this.clients) {
-			sendToUser(client,userSender.getNickname() + ": " + msg);
+	public void broadcastMessages(String msg, Connection connectionSender) {
+		for (Connection client : this.clients) {
+			sendToUser(client,BRDCAST_MSG, connectionSender.getNickname() + ": " + msg);
 		}
 	}
+
+	//TODO return filled Account from DB
 	public void registerUser(Socket client, Account account) throws Exception {
 		this.dbService.insert(account);
-		//return new User(client, account.getUserName());
-		return;
 	}
+
 	// send list of clients to all Users
 	public void broadcastAllUsers() {
-		for (User client : this.clients) {
-			sendToUser(client,this.clients);
+		for (Connection client : this.clients) {
+			sendToUser(client,BRDCAST_USERS,this.clients);
 		}
 	}
+
 	/** Send object as JSON through user OutputStream*/
-	public void sendToUser(User user, Object object){
-		String json=convertObjectToJson(object);
-		user.getOutStream().println(json);
+	public void sendToUser(Connection connection, String context, Object object){
+        Packet packet=new Packet(context,object);
+		connection.getOutStream().println(packet.getJson());
+        System.out.println("to "+connection.getNickname()+"\t:\t"+packet);
 	}
 }

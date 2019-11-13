@@ -15,24 +15,22 @@ import server.Server;
 
 import java.io.IOException;
 
+import static common.Constants.Contexts.LOGIN;
+
+
 public class LoginController {
 
     @FXML
     private Button btnRegister,btnLogin;
     @FXML
     private TextField txtUsername,txtPassword;
+
     private Client client;
 
     @FXML
     private void initialize(){
         btnRegister.setOnMouseClicked(ev->onRegisterClicked());
         btnLogin.setOnMouseClicked(ev->onLoginClicked());
-        client=Client.getInstance(Server.SERVER_HOST, Server.SERVER_PORT);
-        try {
-            client.run();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void onLoginClicked() {
@@ -40,9 +38,9 @@ public class LoginController {
             System.err.println("Invalid Login Input");
             return;
         }
-        //TODO Tell client to send loginUser to Server -> Task with response?
         LoginUser loginUser= new LoginUser(txtUsername.getText(),txtPassword.getText());
-        client.sendToServer(loginUser);
+        client.sendToServer(LOGIN,loginUser);
+        //TODO
     }
 
     private void onRegisterClicked() {

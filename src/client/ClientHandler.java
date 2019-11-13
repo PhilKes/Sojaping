@@ -1,25 +1,29 @@
 package client;
 
+import common.data.Account;
+import common.data.Packet;
+
 import java.io.InputStream;
 import java.util.Scanner;
 
-import static common.JsonHelper.convertJsonToObject;
+import static common.JsonHelper.getPacketFromJson;
+import static common.Constants.Contexts.*;
 
-
-class ReceivedMessagesHandler implements Runnable {
+class ClientHandler implements Runnable {
 
 	private InputStream server;
 	private boolean running;
 
-	ReceivedMessagesHandler(InputStream server) {
+	ClientHandler(InputStream server) {
 		this.server = server;
 		this.running=true;
 	}
-
+	//TODO Substitue Scanner with BufferedReader?
 	// TODO differenzieren wenn Userlist vom Server kommt oder eine Nachricht
 	// TODO Userlist schön anzeigen
+
 	public void run() {
-		//TODO Substitue Scanner with BufferedReader?
+
 		Scanner sc = new Scanner(server);
 		while (running && sc.hasNextLine()) {
 			/*
@@ -33,13 +37,22 @@ class ReceivedMessagesHandler implements Runnable {
 				} catch (Exception ignore) {
 				}
 			}*/
-			//TODO receive proper responses from server
-			String jsonReceived=sc.nextLine();
-			if(jsonReceived.isEmpty()){
-				System.err.println("Received empty message from Server");
-			}else{
-				System.out.println("SERVER: "+convertJsonToObject(jsonReceived));
+			String receivedJson=sc.nextLine();
+			Packet receivedPacket=getPacketFromJson(receivedJson);
+			if(receivedPacket.getContext().contains("Fail"))
+				System.err.println("from Server\t:\t"+receivedPacket);
+			else
+				System.out.println("from Server\t:\t"+receivedPacket);
+			switch(receivedPacket.getContext()){
+				case LOGIN_SUCCESS:
+					Account account= (Account)receivedPacket.getData();
+					System.out.println("Logged into "+account);
+					//TODO Login success -> show gui.fxml
+					break;
+				default:
+					break;
 			}
+
 		}
 		sc.close();
 	}

@@ -8,6 +8,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 
+import static common.Constants.Contexts.*;
+
+
 public class RegisterController {
 
     @FXML
@@ -32,8 +35,8 @@ public class RegisterController {
         }
         //TODO Get selected Languages from boxLanguages
         Account acc = new AccountBuilder().setUserName(txtUsername.getText()).setPassword(txtPassword.getText()).createAccount();
-        System.out.println("Register:\n"+acc);
-        client.sendToServer(acc);
+        //System.out.println("Register:\n"+acc);
+        client.sendToServer(REGISTER,acc);
         //((Stage)btnRegister.getScene().getWindow()).close();
     }
 

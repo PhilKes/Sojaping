@@ -44,6 +44,7 @@ public class JsonHelper {
 		return getJsonFromPacket(new Packet(context,data));
 	}
 	/** Returns Packet object from JSON String*/
+	//TODO deep copy (e.g. Message Object)
 	public static Packet getPacketFromJson(String json){
 		JsonNode node=null;
 		try {

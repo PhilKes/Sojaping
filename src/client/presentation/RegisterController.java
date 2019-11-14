@@ -3,15 +3,18 @@ package client.presentation;
 import client.Client;
 import common.data.Account;
 import common.data.AccountBuilder;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 import static common.Constants.Contexts.*;
 
 
-public class RegisterController {
+public class RegisterController extends UIController {
 
     @FXML
     private TextField txtUsername,txtPassword,txtRepeat;
@@ -47,5 +50,8 @@ public class RegisterController {
     public void setClient(Client client) {
         this.client = client;
     }
-
+    @Override
+    public void close() {
+        Platform.runLater(()-> ((Stage)btnRegister.getScene().getWindow()).close());
+    }
 }

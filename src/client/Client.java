@@ -1,7 +1,7 @@
 package client;
 
-import client.presentation.LoginController;
-import client.presentation.RegisterController;
+import client.presentation.GUIController;
+import client.presentation.UIController;
 import common.data.Account;
 import common.data.Packet;
 import javafx.application.Platform;
@@ -16,6 +16,7 @@ import server.Server;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Stack;
 
 import static common.Constants.Contexts.*;
 
@@ -31,7 +32,7 @@ public class Client {
 	private int port;
 	private PrintStream output;
 
-	private LoginController controller;
+	private Stack<UIController> controllerStack;
 
 	public static Client getInstance(String host, int port) {
 		if(instance ==null)
@@ -41,15 +42,16 @@ public class Client {
 	private Client(String host,int port){
 		this.host = host;
 		this.port = port;
+		this.controllerStack=new Stack<>();
 		//this.loginUser = new LoginUser();
 	}
 
-	public LoginController getController() {
-		return controller;
+	public UIController getController() {
+		return controllerStack.peek();
 	}
 
-	public void setController(LoginController controller) {
-		this.controller = controller;
+	public void setController(UIController controller) {
+		controllerStack.push(controller);
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -95,12 +97,13 @@ public class Client {
 	/** Send Object as JSON to Server*/
 	public void sendToServer(String context,Object object){
 		Packet packet=new Packet(context,object);
-		output.println(packet.getJson());
+		String json=packet.getJson();
+		output.println(json);
 		System.out.println("to Server\t:\t"+packet);
 	}
 
 	public void closeCurrentWindow() {
-		controller.close();
+		controllerStack.pop().close();
 	}
 
 	public void openWindow(String window) {
@@ -110,11 +113,16 @@ public class Client {
 			Parent root1 = (Parent) fxmlLoader.load();
 			//RegisterController registerCtrl=(RegisterController)fxmlLoader.getController();
 			//registerCtrl.setClient(this);
+			UIController controller= (UIController) fxmlLoader.getController();
+			controller.setClient(this);
+			setController(controller);
 			Stage stage = new Stage();
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.initStyle(StageStyle.DECORATED);
 			stage.setTitle(window);
 			stage.setScene(new Scene(root1));
+			stage.setOnCloseRequest(ev->
+					closeCurrentWindow());
 			stage.show();
 		}catch (Exception e){
 			e.printStackTrace();
@@ -127,6 +135,14 @@ public class Client {
 
 	public Account getAccount() {
 		return account;
+	}
+
+	public GUIController getGUIController() {
+		for(UIController controller : controllerStack){
+			if(controller instanceof GUIController)
+				return (GUIController)controller;
+		}
+		return null;
 	}
 }
 

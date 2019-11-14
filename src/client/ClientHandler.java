@@ -1,7 +1,10 @@
 package client;
 
+import client.presentation.GUIController;
 import common.data.Account;
+import common.data.Message;
 import common.data.Packet;
+import javafx.application.Platform;
 
 import java.io.InputStream;
 import java.util.Scanner;
@@ -52,6 +55,11 @@ class ClientHandler implements Runnable {
 					//TODO Login success -> show gui.fxml
 					client.closeCurrentWindow();
 					client.openWindow("gui");
+					break;
+				case MESSAGE_RECEIVED:
+					Message msg= (Message) receivedPacket.getData();
+					//if(msg.getReceiver()==null)
+					    Platform.runLater(()->{client.getGUIController().displayNewMessage(msg);});
 					break;
 				default:
 					break;

@@ -3,17 +3,21 @@ package client.presentation;
 
 import client.Client;
 import common.data.Message;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
+import javafx.stage.Stage;
 import server.Server;
 
 import java.sql.Timestamp;
 
-public class GUIController {
+import static common.Constants.Contexts.MESSAGE_SENT;
+
+public class GUIController extends UIController {
 	@FXML
 	private Button btnSend;
 	@FXML
@@ -41,6 +45,7 @@ public class GUIController {
 			Message newMessage = new Message(checkTranslate.isSelected(), textASendText.getText(), new Timestamp(System.currentTimeMillis()),client.getAccount(),null);
 			displayNewMessage(newMessage);
 			textASendText.clear();
+			client.sendToServer(MESSAGE_SENT,newMessage);
 			//Todo send Message to Server, Sender / Receiver -> Message
 			//client.sendObject(newMessage);
 		}
@@ -48,7 +53,7 @@ public class GUIController {
 
 		}
 	}
-	private void displayNewMessage(Message Message){
+	public void displayNewMessage(Message Message){
 		//Todo add Sender name to output String
 		listVChat.getItems().add(listVChat.getItems().size(),Message.getTimestamp().toString().split("\\.")[0] +" "+Message.getSender().getUserName()+": "+ Message.getText());
 	}
@@ -72,4 +77,8 @@ public class GUIController {
 		this.client = client;
 	}
 
+	@Override
+	public void close() {
+		Platform.runLater(()-> ((Stage)btnSend.getScene().getWindow()).close());
+	}
 }

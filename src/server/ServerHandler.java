@@ -2,6 +2,7 @@ package server;
 
 import client.LoginUser;
 import common.data.Account;
+import common.data.Message;
 import common.data.Packet;
 
 import java.util.Scanner;
@@ -65,6 +66,29 @@ public class ServerHandler implements Runnable {
 					}
 					catch(Exception e) {
 						server.sendToUser(connection, LOGIN_FAIL, e);
+						//e.printStackTrace();
+					}
+					break;
+				case MESSAGE_SENT:
+					System.out.println("Try send message");
+					Message message=(Message) receivedPacket.getData();
+					/** Check login credentials, send Account from DB to user or send failed Exception */
+					try {
+						Account receiver= message.getReceiver();
+						if(receiver==null){
+							//TODO broadcast
+							server.broadcastMessages(connection,message);
+						}
+						else{
+							//TODO Private message
+							//server.sendToUser(connection, MESSAGE_RECEIVED, message);
+						}
+
+						//TODO Send Userlist, new messages to user, ...
+						//server.sendToUser(connection,INFO,"Hi welcome back  " + connection.getNickname());
+					}
+					catch(Exception e) {
+						server.sendToUser(connection, MESSAGE_FAIL, e);
 						//e.printStackTrace();
 					}
 					break;

@@ -29,6 +29,9 @@ public class Message {
 //Todo Sender / Receiver ?
 
 
+    public Message() {
+    }
+
     public Message(/*String sendLanguage, String receiveLanguage,*/ boolean translate, String text, Timestamp timestamp, Account sender, Account receiver) {
         /*this.sendLanguage = sendLanguage;
         this.receiveLanguage = receiveLanguage;*/

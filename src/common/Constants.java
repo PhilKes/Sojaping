@@ -20,6 +20,9 @@ public class Constants {
                 LOGIN_SUCCESS="loginSuccess",
                 LOGIN_FAIL="loginFail",
                 INFO="info",
+                MESSAGE_SENT="messageSent",
+                MESSAGE_RECEIVED="messageRec",
+                MESSAGE_FAIL="messageFail",
                 MESSAGE="message",
                 BRDCAST_MSG="broadcastMsg",
                 BRDCAST_USERS="broadcastUsers";

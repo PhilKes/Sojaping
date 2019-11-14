@@ -2,6 +2,7 @@ package server;
 
 import client.LoginUser;
 import common.data.Account;
+import common.data.Message;
 import common.data.Packet;
 
 import java.io.IOException;
@@ -18,13 +19,12 @@ import static common.JsonHelper.*;
 
 public class Server {
 
-	//public static String SERVER_HOST = "141.59.129.236";
-	public static String SERVER_HOST = "141.59.130.180";
+	public static String SERVER_HOST = "192.168.178.26";
+	//public static String SERVER_HOST = "141.59.130.180";
 
 	public static int SERVER_PORT = 443;
 
 	private int port;
-
 	private List<Connection> clients;
 
 	private TranslationService translationService;
@@ -106,10 +106,18 @@ public class Server {
 		}
 	}
 
+	//TODO Find connection
 	/** Send object as JSON through user OutputStream*/
 	public void sendToUser(Connection connection, String context, Object object){
         Packet packet=new Packet(context,object);
 		connection.getOutStream().println(packet.getJson());
         System.out.println("to "+connection.getNickname()+"\t:\t"+packet);
+	}
+
+	public void broadcastMessages(Connection sender,Message message) {
+		this.clients.forEach(client-> {
+            if(client!=sender)
+                sendToUser(client, MESSAGE_RECEIVED,message);}
+        );
 	}
 }

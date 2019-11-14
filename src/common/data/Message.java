@@ -8,31 +8,33 @@ public class Message {
     private boolean translate;
     private String text;
     private Timestamp timestamp;
-    Account sender;
-    Account receiver;
+    String sender;
+    String receiver;
+    //Account sender;
+    //Account receiver;
 
-    public Account getSender() {
+    public String getSender() {
         return sender;
     }
 
-    public void setSender(Account sender) {
+    public void setSender(String sender) {
         this.sender = sender;
     }
 
-    public Account getReceiver() {
+    public String getReceiver() {
         return receiver;
     }
 
-    public void setReceiver(Account receiver) {
+    public void setReceiver(String receiver) {
         receiver = receiver;
     }
 //Todo Sender / Receiver ?
 
 
     public Message() {
-    }
 
-    public Message(/*String sendLanguage, String receiveLanguage,*/ boolean translate, String text, Timestamp timestamp, Account sender, Account receiver) {
+    }
+    public Message(/*String sendLanguage, String receiveLanguage,*/ boolean translate, String text, Timestamp timestamp, String sender, String receiver) {
         /*this.sendLanguage = sendLanguage;
         this.receiveLanguage = receiveLanguage;*/
         this.translate = translate;

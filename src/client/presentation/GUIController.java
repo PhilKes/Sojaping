@@ -31,6 +31,8 @@ public class GUIController extends UIController {
 
 	private Client client;
 
+	//Todo Display all online users(status)
+	//Todo Javafx custom array adapter for messages
 
 	@FXML
 	private void initialize() {
@@ -42,7 +44,8 @@ public class GUIController extends UIController {
 
 	private void onSendClicked() {
 		if(!textASendText.getText().isEmpty()){
-			Message newMessage = new Message(checkTranslate.isSelected(), textASendText.getText(), new Timestamp(System.currentTimeMillis()),client.getAccount(),null);
+			//Todo Receiver Null = Broadcast otherwise fill receiver with information from GUI Contact list
+			Message newMessage = new Message(checkTranslate.isSelected(), textASendText.getText(), new Timestamp(System.currentTimeMillis()),client.getAccount().getUserName(),null);
 			displayNewMessage(newMessage);
 			textASendText.clear();
 			client.sendToServer(MESSAGE_SENT,newMessage);
@@ -53,9 +56,8 @@ public class GUIController extends UIController {
 
 		}
 	}
-	public void displayNewMessage(Message Message){
-		//Todo add Sender name to output String
-		listVChat.getItems().add(listVChat.getItems().size(),Message.getTimestamp().toString().split("\\.")[0] +" "+Message.getSender().getUserName()+": "+ Message.getText());
+	public void displayNewMessage(Message message){
+		listVChat.getItems().add(listVChat.getItems().size(),message.getTimestamp().toString().split("\\.")[0] +" "+message.getSender()+": "+ message.getText());
 	}
 
 	private void onMyProfileClicked(){

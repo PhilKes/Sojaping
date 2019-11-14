@@ -19,10 +19,11 @@ import static common.JsonHelper.*;
 
 public class Server {
 
-	public static String SERVER_HOST = "192.168.178.26";
+	//public static String SERVER_HOST = "192.168.178.26";
+	  public static String SERVER_HOST = "192.168.0.190";
 	//public static String SERVER_HOST = "141.59.130.180";
 
-	public static int SERVER_PORT = 443;
+	public static int SERVER_PORT = 9999;//443;
 
 	private int port;
 	private List<Connection> clients;

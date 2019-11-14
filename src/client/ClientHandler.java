@@ -11,12 +11,14 @@ import static common.Constants.Contexts.*;
 
 class ClientHandler implements Runnable {
 
-	private InputStream server;
+	private Client client;
 	private boolean running;
+	private Scanner scanner;
 
-	ClientHandler(InputStream server) {
-		this.server = server;
+	public ClientHandler(Client client, InputStream inputStream ) {
+		this.client=client;
 		this.running=true;
+		scanner = new Scanner(inputStream);
 	}
 	//TODO Substitue Scanner with BufferedReader?
 	// TODO differenzieren wenn Userlist vom Server kommt oder eine Nachricht
@@ -24,8 +26,8 @@ class ClientHandler implements Runnable {
 
 	public void run() {
 
-		Scanner sc = new Scanner(server);
-		while (running && sc.hasNextLine()) {
+
+		while (running && scanner.hasNextLine()) {
 			/*
 			usernameAndMessage = s.nextLine();
 			if (usernameAndMessage.charAt(0) == '[') {
@@ -37,8 +39,7 @@ class ClientHandler implements Runnable {
 				} catch (Exception ignore) {
 				}
 			}*/
-			String receivedJson=sc.nextLine();
-			Packet receivedPacket=getPacketFromJson(receivedJson);
+			Packet receivedPacket=getPacketFromJson(scanner.nextLine());
 			if(receivedPacket.getContext().contains("Fail"))
 				System.err.println("from Server\t:\t"+receivedPacket);
 			else
@@ -46,14 +47,27 @@ class ClientHandler implements Runnable {
 			switch(receivedPacket.getContext()){
 				case LOGIN_SUCCESS:
 					Account account= (Account)receivedPacket.getData();
+					client.setAccount(account);
 					System.out.println("Logged into "+account);
 					//TODO Login success -> show gui.fxml
+					client.closeCurrentWindow();
+					client.openWindow("gui");
 					break;
 				default:
 					break;
 			}
 
 		}
-		sc.close();
+		scanner.close();
+	}
+
+	public boolean waitForConnectSuccess(){
+		Packet response= getPacketFromJson(scanner.nextLine());
+		if(response.getContext().equals(CONNECT_SUCCESS)){
+			System.out.println("CONNECT_SUCCESS Packet received");
+			return true;
+		}
+		System.err.println("CONNECT_SUCCESS Packet not received!");
+		return false;
 	}
 }

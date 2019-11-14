@@ -2,6 +2,7 @@ package client.presentation;
 
 import client.Client;
 import client.LoginUser;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -40,9 +41,13 @@ public class LoginController {
         }
         LoginUser loginUser= new LoginUser(txtUsername.getText(),txtPassword.getText());
         client.sendToServer(LOGIN,loginUser);
+
+
         //TODO
     }
-
+    public void close(){
+        Platform.runLater(()-> ((Stage)btnRegister.getScene().getWindow()).close());
+    }
     private void onRegisterClicked() {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("register.fxml"));

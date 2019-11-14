@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.Connection;
 
 public class DatabaseService {
+    private static final String STATUS="status";
     static int lastRow;
     public static void createNewDatabase(String fileName) {
 
@@ -47,7 +48,7 @@ public class DatabaseService {
                 + "    aid integer PRIMARY KEY,\n"
                 + "    userName text NOT NULL UNIQUE,\n"
                 + "    password text NOT NULL,\n"
-                + "    status integer NOT NULL,\n"
+                + "    "+STATUS+" integer NOT NULL,\n"
                 + "    aboutMe text,\n"
                 + "    profilePicture text\n"
                 + ");";
@@ -72,7 +73,7 @@ public class DatabaseService {
             while (rs.next()) {
                 System.out.println(rs.getInt("aid") +  "\t" +
                         rs.getString("userName") + "\t" +
-                        rs.getInt("status") +  "\t" +
+                        rs.getInt(STATUS) +  "\t" +
                         rs.getString("aboutMe") + "\t" +
                         rs.getString("profilePicture"));
             }
@@ -165,22 +166,23 @@ public class DatabaseService {
     }
 
     public Account getAccountByLoginUser(LoginUser user){
-        String sql = "SELECT aid, userName, password, aboutMe, profilePicture FROM account WHERE userName = ? AND password = ?";
+        String sql = "SELECT * FROM account WHERE userName = ? AND password = ?";
         Account acc = null;
         try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
+
             pstmt.setString(1, user.getUserName());
             pstmt.setString(2, user.getPassword());
-            pstmt.executeUpdate();
-            ResultSet rs = pstmt.getResultSet();
+            ResultSet rs= pstmt.executeQuery();
             while (rs.next()) {
                 acc = new AccountBuilder().setAid(rs.getInt("aid")).setUserName(rs.getString("userName"))
-                        .setPassword(rs.getString("password")).setStatus(rs.getInt("status"))
+                        .setPassword(rs.getString("password")).setStatus(rs.getInt(STATUS))
                         .setAboutMe(rs.getString("aboutMe")).setProfilePicture(rs.getString("profilePicture"))
                         .createAccount();
             }
         }catch(SQLException e){
             System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         return acc;
     }
@@ -188,7 +190,7 @@ public class DatabaseService {
     public static void main(String[] args) throws Exception {
         //createNewDatabase("sojaping.db");
         DatabaseService db = new DatabaseService();
-        //db.dropTable();
+        db.dropTable();
         createNewTable();
 
         System.out.println("Insert");

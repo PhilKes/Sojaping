@@ -38,9 +38,8 @@ public class ServerHandler implements Runnable {
 				System.err.println("from "+connection.getNickname()+"\t:\t"+receivedPacket);
 			else
 				System.out.println("from "+connection.getNickname()+"\t:\t"+receivedPacket);
-			/** Determine method of receivecPacket*/
 
-			/** Try to register if Account was sent*/
+			/** Determine method of receivecPacket*/
 			switch(receivedPacket.getContext()) {
 				case REGISTER:
 					/** Try to register account to DB, send Account from DB to user or send failed Exception */

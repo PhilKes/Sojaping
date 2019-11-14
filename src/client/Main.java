@@ -25,6 +25,7 @@ public class Main extends Application {
         Client client=Client.getInstance(Server.SERVER_HOST, Server.SERVER_PORT);
         LoginController loginController=(LoginController)fxmlLoader.getController();
         loginController.setClient(client);
+        client.setController(loginController);
         primaryStage.show();
 
         new Thread(()->client.run()).start();

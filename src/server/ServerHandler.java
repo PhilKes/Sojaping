@@ -35,7 +35,7 @@ public class ServerHandler implements Runnable {
 			String receivedJson=sc.nextLine();
 			Packet receivedPacket=getPacketFromJson(receivedJson);
 
-			if(receivedPacket.getContext().contains("Fail"))
+			if(receivedPacket.getContext().contains(FAIL))
 				System.err.println("from "+connection.getNickname()+"\t:\t"+receivedPacket);
 			else
 				System.out.println("from "+connection.getNickname()+"\t:\t"+receivedPacket);
@@ -50,7 +50,7 @@ public class ServerHandler implements Runnable {
 						server.sendToUser(connection, REGISTER_SUCCESS, "Hi new registered user " + connection.getNickname());
 					}
 					catch(Exception e) {
-						server.sendToUser(connection, REGISTER_FAIL, e);
+						server.sendToUser(connection, receivedPacket.getContext()+FAIL, e);
 					}
 					break;
 				/** Try to login*/
@@ -61,12 +61,11 @@ public class ServerHandler implements Runnable {
 					try {
 						Account account=server.loginUser(connection, loginUser);
 						server.sendToUser(connection, LOGIN_SUCCESS, account);
-						//TODO Send Userlist, new messages to user, ...
+						server.setLoggedUser(connection,account);
 						//server.sendToUser(connection,INFO,"Hi welcome back  " + connection.getNickname());
 					}
 					catch(Exception e) {
-						server.sendToUser(connection, LOGIN_FAIL, e);
-						//e.printStackTrace();
+						server.sendToUser(connection, receivedPacket.getContext()+FAIL, e);
 					}
 					break;
 				case MESSAGE_SENT:
@@ -81,15 +80,24 @@ public class ServerHandler implements Runnable {
 						}
 						else{
 							//TODO Private message
-							//server.sendToUser(connection, MESSAGE_RECEIVED, message);
+							if(!server.sendMessage(message))
+								throw new Exception("Receiver not found!");
 						}
 
 						//TODO Send Userlist, new messages to user, ...
 						//server.sendToUser(connection,INFO,"Hi welcome back  " + connection.getNickname());
 					}
 					catch(Exception e) {
-						server.sendToUser(connection, MESSAGE_FAIL, e);
-						//e.printStackTrace();
+						server.sendToUser(connection, receivedPacket.getContext()+FAIL, e);
+					}
+					break;
+				case USERLIST:
+					//Message message=(Message) receivedPacket.getData();
+					try {
+						server.sendToUser(connection,USERLIST,server.getOnlineUsers());
+					}
+					catch(Exception e) {
+						server.sendToUser(connection, receivedPacket.getContext()+FAIL, e);
 					}
 					break;
 				default:

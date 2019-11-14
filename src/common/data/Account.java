@@ -1,19 +1,13 @@
 package common.data;
 
-/*import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "_class")*/
-public class Account {
+public class Account extends ContactInfo {
     int aid;
-    String userName;
     private String password;
-    int status;
-    String aboutMe;
-    String profilePicture;
 
     public Account(){
-
     }
+
     public Account(int aid, String userName, String password, int status, String aboutMe, String profilePicture) {
         this.aid = aid;
         this.userName = userName;
@@ -31,46 +25,17 @@ public class Account {
         this.aid = aid;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password=password;
     }
 
-    public int getStatus() {
-        return status;
+    public ContactInfo getContactInfo(){
+        return new ContactInfo(userName,status,aboutMe,profilePicture);
     }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public String getAboutMe() {
-        return aboutMe;
-    }
-
-    public void setAboutMe(String aboutMe) {
-        this.aboutMe = aboutMe;
-    }
-
-    public String getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
-    }
-
     @Override
     public String toString() {
         return "Account{" +

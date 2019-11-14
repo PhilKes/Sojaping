@@ -2,11 +2,13 @@ package client;
 
 import client.presentation.GUIController;
 import common.data.Account;
+import common.data.ContactInfo;
 import common.data.Message;
 import common.data.Packet;
 import javafx.application.Platform;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Scanner;
 
 import static common.JsonHelper.getPacketFromJson;
@@ -43,23 +45,31 @@ class ClientHandler implements Runnable {
 				}
 			}*/
 			Packet receivedPacket=getPacketFromJson(scanner.nextLine());
-			if(receivedPacket.getContext().contains("Fail"))
+			if(receivedPacket.getContext().contains(FAIL))
 				System.err.println("from Server\t:\t"+receivedPacket);
 			else
 				System.out.println("from Server\t:\t"+receivedPacket);
 			switch(receivedPacket.getContext()){
 				case LOGIN_SUCCESS:
 					Account account= (Account)receivedPacket.getData();
+					//TODO check if not already logged in on other Connection
 					client.setAccount(account);
 					System.out.println("Logged into "+account);
-					//TODO Login success -> show gui.fxml
-					client.closeCurrentWindow();
+					client.closeCurrentWindowNoexit();
 					client.openWindow("gui");
+                    /** Request online user list from server -> Receive: case USERLIST */
+                    client.sendToServer(USERLIST,null);
 					break;
 				case MESSAGE_RECEIVED:
 					Message msg= (Message) receivedPacket.getData();
 					//if(msg.getReceiver()==null)
 					    Platform.runLater(()->{client.getGUIController().displayNewMessage(msg);});
+					break;
+				case USERLIST:
+					List<ContactInfo> userList= (List<ContactInfo>)receivedPacket.getData();
+					System.out.println("Contacts received:");
+					userList.forEach(u-> System.out.println(u));
+					//TODO client.getGUIController().displayOnlineUsers(userList);
 					break;
 				default:
 					break;

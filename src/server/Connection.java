@@ -1,5 +1,7 @@
 package server;
 
+import common.data.Account;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -13,11 +15,14 @@ public class Connection {
 	private String nickname;
 	private Socket socket;
 
+	private Account loggedAccount;
+
 	public Connection(String host,int port, String name) throws IOException {
 		this.socket=new Socket(host,port);
 		this.streamOut = new PrintStream(socket.getOutputStream());
 		this.streamIn = socket.getInputStream();
 		this.nickname = name;
+		this.loggedAccount=null;
 	}
 
 	public Connection(Socket socket, String name) throws IOException{
@@ -41,5 +46,16 @@ public class Connection {
 
 	public String getNickname() {
 		return this.nickname;
+	}
+
+	public Account getLoggedAccount() {
+		return loggedAccount;
+	}
+
+	public void setLoggedAccount(Account loggedAccount) {
+		this.loggedAccount=loggedAccount;
+	}
+	public boolean isLoggedIn(){
+		return this.loggedAccount!=null;
 	}
 }

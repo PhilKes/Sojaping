@@ -2,6 +2,7 @@ package server;
 
 import client.LoginUser;
 import common.data.Account;
+import common.data.ContactInfo;
 import common.data.Message;
 import common.data.Packet;
 
@@ -11,22 +12,23 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import static common.Constants.Contexts.*;
 import static common.JsonHelper.*;
 
 public class Server {
 
-	//public static String SERVER_HOST = "192.168.178.26";
-	  public static String SERVER_HOST = "192.168.0.190";
+	public static String SERVER_HOST = "192.168.178.26";
 	//public static String SERVER_HOST = "141.59.130.180";
 
 	public static int SERVER_PORT = 9999;//443;
 
 	private int port;
-	private List<Connection> clients;
+	private HashMap<String,Connection> clients;
 
 	private TranslationService translationService;
 
@@ -35,7 +37,7 @@ public class Server {
 	private DatabaseService dbService;
 	private Server(int port) {
 		this.port = port;
-		this.clients = new ArrayList<>();
+		this.clients = new HashMap<>();
 		this.dbService = new DatabaseService();
 	}
 	public static void main(String[] args) throws IOException {
@@ -62,7 +64,8 @@ public class Server {
                 System.out.println("New Client: " + clientIP + " Nickname: " + clientIP);
                 //TODO Try to reconnect when connection failed
                 Connection newConnection= new Connection(clientSocket, clientSocket.getInetAddress().getHostAddress());
-                this.clients.add(newConnection);
+                clients.put(clientIP,newConnection);
+                //this.clients.add(newConnection);
                 sendToUser(newConnection,CONNECT_SUCCESS,"Hello "+clientIP);
                 /** Start Handler for the new client*/
                 new Thread(new ServerHandler(this, newConnection)).start();
@@ -90,7 +93,7 @@ public class Server {
 
 	// send messages to all clients
 	public void broadcastMessages(String msg, Connection connectionSender) {
-		for (Connection client : this.clients) {
+		for (Connection client : this.clients.values()) {
 			sendToUser(client,BRDCAST_MSG, connectionSender.getNickname() + ": " + msg);
 		}
 	}
@@ -102,7 +105,7 @@ public class Server {
 
 	// send list of clients to all Users
 	public void broadcastAllUsers() {
-		for (Connection client : this.clients) {
+		for (Connection client : this.clients.values()) {
 			sendToUser(client,BRDCAST_USERS,this.clients);
 		}
 	}
@@ -116,9 +119,40 @@ public class Server {
 	}
 
 	public void broadcastMessages(Connection sender,Message message) {
-		this.clients.forEach(client-> {
+		this.clients.values().forEach(client-> {
             if(client!=sender)
                 sendToUser(client, MESSAGE_RECEIVED,message);}
         );
+	}
+
+	//TODO Exclude calling client/User?
+	public List<ContactInfo> getOnlineUsers(){
+		List<ContactInfo> userList= new ArrayList<>();
+		userList.addAll(clients.values().stream()
+				.filter(c->c.isLoggedIn())
+				.map(c-> c.getLoggedAccount().getContactInfo())
+				.collect(Collectors.toList()));
+		return userList;
+	}
+	public Connection getConnectionOfUser(String userName){
+	    return clients.get(userName);
+    }
+
+    /** Links Connection to Account, updates clients HashMap */
+    //TODO Multiple logged in instances on same PC?
+	public void setLoggedUser(Connection connection, Account account) {
+	    clients.remove(connection.getNickname());
+		connection.setLoggedAccount(account);
+		clients.put(account.getUserName(),connection);
+	}
+
+	/** Try to send message to receiver if present, return if message was sent*/
+	public boolean sendMessage(Message message) {
+		String receiver= message.getReceiver();
+		if(!clients.containsKey(receiver))
+			return false;
+		Connection con= clients.get(receiver);
+		sendToUser(con,MESSAGE_RECEIVED,message);
+		return true;
 	}
 }

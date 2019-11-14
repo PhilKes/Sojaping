@@ -1,13 +1,17 @@
 package common;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import common.data.Packet;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static common.Constants.Json.*;
 
@@ -23,16 +27,37 @@ public class JsonHelper {
 		String jsonString = "";
 		Object data=packet.getData();
 		String context=packet.getContext();
+		ObjectNode jsonPacket= mapper.createObjectNode();
+		jsonPacket.put(METHOD_FIELD,context);
 		try {
 			ObjectNode node;
+			node=mapper.createObjectNode();
 			/** Wrap primitive types into value field*/
-			if(isPrimitiveOrWrapper(data.getClass()))
-				node=mapper.createObjectNode().put(PRIMITIVE_FIELD, data.toString());
-			else
-				node= mapper.convertValue(data, ObjectNode.class);
-			node.put(CLASS_FIELD,data.getClass().getTypeName());
-			ObjectNode jsonPacket= mapper.createObjectNode();
-			jsonPacket.put(METHOD_FIELD,context).set(DATA_FIELD,node);
+			if(data !=null) {
+				/** Lists */
+				if(data instanceof List<?>){
+					List<?> list= (List<?>) data;
+					ArrayNode array = mapper.valueToTree(list);
+					if(!list.isEmpty()) {
+						String typeName=list.get(0).getClass().getTypeName();
+						node.put(CLASS_FIELD, LIST_CLASS + "-" + typeName);
+						for(JsonNode item : array)
+							((ObjectNode)item).put(CLASS_FIELD,typeName);
+					}
+					else
+						node.put(CLASS_FIELD,LIST_CLASS+"-");
+					node.set(DATA_FIELD,array);
+				}
+				else {
+					/** Primitive or Common objects*/
+					if(isPrimitiveOrWrapper(data.getClass()))
+						node=mapper.createObjectNode().put(PRIMITIVE_FIELD, data.toString());
+					else
+						node=mapper.convertValue(data, ObjectNode.class);
+					node.put(CLASS_FIELD, data.getClass().getTypeName());
+				}
+			}
+			jsonPacket.set(DATA_FIELD,node);
 			jsonString = mapper.writeValueAsString(jsonPacket);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -44,13 +69,15 @@ public class JsonHelper {
 		return getJsonFromPacket(new Packet(context,data));
 	}
 	/** Returns Packet object from JSON String*/
-	//TODO deep copy (e.g. Message Object)
 	public static Packet getPacketFromJson(String json){
 		JsonNode node=null;
 		try {
 			node=mapper.readTree(json);
 			String method= node.get(METHOD_FIELD).asText();
-			Object object= getObjectFromJson(node.get(DATA_FIELD));
+			JsonNode data=node.get(DATA_FIELD);
+			Object object=null;
+			if(!data.toString().isEmpty())
+				object=getObjectFromJson(data);
 			return new Packet(method,object);
 		}
 		catch(JsonProcessingException e) {
@@ -66,19 +93,39 @@ public class JsonHelper {
 			return null;
 		/** Determine class of object and return with cast*/
 		String classField=dataJson.get(CLASS_FIELD).asText();
-		Class type=null;
-		try {
-			type=Class.forName(classField);
 
-			/** Read primitive types (String,Integer,...)*/
-			if(dataJson.has(PRIMITIVE_FIELD))
-				object= mapper.readValue(dataJson.get(PRIMITIVE_FIELD).toString(),type);
-			else
-				object = mapper.readValue(dataJson.toString(), type);
-			return (T) object;
+		/** Lists */
+		if(classField.startsWith(LIST_CLASS)){
+			try {
+				Class type=Class.forName(classField.split("-")[1]);
+				String json=dataJson.get(DATA_FIELD).toString();
+				List<Object> list= new ArrayList<>();
+				ArrayNode array= (ArrayNode)mapper.readTree(json);
+				for(JsonNode item : array){
+					Object o=mapper.readValue(item.toString(),type);
+					list.add(o);
+				}
+				return (T) list;
+			}
+			catch(JsonProcessingException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
-		catch(ClassNotFoundException | JsonProcessingException e) {
-			e.printStackTrace();
+		/** Single objects*/
+		else {
+			Class type=null;
+			try {
+				type=Class.forName(classField);
+				/** Read primitive types (String,Integer,...)*/
+				if(dataJson.has(PRIMITIVE_FIELD))
+					object=mapper.readValue(dataJson.get(PRIMITIVE_FIELD).toString(), type);
+				else
+					object=mapper.readValue(dataJson.toString(), type);
+				return (T) object;
+			}
+			catch(ClassNotFoundException | JsonProcessingException e) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}

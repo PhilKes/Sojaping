@@ -16,6 +16,7 @@ import server.Server;
 import java.sql.Timestamp;
 
 import static common.Constants.Contexts.MESSAGE_SENT;
+import static common.Constants.Contexts.USERLIST;
 
 public class GUIController extends UIController {
 	@FXML
@@ -39,7 +40,6 @@ public class GUIController extends UIController {
 		btnSend.setOnMouseClicked(ev -> onSendClicked());
 		textASendText.setOnKeyReleased(event -> {if(event.getCode() == KeyCode.ENTER)onSendClicked();});
 		client=Client.getInstance(Server.SERVER_HOST, Server.SERVER_PORT);
-
 	}
 
 	private void onSendClicked() {

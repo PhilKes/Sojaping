@@ -5,26 +5,26 @@ public class Constants {
         public static final String
                 PRIMITIVE_FIELD="primitive",
                 CLASS_FIELD="_class",
+                LIST_CLASS="_list",
                 DATA_FIELD="data",
                 METHOD_FIELD="method";
     }
 
     public static class Contexts {
         public static final String
+                FAIL="fail",
                 CONNECT="connect",
                 CONNECT_SUCCESS="connectSuccess",
                 REGISTER="register",
                 REGISTER_SUCCESS="registerSuccess",
-                REGISTER_FAIL="registerFail",
                 LOGIN="login",
                 LOGIN_SUCCESS="loginSuccess",
-                LOGIN_FAIL="loginFail",
                 INFO="info",
                 MESSAGE_SENT="messageSent",
                 MESSAGE_RECEIVED="messageRec",
-                MESSAGE_FAIL="messageFail",
                 MESSAGE="message",
                 BRDCAST_MSG="broadcastMsg",
-                BRDCAST_USERS="broadcastUsers";
+                BRDCAST_USERS="broadcastUsers",
+                USERLIST="userlist";
     }
 }

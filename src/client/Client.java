@@ -16,6 +16,7 @@ import server.Server;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.InetAddress;
 import java.util.Stack;
 
 import static common.Constants.Contexts.*;
@@ -62,7 +63,7 @@ public class Client {
 		/** Loop to try to connect to server*/
 		do {
 			try {
-				connection=new Connection(host, port, host);
+				connection=new Connection(host, port, InetAddress.getLocalHost().getHostAddress());
 				break;
 			}
 			catch(IOException e) {
@@ -95,6 +96,7 @@ public class Client {
 	}
 
 	/** Send Object as JSON to Server*/
+	//TODO MAKE ALL SENDTOSERVER ASYNCHRONOUS TASKS
 	public void sendToServer(String context,Object object){
 		Packet packet=new Packet(context,object);
 		String json=packet.getJson();
@@ -103,9 +105,13 @@ public class Client {
 	}
 
 	public void closeCurrentWindow() {
+		closeCurrentWindowNoexit();
+		if(controllerStack.isEmpty())
+			this.stop();
+	}
+	public void closeCurrentWindowNoexit() {
 		controllerStack.pop().close();
 	}
-
 	public void openWindow(String window) {
 		Platform.runLater(()->{
 		try {

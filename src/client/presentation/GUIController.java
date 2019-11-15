@@ -4,6 +4,8 @@ package client.presentation;
 import client.Client;
 import common.data.Message;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -26,11 +28,13 @@ public class GUIController extends UIController {
 	@FXML
 	private TextArea textASendText;
 	@FXML
-	private ListView listVChat;
+	private ListView<Message> listVChat;
 	@FXML
 	private CheckBox checkTranslate;
 
 	private Client client;
+
+	private ObservableList<Message> messageObservableList;
 
 	//Todo Display all online users(status)
 	//Todo Javafx custom array adapter for messages
@@ -40,6 +44,11 @@ public class GUIController extends UIController {
 		btnSend.setOnMouseClicked(ev -> onSendClicked());
 		textASendText.setOnKeyReleased(event -> {if(event.getCode() == KeyCode.ENTER)onSendClicked();});
 		client=Client.getInstance(Server.SERVER_HOST, Server.SERVER_PORT);
+
+		messageObservableList = FXCollections.observableArrayList();
+		listVChat.setItems(messageObservableList);
+		listVChat.setCellFactory(messagesListView -> new ChatListViewCell());
+
 	}
 
 	private void onSendClicked() {
@@ -56,8 +65,10 @@ public class GUIController extends UIController {
 
 		}
 	}
-	public void displayNewMessage(Message message){
-		listVChat.getItems().add(listVChat.getItems().size(),message.getTimestamp().toString().split("\\.")[0] +" "+message.getSender()+": "+ message.getText());
+	public void displayNewMessage(Message message) {
+		//listVChat = listVChat.getItems().add(listVChat.getItems().size(), )
+		messageObservableList.add(message);
+		//listVChat.getItems().add(listVChat.getItems().size(),message.getTimestamp().toString().split("\\.")[0] +" "+message.getSender()+": "+ message.getText());
 	}
 
 	private void onMyProfileClicked(){

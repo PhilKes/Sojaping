@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 
-/** Socket connection to host with Input/Output Streams*/
+/** Socket connection to host with Input/Output Streams and loggedAcount if logged in*/
 public class Connection {
 
 	private PrintStream streamOut;

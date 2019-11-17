@@ -1,6 +1,7 @@
 package common.data;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 public class Message {
     //private String sendLanguage;
@@ -8,28 +9,8 @@ public class Message {
     private boolean translate;
     private String text;
     private Timestamp timestamp;
-    String sender;
-    String receiver;
-    //Account sender;
-    //Account receiver;
-
-    public String getSender() {
-        return sender;
-    }
-
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
-
-    public String getReceiver() {
-        return receiver;
-    }
-
-    public void setReceiver(String receiver) {
-        receiver = receiver;
-    }
-//Todo Sender / Receiver ?
-
+    private String sender;
+    private String receiver;
 
     public Message() {
 
@@ -82,5 +63,31 @@ public class Message {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public void setSender(String sender) {
+        this.sender = sender;
+    }
+
+    public String getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(String receiver) {
+        receiver = receiver;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "text='" + text + '\'' +
+                ", timestamp='"  + new SimpleDateFormat("HH:mm:ss \n dd-MM-yy").format(timestamp) + '\'' +
+                ", sender='" + sender + '\'' +
+                ", receiver='" + receiver + '\'' +
+                '}';
     }
 }

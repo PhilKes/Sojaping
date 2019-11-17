@@ -1,8 +1,6 @@
-package client;
+package common.data;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "_class")
+/** Temporarily used object for login authentication */
 public class LoginUser {
 
 	private String userName;

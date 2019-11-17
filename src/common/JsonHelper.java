@@ -15,6 +15,7 @@ import java.util.List;
 
 import static common.Constants.Json.*;
 
+/** Helper class providing methods to generate/parse Packets as Objects */
 public class JsonHelper {
 
 	public static final ObjectMapper mapper = new ObjectMapper();
@@ -40,12 +41,12 @@ public class JsonHelper {
 					ArrayNode array = mapper.valueToTree(list);
 					if(!list.isEmpty()) {
 						String typeName=list.get(0).getClass().getTypeName();
-						node.put(CLASS_FIELD, LIST_CLASS + "-" + typeName);
+						node.put(CLASS_FIELD, LIST_CLASS + SEPERATOR + typeName);
 						for(JsonNode item : array)
 							((ObjectNode)item).put(CLASS_FIELD,typeName);
 					}
 					else
-						node.put(CLASS_FIELD,LIST_CLASS+"-");
+						node.put(CLASS_FIELD,LIST_CLASS+SEPERATOR);
 					node.set(DATA_FIELD,array);
 				}
 				else {
@@ -69,6 +70,7 @@ public class JsonHelper {
 		return getJsonFromPacket(new Packet(context,data));
 	}
 	/** Returns Packet object from JSON String*/
+	//TODO Return Optional<Packet> ?
 	public static Packet getPacketFromJson(String json){
 		JsonNode node=null;
 		try {
@@ -97,7 +99,7 @@ public class JsonHelper {
 		/** Lists */
 		if(classField.startsWith(LIST_CLASS)){
 			try {
-				Class type=Class.forName(classField.split("-")[1]);
+				Class type=Class.forName(classField.split(SEPERATOR)[1]);
 				String json=dataJson.get(DATA_FIELD).toString();
 				List<Object> list= new ArrayList<>();
 				ArrayNode array= (ArrayNode)mapper.readTree(json);

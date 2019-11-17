@@ -31,7 +31,8 @@ public class ChatListViewCell extends ListCell<Message> {
     protected void updateItem(Message message, boolean empty){
         super.updateItem(message,empty);
         if(empty || message == null){
-
+            setGraphic(null);
+            setText(null);
         }
         else {
             if(fxmlLoader == null){
@@ -46,7 +47,6 @@ public class ChatListViewCell extends ListCell<Message> {
             labelTime.setText(new SimpleDateFormat("HH:mm:ss \n dd-MM-yy").format(message.getTimestamp()));//message.getTimestamp()//.toString().split("\\.")[0]);
             labelText.setText(message.getText());
             labelSender.setText(message.getSender());
-
             setGraphic(hbox);
         }
 

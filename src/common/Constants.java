@@ -8,6 +8,7 @@ public class Constants {
                 LIST_CLASS="_list",
                 DATA_FIELD="data",
                 METHOD_FIELD="method";
+        public static final String SEPERATOR= ":";
     }
 
     public static class Contexts {

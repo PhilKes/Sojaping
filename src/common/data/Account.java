@@ -2,7 +2,7 @@ package common.data;
 
 
 public class Account extends Profile {
-    int aid;
+    int aid=-1;
     private String password;
 
     public Account(){

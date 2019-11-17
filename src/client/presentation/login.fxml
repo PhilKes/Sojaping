@@ -13,7 +13,7 @@
             <Label layoutX="1.0" layoutY="35.0" text="Username:" />
             <TextField fx:id="txtUsername" layoutX="62.0" layoutY="31.0" text="aaa" />
             <Label layoutX="2.0" layoutY="65.0" text="Password:" />
-            <TextField fx:id="txtPassword" accessibleRole="PASSWORD_FIELD" layoutX="62.0" layoutY="61.0" text="aaa" />
+            <TextField fx:id="txtPassword" accessibleRole="PASSWORD_FIELD" layoutX="62.0" layoutY="61.0" text="abc" />
       </children>
    </AnchorPane>
    <Button fx:id="btnLogin" layoutX="280.0" layoutY="253.0" mnemonicParsing="false" text="Login" />

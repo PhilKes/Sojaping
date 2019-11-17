@@ -28,7 +28,6 @@ public class Main extends Application {
         loginController.setClient(client);
         client.setController(loginController);*/
         /*primaryStage.show();*/
-
         new Thread(()->client.run()).start();
     }
 

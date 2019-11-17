@@ -23,8 +23,6 @@ public class RegisterController extends UIController {
     @FXML
     private Button btnRegister;
 
-    private Client client;
-
     @FXML
     private void initialize(){
         btnRegister.setOnMouseClicked(ev->onRegisterClicked());
@@ -36,20 +34,16 @@ public class RegisterController extends UIController {
             System.err.println("Invalid Input");
             return;
         }
-        //TODO Get selected Languages from boxLanguages
-        Account acc = new AccountBuilder().setUserName(txtUsername.getText()).setPassword(txtPassword.getText()).createAccount();
+        //TODO (Next Sprint) Get selected Languages from boxLanguages
+        Account acc = new AccountBuilder()
+                .setUserName(txtUsername.getText())
+                .setPassword(txtPassword.getText())
+                .createAccount();
         //System.out.println("Register:\n"+acc);
         client.sendToServer(REGISTER,acc);
         //((Stage)btnRegister.getScene().getWindow()).close();
     }
 
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
     @Override
     public void close() {
         Platform.runLater(()-> ((Stage)btnRegister.getScene().getWindow()).close());

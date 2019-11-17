@@ -1,7 +1,7 @@
 package server;
 
 
-import client.LoginUser;
+import common.data.LoginUser;
 import common.data.Account;
 import common.data.AccountBuilder;
 import common.data.Profile;

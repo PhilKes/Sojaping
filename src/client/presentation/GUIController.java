@@ -32,8 +32,6 @@ public class GUIController extends UIController {
 	@FXML
 	private CheckBox checkTranslate;
 
-	private Client client;
-
 	private ObservableList<Message> messageObservableList;
 
 	//Todo Display all online users(status)
@@ -48,6 +46,8 @@ public class GUIController extends UIController {
 		messageObservableList = FXCollections.observableArrayList();
 		listVChat.setItems(messageObservableList);
 		listVChat.setCellFactory(messagesListView -> new ChatListViewCell());
+
+		//TODO (Next Sprint) use ListView(of ContactList).getSelectionModel().selectedItemProperty().bind() to show correct chat
 
 	}
 
@@ -79,15 +79,6 @@ public class GUIController extends UIController {
 	}
 	private void onChatsClicked(){
 		//necessary? Chats are not saved
-	}
-
-
-	public Client getClient() {
-		return client;
-	}
-
-	public void setClient(Client client) {
-		this.client = client;
 	}
 
 	@Override

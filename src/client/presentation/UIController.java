@@ -3,7 +3,7 @@ package client.presentation;
 import client.Client;
 
 public abstract class UIController {
-    private Client client;
+    protected Client client;
     public abstract void close();
 
     public Client getClient() {

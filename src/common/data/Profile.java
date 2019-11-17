@@ -5,7 +5,6 @@ public class Profile {
     protected int status;
     protected String aboutMe;
     protected String profilePicture;
-    //TODO do not extend Account, only store userName, status,aboutMe,profilePicture
 
 
     public Profile() {
@@ -52,8 +51,9 @@ public class Profile {
 
     @Override
     public String toString() {
-        return userName+"{" +
-                " status=" + status +
+        return "Profile{" +
+                "userName='" + userName + '\'' +
+                ", status=" + status +
                 ", aboutMe='" + aboutMe + '\'' +
                 ", profilePicture='" + profilePicture + '\'' +
                 '}';

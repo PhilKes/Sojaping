@@ -3,6 +3,7 @@ package client;
 import client.presentation.GUIController;
 import client.presentation.UIController;
 import common.data.Account;
+import common.data.LoginUser;
 import common.data.Packet;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -14,9 +15,9 @@ import javafx.stage.StageStyle;
 import server.Connection;
 import server.Server;
 
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.Stack;
 
 import static common.Constants.Contexts.*;
@@ -31,7 +32,7 @@ public class Client {
 	private String host;
 	private Connection connection;
 	private int port;
-	private PrintStream output;
+	private PrintWriter output;
 
 	private Stack<UIController> controllerStack;
 
@@ -47,17 +48,9 @@ public class Client {
 		//this.loginUser = new LoginUser();
 	}
 
-	public UIController getController() {
-		return controllerStack.peek();
-	}
-
-	public void setController(UIController controller) {
-		controllerStack.push(controller);
-	}
-
-	public static void main(String[] args) throws IOException {
+/*	public static void main(String[] args){
 		getInstance(Server.SERVER_HOST, Server.SERVER_PORT).run();
-	}
+	}*/
 
 	public void run()  {
 		/** Loop to try to connect to server*/
@@ -77,15 +70,16 @@ public class Client {
 				}
 			}
 		}while(true);
-		System.out.println("Socket successfully established to server("+host+")!");
-		output = connection.getOutStream();
-		//TODO Wait for CONNECT_SUCCESS Packet before starting ClientHandler
+		System.out.println("Socket connection successfully established to server("+host+")!");
+		output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
+						connection.getOutStream(), StandardCharsets.UTF_8)), true);
 		ClientHandler handler=new ClientHandler(this, connection.getInputStream());
 		sendToServer(CONNECT, connection.getSocket().getInetAddress().getHostAddress());
 		if(handler.waitForConnectSuccess())
-			/** Start Thread to handle packets from the server*/
+			/** Start Thread to handle packets from the server if CONNECT_SUCCESS received*/
 			new Thread(handler).start();
 	}
+
 	public void stop(){
 		output.close();
 		try {
@@ -96,11 +90,11 @@ public class Client {
 	}
 
 	/** Send Object as JSON to Server*/
-	//TODO MAKE ALL SENDTOSERVER ASYNCHRONOUS TASKS
+	//TODO (Next Sprint) MAKE ALL SENDTOSERVER TASKS (NOT ON UI THREAD)
 	public void sendToServer(String context,Object object){
 		Packet packet=new Packet(context,object);
-		String json=packet.getJson();
-		output.println(json);
+		output.println(packet.getJson());
+		output.flush();
 		System.out.println("to Server\t:\t"+packet);
 	}
 
@@ -109,9 +103,12 @@ public class Client {
 		if(controllerStack.isEmpty())
 			this.stop();
 	}
+
 	public void closeCurrentWindowNoexit() {
 		controllerStack.pop().close();
 	}
+
+	/** Open new GUI window, add UIController to Stack*/
 	public void openWindow(String window) {
 		Platform.runLater(()->{
 		try {
@@ -149,6 +146,14 @@ public class Client {
 				return (GUIController)controller;
 		}
 		return null;
+	}
+
+	public UIController getController() {
+		return controllerStack.peek();
+	}
+
+	public void setController(UIController controller) {
+		controllerStack.push(controller);
 	}
 }
 

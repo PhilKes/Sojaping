@@ -1,8 +1,7 @@
 package client;
 
-import client.presentation.GUIController;
 import common.data.Account;
-import common.data.ContactInfo;
+import common.data.Profile;
 import common.data.Message;
 import common.data.Packet;
 import javafx.application.Platform;
@@ -66,7 +65,7 @@ class ClientHandler implements Runnable {
 					    Platform.runLater(()->{client.getGUIController().displayNewMessage(msg);});
 					break;
 				case USERLIST:
-					List<ContactInfo> userList= (List<ContactInfo>)receivedPacket.getData();
+					List<Profile> userList= (List<Profile>)receivedPacket.getData();
 					System.out.println("Contacts received:");
 					userList.forEach(u-> System.out.println(u));
 					//TODO client.getGUIController().displayOnlineUsers(userList);

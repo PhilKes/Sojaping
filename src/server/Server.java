@@ -2,7 +2,7 @@ package server;
 
 import client.LoginUser;
 import common.data.Account;
-import common.data.ContactInfo;
+import common.data.Profile;
 import common.data.Message;
 import common.data.Packet;
 
@@ -100,7 +100,7 @@ public class Server {
 
 	//TODO return filled Account from DB
 	public void registerUser(Socket client, Account account) throws Exception {
-		this.dbService.insert(account);
+		this.dbService.insertAccount(account);
 	}
 
 	// send list of clients to all Users
@@ -126,11 +126,11 @@ public class Server {
 	}
 
 	//TODO Exclude calling client/User?
-	public List<ContactInfo> getOnlineUsers(){
-		List<ContactInfo> userList= new ArrayList<>();
+	public List<Profile> getOnlineUsers(){
+		List<Profile> userList= new ArrayList<>();
 		userList.addAll(clients.values().stream()
 				.filter(c->c.isLoggedIn())
-				.map(c-> c.getLoggedAccount().getContactInfo())
+				.map(c-> c.getLoggedAccount().getProfile())
 				.collect(Collectors.toList()));
 		return userList;
 	}

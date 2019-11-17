@@ -1,6 +1,6 @@
 package common.data;
 
-public class ContactInfo  {
+public class Profile {
     protected String userName;
     protected int status;
     protected String aboutMe;
@@ -8,10 +8,10 @@ public class ContactInfo  {
     //TODO do not extend Account, only store userName, status,aboutMe,profilePicture
 
 
-    public ContactInfo() {
+    public Profile() {
     }
 
-    public ContactInfo(String userName, int status, String aboutMe, String profilePicture) {
+    public Profile(String userName, int status, String aboutMe, String profilePicture) {
         this.userName=userName;
         this.status=status;
         this.aboutMe=aboutMe;

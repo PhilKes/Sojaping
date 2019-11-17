@@ -1,13 +1,16 @@
 package common.data;
 
 
-public class Account extends ContactInfo {
+public class Account extends Profile {
     int aid;
     private String password;
 
     public Account(){
     }
 
+    /*Status = 0 : offline
+    * Status = 1 : online
+    */
     public Account(int aid, String userName, String password, int status, String aboutMe, String profilePicture) {
         this.aid = aid;
         this.userName = userName;
@@ -33,8 +36,8 @@ public class Account extends ContactInfo {
         this.password=password;
     }
 
-    public ContactInfo getContactInfo(){
-        return new ContactInfo(userName,status,aboutMe,profilePicture);
+    public Profile getProfile(){
+        return new Profile(userName,status,aboutMe,profilePicture);
     }
     @Override
     public String toString() {

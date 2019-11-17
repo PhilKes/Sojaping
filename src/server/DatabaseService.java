@@ -4,18 +4,26 @@ package server;
 import client.LoginUser;
 import common.data.Account;
 import common.data.AccountBuilder;
+import common.data.Profile;
 
 import java.sql.*;
 import java.sql.ResultSet;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseService {
-    private static final String STATUS="status";
+    private static final String AID = "aid";
+    private static final String USERNAME = "userName";
+    private static final String PASSWORD = "password";
+    private static final String STATUS = "status";
+    private static final String ABOUTME = "aboutMe";
+    private static final String PROFILEPICTURE = "profilePicture";
+    private static final String LID = "lid";
     static int lastRow;
+
     public static void createNewDatabase(String fileName) {
-
         String url = "jdbc:sqlite:assets/" + fileName;
-
         try (Connection conn = DriverManager.getConnection(url)) {
             if (conn != null) {
                 DatabaseMetaData meta = conn.getMetaData();
@@ -39,18 +47,18 @@ public class DatabaseService {
         return conn;
     }
 
-    public static void createNewTable() {
+    public static void createNewTableAccount() {
         // SQLite connection string
         String url = "jdbc:sqlite:assets/sojaping.db";
 
         // SQL statement for creating a new table
         String sql = "CREATE TABLE IF NOT EXISTS account (\n"
-                + "    aid integer PRIMARY KEY,\n"
-                + "    userName text NOT NULL UNIQUE,\n"
-                + "    password text NOT NULL,\n"
-                + "    "+STATUS+" integer NOT NULL,\n"
-                + "    aboutMe text,\n"
-                + "    profilePicture text\n"
+                +       AID+" integer PRIMARY KEY autoincrement,\n"
+                +       USERNAME+" text NOT NULL UNIQUE,\n"
+                +       PASSWORD+" text NOT NULL,\n"
+                +       STATUS+" integer NOT NULL,\n"
+                +       ABOUTME+" text,\n"
+                +       PROFILEPICTURE+" text\n"
                 + ");";
 
         try (Connection conn = DriverManager.getConnection(url);
@@ -62,28 +70,89 @@ public class DatabaseService {
         }
     }
 
-    public void selectAll(){
-        String sql = "SELECT aid, userName, status, " +
-                "aboutMe, profilePicture FROM account";
+    public static void createNewTableContactList(){
+        String url = "jdbc:sqlite:assets/sojaping.db";
+        String sql = "CREATE TABLE IF NOT EXISTS contactList (\n"
+                +       LID+" integer PRIMARY KEY,\n"
+                +       AID+" integer NOT NULL,\n" //aid of the "owner" of this list
+                +       USERNAME+" text NOT NULL,\n"
+                +       STATUS+" integer NOT NULL,\n"
+                +       ABOUTME+" text,\n"
+                +       PROFILEPICTURE+" text,\n"
+                +       "FOREIGN KEY ("+AID+")\n"
+                +       "REFERENCES account("+AID+")\n"
+                +       "ON DELETE CASCADE"
+                +       ");";
+        try (Connection conn = DriverManager.getConnection(url);
+             Statement stmt = conn.createStatement()) {
+            // create a new table
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void selectAllAccounts(){
+        String sql = "SELECT "+AID+", "+USERNAME+", "+STATUS+", " +
+                ABOUTME+", "+PROFILEPICTURE+" FROM account";
         try (Connection conn = this.connect();
              Statement stmt  = conn.createStatement();
              ResultSet rs    = stmt.executeQuery(sql)){
 
             // loop through the result set
             while (rs.next()) {
-                System.out.println(rs.getInt("aid") +  "\t" +
-                        rs.getString("userName") + "\t" +
+                System.out.println(rs.getInt(AID) +  "\t" +
+                        rs.getString(USERNAME) + "\t" +
                         rs.getInt(STATUS) +  "\t" +
-                        rs.getString("aboutMe") + "\t" +
-                        rs.getString("profilePicture"));
+                        rs.getString(ABOUTME) + "\t" +
+                        rs.getString(PROFILEPICTURE));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public void insert(Account acc) throws Exception {
-        String sql = "INSERT INTO account(aid, userName, password, status, aboutMe, profilePicture) VALUES(NULL,?,?,?,?,?)";
+    public void selectAllContactsOfAccount(Account acc){
+        String sql = "SELECT * FROM contactList WHERE "+AID+" = ?";
+        try(Connection conn = this.connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, acc.getAid());
+            ResultSet rs= pstmt.executeQuery();
+            while (rs.next()) {
+                System.out.println(rs.getInt(LID) + "\t"
+                + rs.getInt(AID) + "\t"
+                + rs.getString(USERNAME) + "\t"
+                + rs.getInt(STATUS) + "\t"
+                + rs.getString(ABOUTME) + "\t"
+                + rs.getString(PROFILEPICTURE));
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public List<Profile> getAllContactsOfAccount(Account acc){
+        List<Profile> contacts = new ArrayList<>();
+        String sql = "SELECT * FROM contactList WHERE "+AID+" = ?";
+        try(Connection conn = this.connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, acc.getAid());
+            ResultSet rs= pstmt.executeQuery();
+            while (rs.next()) {
+                contacts.add(new Profile(rs.getString(USERNAME), rs.getInt(STATUS),
+                        rs.getString(ABOUTME), rs.getString(PROFILEPICTURE)));
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return contacts;
+    }
+
+    public void insertAccount(Account acc) throws Exception {
+        String sql = "INSERT INTO account("+AID+", "+USERNAME+", "+PASSWORD+", "+STATUS+", "
+                +ABOUTME+", "+PROFILEPICTURE+") VALUES(NULL,?,?,?,?,?)";
         try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
             pstmt.setString(1, acc.getUserName());
@@ -102,18 +171,40 @@ public class DatabaseService {
             if(e.getMessage().contains("[SQLITE_CONSTRAINT]  Abort due to constraint violation (UNIQUE constraint failed: account.userName)")){
                 throw new Exception("Username is already in use!");
             }
+            e.printStackTrace();
+        }
+    }
 
+    public void insertContactOfAccount(Account account, Profile contact) throws Exception {
+        String sql = "INSERT INTO contactList("+LID+", "+AID +", "+USERNAME+","+STATUS+", "
+                +ABOUTME+", "+PROFILEPICTURE+") VALUES(NULL,?,?,?,?,?)";
+        try(Connection conn = this.connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+            pstmt.setInt(1, account.getAid());
+            pstmt.setString(2, contact.getUserName());
+            pstmt.setInt(3, contact.getStatus());
+            pstmt.setString(4, contact.getAboutMe());
+            pstmt.setString(5, contact.getProfilePicture());
+            pstmt.executeUpdate();
+            ResultSet rs=pstmt.getGeneratedKeys();
+            if(rs.next()){
+                System.out.println("Inserted into ContactList DB of Account "+account+":\t"+contact);
+            }
+        }catch(SQLException e){
+//            if(e.getMessage().contains("[SQLITE_CONSTRAINT]  Abort due to constraint violation (UNIQUE constraint failed: account.userName)")){
+//                throw new Exception("User is already in the ContactList!");
+//            }
             e.printStackTrace();
         }
     }
 
     public void update(Account acc){
-        String sql ="UPDATE account SET userName = ? , "
-                + "password = ? , "
-                + "status = ? , "
-                + "aboutMe = ?, "
-                + "profilePicture = ? "
-                + "WHERE aid = ?";
+        String sql ="UPDATE account SET "+USERNAME+" = ? , "
+                +   PASSWORD+" = ? , "
+                +   STATUS+" = ? , "
+                +   ABOUTME+" = ?, "
+                +   PROFILEPICTURE+" = ? "
+                + "WHERE "+AID+" = ?";
         try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
             pstmt.setString(1, acc.getUserName());
@@ -128,8 +219,8 @@ public class DatabaseService {
         }
     }
 
-    public void delete(Account acc){
-        String sql= "DELETE FROM account WHERE aid = ?";
+    public void deleteAccount(Account acc){
+        String sql= "DELETE FROM account WHERE "+AID+" = ?";
 
         try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -141,7 +232,7 @@ public class DatabaseService {
     }
 
     private void resetTable(){
-        String sql = "DELETE FROM account WHERE aid = ?";
+        String sql = "DELETE FROM account WHERE "+AID+" = ?";
         try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
             for(int i = 1 ; i <= lastRow; i++) {
@@ -154,7 +245,7 @@ public class DatabaseService {
 
     }
 
-    private void dropTable(){
+    private void dropTableAccount(){
         String sql = "DROP TABLE account";
         try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -162,11 +253,20 @@ public class DatabaseService {
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
+    }
 
+    private void dropTableContactList(){
+        String sql = "DROP TABLE contactList";
+        try(Connection conn = this.connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.executeUpdate();
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     public Account getAccountByLoginUser(LoginUser user){
-        String sql = "SELECT * FROM account WHERE userName = ? AND password = ?";
+        String sql = "SELECT * FROM account WHERE "+USERNAME+" = ? AND "+PASSWORD+" = ?";
         Account acc = null;
         try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -175,9 +275,9 @@ public class DatabaseService {
             pstmt.setString(2, user.getPassword());
             ResultSet rs= pstmt.executeQuery();
             while (rs.next()) {
-                acc = new AccountBuilder().setAid(rs.getInt("aid")).setUserName(rs.getString("userName"))
-                        .setPassword(rs.getString("password")).setStatus(rs.getInt(STATUS))
-                        .setAboutMe(rs.getString("aboutMe")).setProfilePicture(rs.getString("profilePicture"))
+                acc = new AccountBuilder().setAid(rs.getInt(AID)).setUserName(rs.getString(USERNAME))
+                        .setPassword(rs.getString(PASSWORD)).setStatus(rs.getInt(STATUS))
+                        .setAboutMe(rs.getString(ABOUTME)).setProfilePicture(rs.getString(PROFILEPICTURE))
                         .createAccount();
             }
         }catch(SQLException e){
@@ -190,24 +290,29 @@ public class DatabaseService {
     public static void main(String[] args) throws Exception {
         //createNewDatabase("sojaping.db");
         DatabaseService db = new DatabaseService();
-        db.dropTable();
-        createNewTable();
+        //db.dropTableAccount();
+        //db.dropTableContactList();
+        createNewTableAccount();
+        createNewTableContactList();
 
         System.out.println("Insert");
-        Account account = new AccountBuilder().setUserName("Sophie").setPassword("abc").setAboutMe("I'm not happy.").createAccount();
-        db.insert(account);
-        db.selectAll();
-        System.out.println(account.getAid());
-        account.setUserName("Irina");
-        db.update(account);
+        Account acc = new AccountBuilder().setUserName("aaa").setPassword("abc")
+                .setAboutMe("I'm not happy.").createAccount();
+        Account acc2 = new AccountBuilder().setUserName("bbb").setPassword("aaa")
+                .setAboutMe("Not nice.").createAccount();
+        Account acc3 = new AccountBuilder().setUserName("ccc").setPassword("aaa")
+                .setAboutMe("Not nice.").createAccount();
+        db.insertAccount(acc);
+        db.selectAllAccounts();
+        System.out.println(acc.getAid());
         System.out.println();
-        db.selectAll();
-        //db.delete(account);
+        db.selectAllAccounts();
+        //db.deleteAccount(acc);
         System.out.println();
-        //db.selectAll();
-        //db.resetTable();
-        //db.selectAll();
-
+        db.insertAccount(acc2);
+        db.insertContactOfAccount(acc, acc2.getProfile());
+        db.insertContactOfAccount(acc, acc3.getProfile());
+        db.selectAllContactsOfAccount(acc);
     }
 
 

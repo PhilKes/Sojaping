@@ -19,8 +19,8 @@ import static common.JsonHelper.*;
 
 public class Server {
 
-	public static String SERVER_HOST = "192.168.178.26";
-	//public static String SERVER_HOST = "141.59.130.180";
+	//public static String SERVER_HOST = "192.168.178.26";
+	public static String SERVER_HOST = "141.59.130.79";
 
 	public static int SERVER_PORT = 9999;//443;
 
@@ -36,15 +36,14 @@ public class Server {
 
 	private DatabaseService dbService;
 
-
-	public Server(int port, DatabaseService dbService) {
+	private Server(int port) {
 		this.port = port;
 		this.connections= new HashMap<>();
-		this.dbService = dbService;
+		this.dbService = new DatabaseService();
 	}
 
 	public static void main(String[] args) throws IOException {
-		new Server(SERVER_PORT, new DatabaseService()).run();
+		new Server(SERVER_PORT).run();
 	}
 
 	private void run() throws IOException {
@@ -93,7 +92,7 @@ public class Server {
 
 	/** Checks if loginUser has valid credentials, returns Account from DB
      *  throws Exception if invalid credentials */
-	public Account loginUser(LoginUser loginUser) throws Exception {
+	public Account loginUser(Connection newConnection, LoginUser loginUser) throws Exception {
 		//LoginUser loginUser = JsonHelper.convertJsonToObject(accountOrLoginAsJson);
 		Account account = this.dbService.getAccountByLoginUser(loginUser);
 		if (account != null) {

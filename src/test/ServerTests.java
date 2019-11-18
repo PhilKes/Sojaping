@@ -12,7 +12,10 @@ import org.mockito.MockitoAnnotations;
 import server.DatabaseService;
 import server.Server;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 public class ServerTests {
@@ -36,10 +39,49 @@ public class ServerTests {
 
 		Account account = new AccountBuilder().setAid(100).setUserName("myName").setPassword("myPassword").setStatus(0).setAboutMe("").setProfilePicture("").createAccount();
 
-		when(this.dbServiceMock.getAccountByLoginUser(any())).thenReturn(account);
+		when(this.dbServiceMock.getAccountByLoginUser(eq(loginUser))).thenReturn(account);
 
 		exceptionRule.expect(Exception.class);
 		exceptionRule.expectMessage("Invalid password");
 		server.loginUser(loginUser);
 	}
+
+	@Test
+	public void testLoginUnknownUsername() throws Exception {
+		Server server = new Server(9999, this.dbServiceMock);
+
+		LoginUser loginUser = new LoginUser("myUnknownName", "myPassword");
+
+		when(this.dbServiceMock.getAccountByLoginUser(loginUser)).thenReturn(null);
+
+		exceptionRule.expect(Exception.class);
+		exceptionRule.expectMessage("Unknown username");
+		server.loginUser(loginUser);
+	}
+
+	@Test
+	public void testGetAccountAfterSuccessfullLogin() throws Exception {
+		Server server = new Server(9999, this.dbServiceMock);
+
+		LoginUser loginUser = new LoginUser("myName", "myPassword");
+
+		Account account = new AccountBuilder().setAid(100).setUserName("myName").setPassword("myPassword").setStatus(0).setAboutMe("").setProfilePicture("").createAccount();
+
+		when(this.dbServiceMock.getAccountByLoginUser(eq(loginUser))).thenReturn(account);
+		Account resultAccount = server.loginUser(loginUser);
+		assertEquals("myName", resultAccount.getUserName());
+		assertEquals("myPassword", resultAccount.getPassword());
+	}
+
+//	@Test
+//	public void testRegisterUser() throws Exception {
+//		Server server = new Server(9999, this.dbServiceMock);
+//
+//		Account account = new AccountBuilder().setAid(100).setUserName("myName").setPassword("myPassword").setStatus(0).setAboutMe("").setProfilePicture("").createAccount();
+//
+//		server.registerUser(account);
+//
+//		verify(this.dbServiceMock);
+//
+//	}
 }

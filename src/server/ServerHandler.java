@@ -57,7 +57,7 @@ public class ServerHandler implements Runnable {
 			case REGISTER:
 				/** Try to register account to DB, send Account from DB to user or send failed Exception */
 				Account account= receivedPacket.getData();
-				server.registerUser(connection.getSocket(), account);
+				server.registerUser(account);
 				server.sendToUser(connection, REGISTER_SUCCESS, "Hi new registered user " + connection.getNickname());
 				break;
 			/** Try to authenticate sent LoginUser*/

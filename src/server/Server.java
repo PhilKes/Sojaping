@@ -118,7 +118,7 @@ public class Server {
 	}
 
 	//TODO return filled Account from DB
-	public void registerUser(Socket client, Account account) throws Exception {
+	public void registerUser(Account account) throws Exception {
 		this.dbService.insertAccount(account);
 	}
 

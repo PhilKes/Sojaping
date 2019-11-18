@@ -22,11 +22,11 @@ public class DatabaseService {
     private static final String PROFILEPICTURE = "profilePicture";
     private static final String LID = "lid";
     private static final String SOJAPING = "sojaping.db";
-    public static String URL = "jdbc:sqlite:assets/";
+    public static String URL = "";
     static int lastRow;
 
     public static void createNewDatabase(String fileName) {
-        String url = URL + fileName;
+        String url = "jdbc:sqlite:assets/" + fileName;
         try (Connection conn = DriverManager.getConnection(url)) {
             if (conn != null) {
                 DatabaseMetaData meta = conn.getMetaData();
@@ -309,7 +309,7 @@ public class DatabaseService {
 
     public static void main(String[] args) throws Exception {
         //createNewDatabase("sojaping.db");
-        URL += SOJAPING;
+        URL = "jdbc:sqlite:assets/"+SOJAPING;
         DatabaseService db = new DatabaseService();
         //db.dropTableAccount();
         //db.dropTableContactList();

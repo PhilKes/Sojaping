@@ -9,13 +9,13 @@ import java.sql.*;
 import static org.junit.Assert.assertEquals;
 
 public class DatabaseServiceTest {
-    DatabaseService db = new DatabaseService();
+    DatabaseService db;
     private static String SOJAPINGTEST = "sojapingTest.db";
 
     @Before
     public void createTestDatabase(){
         DatabaseService.createNewDatabase(SOJAPINGTEST);
-        DatabaseService.URL = "jdbc:sqlite:assets/" + SOJAPINGTEST;
+        db = new DatabaseService(SOJAPINGTEST);
     }
 
     @Test

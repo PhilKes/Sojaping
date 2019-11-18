@@ -25,8 +25,8 @@ public class DatabaseService {
     public static String URL = "";
     static int lastRow;
 
-    public DatabaseService() {
-        URL = "jdbc:sqlite:assets/"+SOJAPING;
+    public DatabaseService(String url) {
+        URL = "jdbc:sqlite:assets/"+url;
     }
 
     public static void createNewDatabase(String fileName) {
@@ -313,8 +313,7 @@ public class DatabaseService {
 
     public static void main(String[] args) throws Exception {
         //createNewDatabase("sojaping.db");
-        URL = "jdbc:sqlite:assets/"+SOJAPING;
-        DatabaseService db = new DatabaseService();
+        DatabaseService db = new DatabaseService(SOJAPING);
         //db.dropTableAccount();
         //db.dropTableContactList();
         createNewTableAccount();

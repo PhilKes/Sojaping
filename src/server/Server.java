@@ -19,7 +19,7 @@ import static common.Constants.Contexts.*;
 import static common.JsonHelper.*;
 
 public class Server {
-
+	private static final String SOJAPING = "sojaping.db";
 	public static String SERVER_HOST = "192.168.178.26";
 	//	public static String SERVER_HOST = "141.59.130.79";
 
@@ -45,7 +45,7 @@ public class Server {
 	}
 
 	public static void main(String[] args) throws IOException {
-		new Server(SERVER_PORT, new DatabaseService()).run();
+		new Server(SERVER_PORT, new DatabaseService(SOJAPING)).run();
 	}
 
 	private void run() throws IOException {

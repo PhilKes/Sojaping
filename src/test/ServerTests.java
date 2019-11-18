@@ -13,9 +13,8 @@ import server.DatabaseService;
 import server.Server;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class ServerTests {
@@ -43,7 +42,7 @@ public class ServerTests {
 
 		exceptionRule.expect(Exception.class);
 		exceptionRule.expectMessage("Invalid password");
-		server.loginUser(loginUser);
+		server.loginUser(null, loginUser);
 	}
 
 	@Test
@@ -56,7 +55,7 @@ public class ServerTests {
 
 		exceptionRule.expect(Exception.class);
 		exceptionRule.expectMessage("Unknown username");
-		server.loginUser(loginUser);
+		server.loginUser(null, loginUser);
 	}
 
 	@Test
@@ -68,7 +67,7 @@ public class ServerTests {
 		Account account = new AccountBuilder().setAid(100).setUserName("myName").setPassword("myPassword").setStatus(0).setAboutMe("").setProfilePicture("").createAccount();
 
 		when(this.dbServiceMock.getAccountByLoginUser(eq(loginUser))).thenReturn(account);
-		Account resultAccount = server.loginUser(loginUser);
+		Account resultAccount = server.loginUser(null, loginUser);
 		assertEquals("myName", resultAccount.getUserName());
 		assertEquals("myPassword", resultAccount.getPassword());
 	}
@@ -82,6 +81,5 @@ public class ServerTests {
 //		server.registerUser(account);
 //
 //		verify(this.dbServiceMock);
-//
 //	}
 }

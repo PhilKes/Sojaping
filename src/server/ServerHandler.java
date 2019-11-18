@@ -32,20 +32,20 @@ public class ServerHandler implements Runnable {
 
 	/** Handles single Packet received from connection InputStream*/
 	public void run() {
-			Packet receivedPacket=getPacketFromJson(receivedJson);
-			if(receivedPacket==null) {
-				server.sendToUser(connection, FAIL, "Invalid JSON received!");
-				return;
-			}
-			if(receivedPacket.getContext().contains(FAIL))
-				System.err.println("from "+connection.getNickname()+"\t:\t"+receivedPacket);
-			else
-				System.out.println("from "+connection.getNickname()+"\t:\t"+receivedPacket);
-			try {
-				handlePacket(receivedPacket);
-			}catch(Exception e){
-				server.sendToUser(connection, receivedPacket.getContext()+FAIL, e);
-			}
+		Packet receivedPacket=getPacketFromJson(receivedJson);
+		if(receivedPacket==null) {
+			server.sendToUser(connection, FAIL, "Invalid JSON received!");
+			return;
+		}
+		if(receivedPacket.getContext().contains(FAIL))
+			System.err.println("from "+connection.getNickname()+"\t:\t"+receivedPacket);
+		else
+			System.out.println("from "+connection.getNickname()+"\t:\t"+receivedPacket);
+		try {
+			handlePacket(receivedPacket);
+		}catch(Exception e){
+			server.sendToUser(connection, receivedPacket.getContext()+FAIL, e);
+		}
 		//server.removeUser(connection);
 		//this.server.broadcastAllUsers();
 	}
@@ -57,7 +57,7 @@ public class ServerHandler implements Runnable {
 			case REGISTER:
 				/** Try to register account to DB, send Account from DB to user or send failed Exception */
 				Account account= receivedPacket.getData();
-				server.registerUser(account);
+				server.registerUser(connection.getSocket(), account);
 				server.sendToUser(connection, REGISTER_SUCCESS, "Hi new registered user " + connection.getNickname());
 				break;
 			/** Try to authenticate sent LoginUser*/
@@ -65,7 +65,7 @@ public class ServerHandler implements Runnable {
 				System.out.println("Login Account");
 				LoginUser loginUser= receivedPacket.getData();
 				/** Check login credentials, send Account from DB to user or throw failed Exception */
-				Account loginAccount=server.loginUser(loginUser);
+				Account loginAccount=server.loginUser(connection, loginUser);
 				server.sendToUser(connection, LOGIN_SUCCESS, loginAccount);
 				server.setLoggedUser(connection,loginAccount);
 				//server.sendToUser(connection,INFO,"Hi welcome back  " + connection.getNickname());

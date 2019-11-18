@@ -3,6 +3,7 @@ package server;
 import common.data.LoginUser;
 import common.data.*;
 
+import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -93,7 +94,7 @@ public class Server {
 
 	/** Checks if loginUser has valid credentials, returns Account from DB
 	 *  throws Exception if invalid credentials */
-	public Account loginUser(LoginUser loginUser) throws Exception {
+	public Account loginUser(Connection newConnection, LoginUser loginUser) throws Exception {
 		//LoginUser loginUser = JsonHelper.convertJsonToObject(accountOrLoginAsJson);
 		Account account = this.dbService.getAccountByLoginUser(loginUser);
 		if (account != null) {
@@ -118,7 +119,7 @@ public class Server {
 	}
 
 	//TODO return filled Account from DB
-	public void registerUser(Account account) throws Exception {
+	public void registerUser(Socket client, Account account) throws Exception {
 		this.dbService.insertAccount(account);
 	}
 

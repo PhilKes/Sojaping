@@ -197,6 +197,7 @@ public class DatabaseService {
 //            }
             e.printStackTrace();
         }
+        //TODO: Beim Aufruf prüfen, dass man sich nicht selbst oder jemanden, der schon enthalten ist, einfügt.
     }
 
     public void update(Account acc){
@@ -318,12 +319,12 @@ public class DatabaseService {
         createNewTableContactList();
 
         System.out.println("Insert");
-        Account acc = new AccountBuilder().setUserName("aaa").setPassword("abc")
+        Account acc = new AccountBuilder().setUserName("ggg").setPassword("abc")
                 .setAboutMe("I'm not happy.").createAccount();
-        Account acc2 = new AccountBuilder().setUserName("bbb").setPassword("aaa")
-                .setAboutMe("Not nice.").createAccount();
-        Account acc3 = new AccountBuilder().setUserName("ccc").setPassword("aaa")
-                .setAboutMe("Not nice.").createAccount();
+        Account acc2 = new AccountBuilder().setUserName("hhh").setPassword("aaa")
+                .setAboutMe("Not nice.").setStatus(1).createAccount();
+        Account acc3 = new AccountBuilder().setUserName("fff").setPassword("aaa")
+                .setAboutMe("Not nice.").setStatus(1).createAccount();
         db.insertAccount(acc);
         db.selectAllAccounts();
         System.out.println(acc.getAid());
@@ -332,9 +333,11 @@ public class DatabaseService {
         //db.deleteAccount(acc);
         System.out.println();
         db.insertAccount(acc2);
-        db.insertContactOfAccount(acc, acc2.getProfile());
-        db.insertContactOfAccount(acc, acc3.getProfile());
-        db.selectAllContactsOfAccount(acc);
+        db.insertAccount(acc3);
+        //db.insertContactOfAccount(acc, acc2.getProfile());
+        //db.insertContactOfAccount(acc, acc3.getProfile());
+        //db.selectAllContactsOfAccount(acc);
+        ArrayList<Profile> onlineUser = db.getOnlineAccounts();
     }
 
 

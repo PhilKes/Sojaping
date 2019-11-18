@@ -81,6 +81,8 @@ public class ServerHandler implements Runnable {
 				}
 				else{
 					/** Private message */
+
+
 					if(!server.sendMessage(message))
 						throw new Exception("Receiver not found!");
 				}

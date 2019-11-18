@@ -65,6 +65,7 @@ public class GUIController extends UIController {
 	private void onSendClicked() {
 		if(!textASendText.getText().isEmpty()){
 			//Todo Receiver Null = Broadcast otherwise fill receiver with information from GUI Contact list
+			/*
 			String receiver =null;
 			try {
 				receiver = tabOnlineListView.getSelectionModel().getSelectedItem().getUserName();
@@ -75,8 +76,9 @@ public class GUIController extends UIController {
 			catch (Exception e){
 				e.printStackTrace();
 			}
+			 */
 			Message newMessage = new Message(checkTranslate.isSelected(), textASendText.getText(),
-					new Timestamp(System.currentTimeMillis()),client.getAccount().getUserName(), receiver);
+					new Timestamp(System.currentTimeMillis()),client.getAccount().getUserName(), null);
 			displayNewMessage(newMessage);
 			textASendText.clear();
 			client.sendToServer(MESSAGE_SENT,newMessage);

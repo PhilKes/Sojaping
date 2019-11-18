@@ -19,8 +19,8 @@ import static common.JsonHelper.*;
 
 public class Server {
 
-	//public static String SERVER_HOST = "192.168.178.26";
-	public static String SERVER_HOST = "141.59.130.79";
+	public static String SERVER_HOST = "192.168.178.26";
+	//	public static String SERVER_HOST = "141.59.130.79";
 
 	public static int SERVER_PORT = 9999;//443;
 
@@ -36,14 +36,15 @@ public class Server {
 
 	private DatabaseService dbService;
 
-	private Server(int port) {
+
+	public Server(int port, DatabaseService dbService) {
 		this.port = port;
 		this.connections= new HashMap<>();
-		this.dbService = new DatabaseService();
+		this.dbService = dbService;
 	}
 
 	public static void main(String[] args) throws IOException {
-		new Server(SERVER_PORT).run();
+		new Server(SERVER_PORT, new DatabaseService()).run();
 	}
 
 	private void run() throws IOException {
@@ -63,15 +64,15 @@ public class Server {
 		while (true) {
 			Socket clientSocket = server.accept();
 			/** Receive connectPacket with Clients IP as data, add to connection list*/
-            Packet connectPacket =getPacketFromJson(new Scanner(clientSocket.getInputStream(),"UTF-8").nextLine());
-            if(connectPacket==null) {
+			Packet connectPacket =getPacketFromJson(new Scanner(clientSocket.getInputStream(),"UTF-8").nextLine());
+			if(connectPacket==null) {
 				clientSocket.close();
 				continue;
 			}
-            if(connectPacket.getContext().equals(CONNECT)) {
-                String clientIP= connectPacket.getData();
-                System.out.println("New Client: " + clientIP);
-                try {
+			if(connectPacket.getContext().equals(CONNECT)) {
+				String clientIP= connectPacket.getData();
+				System.out.println("New Client: " + clientIP);
+				try {
 					Connection newConnection=new Connection(clientSocket, clientSocket.getInetAddress().getHostAddress());
 					/** Temporarily put clientIP as userName until client loggs into an Account */
 					synchronized (connections) {
@@ -79,25 +80,25 @@ public class Server {
 					}
 					sendToUser(newConnection, CONNECT_SUCCESS, "Hello " + clientIP);
 				}catch(IOException e){
-                	e.printStackTrace();
-                	continue;
+					e.printStackTrace();
+					continue;
 				}
-                /** Main Thread: (Server)Accept connections,
-				/	2.Thr: (ServerDispatcher) Loop through InputStream
-				/				-> dispatch Handler Thread (ServerHandler) for individual new Packets */
-               // new Thread(new ServerHandler(this, newConnection)).start();
-            }
+				/** Main Thread: (Server)Accept connections,
+				 /	2.Thr: (ServerDispatcher) Loop through InputStream
+				 /				-> dispatch Handler Thread (ServerHandler) for individual new Packets */
+				// new Thread(new ServerHandler(this, newConnection)).start();
+			}
 		}
 	}
 
 	/** Checks if loginUser has valid credentials, returns Account from DB
-     *  throws Exception if invalid credentials */
-	public Account loginUser(Connection newConnection, LoginUser loginUser) throws Exception {
+	 *  throws Exception if invalid credentials */
+	public Account loginUser(LoginUser loginUser) throws Exception {
 		//LoginUser loginUser = JsonHelper.convertJsonToObject(accountOrLoginAsJson);
 		Account account = this.dbService.getAccountByLoginUser(loginUser);
 		if (account != null) {
 			if (account.getPassword().equals(loginUser.getPassword()))
-                return account;
+				return account;
 			else
 				throw new Exception("Invalid password");
 		} else
@@ -124,8 +125,8 @@ public class Server {
 	//TODO Find connection
 	/** Send object as JSON through user OutputStream*/
 	public void sendToUser(Connection connection, String context, Object object){
-        Packet packet=new Packet(context,object);
-        /** Use PrintWriter with UTF-8 Charset*/
+		Packet packet=new Packet(context,object);
+		/** Use PrintWriter with UTF-8 Charset*/
 		PrintWriter out = new PrintWriter(
 				new BufferedWriter(new OutputStreamWriter(
 						connection.getOutStream(), StandardCharsets.UTF_8)), true);
@@ -136,9 +137,9 @@ public class Server {
 
 	public void broadcastMessages(Connection sender,Message message) {
 		this.connections.values().forEach(client-> {
-            if(client!=sender)
-                sendToUser(client, MESSAGE_RECEIVED,message);}
-        );
+			if(client!=sender)
+				sendToUser(client, MESSAGE_RECEIVED,message);}
+		);
 	}
 
 
@@ -154,11 +155,11 @@ public class Server {
 	}
 
 	public Connection getConnectionOfUser(String userName){
-	    return connections.get(userName);
-    }
+		return connections.get(userName);
+	}
 
-    /** Links Connection to Account, updates clients HashMap */
-    //TODO Multiple logged in instances on same PC?(Next Sprint)
+	/** Links Connection to Account, updates clients HashMap */
+	//TODO Multiple logged in instances on same PC?(Next Sprint)
 	public void setLoggedUser(Connection connection, Account account) {
 		/** Replace clientIP with newly logged in account.userName */
 		synchronized (connections) {

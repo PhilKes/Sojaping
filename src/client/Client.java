@@ -126,6 +126,7 @@ public class Client {
 			stage.setScene(new Scene(root1));
 			stage.setOnCloseRequest(ev->
 					closeCurrentWindow());
+			stage.setResizable(false);
 			stage.show();
 		}catch (Exception e){
 			e.printStackTrace();

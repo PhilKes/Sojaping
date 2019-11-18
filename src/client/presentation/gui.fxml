@@ -19,8 +19,14 @@
             <HBox fx:id="hBoxMe" prefHeight="150.0" prefWidth="200.0" />
             <TabPane fx:id="tabPContacts" prefHeight="366.0" prefWidth="150.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                <Tab fx:id="tabContacts" text="Contacts" />
-                <Tab fx:id="tabChats" text="Chats" />
+                <Tab fx:id="tabContacts" text="Contacts">
+                     <content>
+                        <ListView fx:id="tabContactsListView" prefHeight="200.0" prefWidth="200.0" />
+                     </content></Tab>
+                <Tab fx:id="tabOnline" text="Online">
+                     <content>
+                        <ListView fx:id="tabOnlineListView" prefHeight="200.0" prefWidth="200.0" />
+                     </content></Tab>
               </tabs>
             </TabPane>
             <Button fx:id="btnMyProfile" mnemonicParsing="false" prefHeight="100.0" prefWidth="150.0" text="MyProfile" />

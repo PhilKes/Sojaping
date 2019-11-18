@@ -86,7 +86,7 @@ public class ServerHandler implements Runnable {
 				}
 				break;
 			case USERLIST:
-				System.out.println("Send User list");
+				System.out.println("Send online User list");
 				/** Send online Userlist to client*/
 				//TODO Exclude the receiving client/User?
 				server.sendToUser(connection,USERLIST,server.getOnlineUsers());

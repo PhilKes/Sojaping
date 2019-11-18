@@ -3,19 +3,18 @@ package client.presentation;
 
 import client.Client;
 import common.data.Message;
+import common.data.Profile;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import server.Server;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
 import static common.Constants.Contexts.MESSAGE_SENT;
 import static common.Constants.Contexts.USERLIST;
@@ -31,21 +30,32 @@ public class GUIController extends UIController {
 	private ListView<Message> listVChat;
 	@FXML
 	private CheckBox checkTranslate;
+	@FXML
+	private ListView<Profile> tabOnlineListView;
 
 	private ObservableList<Message> messageObservableList;
+	private ObservableList<Profile> profilesObservableList;
 
 	//Todo Display all online users(status)
-	//Todo Javafx custom array adapter for messages
+	//Todo ListView does not Auto scroll to newest message
 
 	@FXML
 	private void initialize() {
 		btnSend.setOnMouseClicked(ev -> onSendClicked());
 		textASendText.setOnKeyReleased(event -> {if(event.getCode() == KeyCode.ENTER)onSendClicked();});
 		client=Client.getInstance(Server.SERVER_HOST, Server.SERVER_PORT);
-
+		// Message initialize
 		messageObservableList = FXCollections.observableArrayList();
 		listVChat.setItems(messageObservableList);
 		listVChat.setCellFactory(messagesListView -> new ChatListViewCell());
+		//show online Profiles initialize
+		profilesObservableList = FXCollections.observableArrayList();
+		tabOnlineListView.setItems(profilesObservableList);
+		tabOnlineListView.setCellFactory(profilesListView -> new ContactListViewCell());
+
+
+
+
 
 		//TODO (Next Sprint) use ListView(of ContactList).getSelectionModel().selectedItemProperty().bind() to show correct chat
 
@@ -70,7 +80,11 @@ public class GUIController extends UIController {
 		messageObservableList.add(message);
 		//listVChat.getItems().add(listVChat.getItems().size(),message.getTimestamp().toString().split("\\.")[0] +" "+message.getSender()+": "+ message.getText());
 	}
-
+	public void displayOnlineProfiles(ArrayList<Profile> profiles){
+		for (Profile p:profiles) {
+			profilesObservableList.add(p);
+		}
+	}
 	private void onMyProfileClicked(){
 
 	}

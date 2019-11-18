@@ -25,6 +25,10 @@ public class DatabaseService {
     public static String URL = "";
     static int lastRow;
 
+    public DatabaseService() {
+        URL = "jdbc:sqlite:assets/"+SOJAPING;
+    }
+
     public static void createNewDatabase(String fileName) {
         String url = "jdbc:sqlite:assets/" + fileName;
         try (Connection conn = DriverManager.getConnection(url)) {

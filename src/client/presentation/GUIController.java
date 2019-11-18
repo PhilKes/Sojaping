@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import server.Server;
 
 import java.sql.Timestamp;
+import java.text.BreakIterator;
 import java.util.ArrayList;
 
 import static common.Constants.Contexts.MESSAGE_SENT;
@@ -64,7 +65,18 @@ public class GUIController extends UIController {
 	private void onSendClicked() {
 		if(!textASendText.getText().isEmpty()){
 			//Todo Receiver Null = Broadcast otherwise fill receiver with information from GUI Contact list
-			Message newMessage = new Message(checkTranslate.isSelected(), textASendText.getText(), new Timestamp(System.currentTimeMillis()),client.getAccount().getUserName(),null);
+			String receiver =null;
+			try {
+				receiver = tabOnlineListView.getSelectionModel().getSelectedItem().getUserName();
+			}
+			catch (NullPointerException e){
+				receiver = null;
+			}
+			catch (Exception e){
+				e.printStackTrace();
+			}
+			Message newMessage = new Message(checkTranslate.isSelected(), textASendText.getText(),
+					new Timestamp(System.currentTimeMillis()),client.getAccount().getUserName(), receiver);
 			displayNewMessage(newMessage);
 			textASendText.clear();
 			client.sendToServer(MESSAGE_SENT,newMessage);

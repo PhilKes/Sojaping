@@ -45,7 +45,7 @@ public class Server {
 	}
 
 	public static void main(String[] args) throws IOException {
-		new Server(SERVER_PORT, new DatabaseService(SOJAPING)).run();
+		new Server(SERVER_PORT, new DatabaseService()).run();
 	}
 
 	private void run() throws IOException {

@@ -21,10 +21,12 @@ public class DatabaseService {
     private static final String ABOUTME = "aboutMe";
     private static final String PROFILEPICTURE = "profilePicture";
     private static final String LID = "lid";
+    private static final String SOJAPING = "sojaping.db";
+    public static String URL = "jdbc:sqlite:assets/";
     static int lastRow;
 
     public static void createNewDatabase(String fileName) {
-        String url = "jdbc:sqlite:assets/" + fileName;
+        String url = URL + fileName;
         try (Connection conn = DriverManager.getConnection(url)) {
             if (conn != null) {
                 DatabaseMetaData meta = conn.getMetaData();
@@ -37,11 +39,10 @@ public class DatabaseService {
         }
     }
 
-    private Connection connect(){
-        String url = "jdbc:sqlite:assets/sojaping.db";
+    public Connection connect(){
         Connection conn = null;
         try {
-            conn = DriverManager.getConnection(url);
+            conn = DriverManager.getConnection(URL);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -49,9 +50,6 @@ public class DatabaseService {
     }
 
     public static void createNewTableAccount() {
-        // SQLite connection string
-        String url = "jdbc:sqlite:assets/sojaping.db";
-
         // SQL statement for creating a new table
         String sql = "CREATE TABLE IF NOT EXISTS account (\n"
                 +       AID+" integer PRIMARY KEY autoincrement,\n"
@@ -62,7 +60,7 @@ public class DatabaseService {
                 +       PROFILEPICTURE+" text\n"
                 + ");";
 
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DriverManager.getConnection(URL);
              Statement stmt = conn.createStatement()) {
             // create a new table
             stmt.execute(sql);
@@ -72,7 +70,6 @@ public class DatabaseService {
     }
 
     public static void createNewTableContactList(){
-        String url = "jdbc:sqlite:assets/sojaping.db";
         String sql = "CREATE TABLE IF NOT EXISTS contactList (\n"
                 +       LID+" integer PRIMARY KEY,\n"
                 +       AID+" integer NOT NULL,\n" //aid of the "owner" of this list
@@ -84,7 +81,7 @@ public class DatabaseService {
                 +       "REFERENCES account("+AID+")\n"
                 +       "ON DELETE CASCADE"
                 +       ");";
-        try (Connection conn = DriverManager.getConnection(url);
+        try (Connection conn = DriverManager.getConnection(URL);
              Statement stmt = conn.createStatement()) {
             // create a new table
             stmt.execute(sql);
@@ -312,6 +309,7 @@ public class DatabaseService {
 
     public static void main(String[] args) throws Exception {
         //createNewDatabase("sojaping.db");
+        URL += SOJAPING;
         DatabaseService db = new DatabaseService();
         //db.dropTableAccount();
         //db.dropTableContactList();

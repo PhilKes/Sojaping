@@ -48,9 +48,9 @@ public class Client {
 		//this.loginUser = new LoginUser();
 	}
 
-/*	public static void main(String[] args){
+	public static void main(String[] args){
 		getInstance(Server.SERVER_HOST, Server.SERVER_PORT).run();
-	}*/
+	}
 
 	public void run()  {
 		/** Loop to try to connect to server*/

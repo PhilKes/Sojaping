@@ -1,6 +1,7 @@
 package server;
 
 
+import com.fasterxml.jackson.databind.ser.impl.PropertyBasedObjectIdGenerator;
 import common.data.LoginUser;
 import common.data.Account;
 import common.data.AccountBuilder;
@@ -132,8 +133,8 @@ public class DatabaseService {
         }
     }
 
-    public List<Profile> getAllContactsOfAccount(Account acc){
-        List<Profile> contacts = new ArrayList<>();
+    public ArrayList<Profile> getAllContactsOfAccount(Account acc){
+        ArrayList<Profile> contacts = new ArrayList<>();
         String sql = "SELECT * FROM contactList WHERE "+AID+" = ?";
         try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -285,6 +286,27 @@ public class DatabaseService {
             e.printStackTrace();
         }
         return acc;
+    }
+
+    public ArrayList<Profile> getOnlineAccounts(){
+        ArrayList<Profile> onlineAccounts = new ArrayList<>();
+        String sql = "SELECT "+USERNAME+", "+STATUS+", " +
+        ABOUTME+", "+PROFILEPICTURE+" FROM account WHERE "+STATUS+" = 1";
+        try (Connection conn = this.connect();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+            while (rs.next()) {
+                onlineAccounts.add(new Profile(rs.getString(USERNAME), rs.getInt(STATUS),
+                        rs.getString(ABOUTME), rs.getString(PROFILEPICTURE)));
+                System.out.println(rs.getString(USERNAME) + "\t" +
+                        rs.getInt(STATUS) +  "\t" +
+                        rs.getString(ABOUTME) + "\t" +
+                        rs.getString(PROFILEPICTURE));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return onlineAccounts;
     }
 
     public static void main(String[] args) throws Exception {

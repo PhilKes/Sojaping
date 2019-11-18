@@ -142,12 +142,15 @@ public class Server {
 	}
 
 
-	public ArrayList<Profile> getOnlineUsers(){
+	public List<Profile> getOnlineUsers(){
 		synchronized (connections) {
-			ArrayList<Profile> userList=new ArrayList<>();
-			return dbService.getOnlineAccounts();
+			List<Profile> userList=new ArrayList<>();
+			userList.addAll(connections.values().stream()
+					.filter(c -> c.isLoggedIn())
+					.map(c -> c.getLoggedAccount().getProfile())
+					.collect(Collectors.toList()));
+			return userList;
 		}
-
 	}
 
 	public Connection getConnectionOfUser(String userName){

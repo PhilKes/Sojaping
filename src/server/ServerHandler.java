@@ -65,7 +65,7 @@ public class ServerHandler implements Runnable {
 				System.out.println("Login Account");
 				LoginUser loginUser= receivedPacket.getData();
 				/** Check login credentials, send Account from DB to user or throw failed Exception */
-				Account loginAccount=server.loginUser(connection, loginUser);
+				Account loginAccount=server.loginUser(loginUser);
 				server.sendToUser(connection, LOGIN_SUCCESS, loginAccount);
 				server.setLoggedUser(connection,loginAccount);
 				//server.sendToUser(connection,INFO,"Hi welcome back  " + connection.getNickname());

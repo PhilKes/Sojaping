@@ -19,8 +19,8 @@ import static common.JsonHelper.*;
 
 public class Server {
 
+	//public static String SERVER_HOST = "192.168.178.26";
 	public static String SERVER_HOST = "141.59.130.79";
-	//public static String SERVER_HOST = "141.59.130.79";
 
 	public static int SERVER_PORT = 9999;//443;
 
@@ -142,15 +142,12 @@ public class Server {
 	}
 
 
-	public List<Profile> getOnlineUsers(){
+	public ArrayList<Profile> getOnlineUsers(){
 		synchronized (connections) {
-			List<Profile> userList=new ArrayList<>();
-			userList.addAll(connections.values().stream()
-					.filter(c -> c.isLoggedIn())
-					.map(c -> c.getLoggedAccount().getProfile())
-					.collect(Collectors.toList()));
-			return userList;
+			ArrayList<Profile> userList=new ArrayList<>();
+			return dbService.getOnlineAccounts();
 		}
+
 	}
 
 	public Connection getConnectionOfUser(String userName){

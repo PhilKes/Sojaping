@@ -7,6 +7,7 @@ import common.data.Packet;
 import javafx.application.Platform;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -65,9 +66,10 @@ class ClientHandler implements Runnable {
 				Platform.runLater(()->{client.getGUIController().displayNewMessage(msg);});
 				break;
 			case USERLIST:
-				List<Profile> userList=receivedPacket.getData();
-				System.out.println("Contacts received:");
+				ArrayList<Profile> userList=receivedPacket.getData();
+				System.out.println("Profiles received:");
 				userList.forEach(u-> System.out.println(u));
+				Platform.runLater(()->{client.getGUIController().displayOnlineProfiles(userList);});
 				//TODO --> client.getGUIController().displayOnlineUsers(userList);
 				break;
 			default:

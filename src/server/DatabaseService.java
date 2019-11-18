@@ -1,6 +1,7 @@
 package server;
 
 
+import com.fasterxml.jackson.databind.ser.impl.PropertyBasedObjectIdGenerator;
 import common.data.LoginUser;
 import common.data.Account;
 import common.data.AccountBuilder;
@@ -132,8 +133,8 @@ public class DatabaseService {
         }
     }
 
-    public List<Profile> getAllContactsOfAccount(Account acc){
-        List<Profile> contacts = new ArrayList<>();
+    public ArrayList<Profile> getAllContactsOfAccount(Account acc){
+        ArrayList<Profile> contacts = new ArrayList<>();
         String sql = "SELECT * FROM contactList WHERE "+AID+" = ?";
         try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -196,6 +197,7 @@ public class DatabaseService {
 //            }
             e.printStackTrace();
         }
+        //TODO: Beim Aufruf prüfen, dass man sich nicht selbst oder jemanden, der schon enthalten ist, einfügt.
     }
 
     public void update(Account acc){
@@ -287,6 +289,27 @@ public class DatabaseService {
         return acc;
     }
 
+    public ArrayList<Profile> getOnlineAccounts(){
+        ArrayList<Profile> onlineAccounts = new ArrayList<>();
+        String sql = "SELECT "+USERNAME+", "+STATUS+", " +
+        ABOUTME+", "+PROFILEPICTURE+" FROM account WHERE "+STATUS+" = 1";
+        try (Connection conn = this.connect();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+            while (rs.next()) {
+                onlineAccounts.add(new Profile(rs.getString(USERNAME), rs.getInt(STATUS),
+                        rs.getString(ABOUTME), rs.getString(PROFILEPICTURE)));
+                System.out.println(rs.getString(USERNAME) + "\t" +
+                        rs.getInt(STATUS) +  "\t" +
+                        rs.getString(ABOUTME) + "\t" +
+                        rs.getString(PROFILEPICTURE));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return onlineAccounts;
+    }
+
     public static void main(String[] args) throws Exception {
         //createNewDatabase("sojaping.db");
         DatabaseService db = new DatabaseService();
@@ -296,12 +319,12 @@ public class DatabaseService {
         createNewTableContactList();
 
         System.out.println("Insert");
-        Account acc = new AccountBuilder().setUserName("aaa").setPassword("abc")
+        Account acc = new AccountBuilder().setUserName("ggg").setPassword("abc")
                 .setAboutMe("I'm not happy.").createAccount();
-        Account acc2 = new AccountBuilder().setUserName("bbb").setPassword("aaa")
-                .setAboutMe("Not nice.").createAccount();
-        Account acc3 = new AccountBuilder().setUserName("ccc").setPassword("aaa")
-                .setAboutMe("Not nice.").createAccount();
+        Account acc2 = new AccountBuilder().setUserName("hhh").setPassword("aaa")
+                .setAboutMe("Not nice.").setStatus(1).createAccount();
+        Account acc3 = new AccountBuilder().setUserName("fff").setPassword("aaa")
+                .setAboutMe("Not nice.").setStatus(1).createAccount();
         db.insertAccount(acc);
         db.selectAllAccounts();
         System.out.println(acc.getAid());
@@ -310,9 +333,11 @@ public class DatabaseService {
         //db.deleteAccount(acc);
         System.out.println();
         db.insertAccount(acc2);
-        db.insertContactOfAccount(acc, acc2.getProfile());
-        db.insertContactOfAccount(acc, acc3.getProfile());
-        db.selectAllContactsOfAccount(acc);
+        db.insertAccount(acc3);
+        //db.insertContactOfAccount(acc, acc2.getProfile());
+        //db.insertContactOfAccount(acc, acc3.getProfile());
+        //db.selectAllContactsOfAccount(acc);
+        ArrayList<Profile> onlineUser = db.getOnlineAccounts();
     }
 
 

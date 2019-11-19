@@ -75,24 +75,28 @@ public class ServerHandler implements Runnable {
 				System.out.println("Send message");
 				Message message= receivedPacket.getData();
 				/** Check login credentials, send Account from DB to user or send failed Exception */
-				String receiver= message.getReceiver();
-				if(receiver==null){
+				String receiver = message.getReceiver();
+				if(receiver.equals("broadcast")){
 					server.broadcastMessages(connection,message);
 				}
 				else{
 					/** Private message */
 
-
 					if(!server.sendMessage(message))
-						throw new Exception("Receiver not found!");
+						throw new Exception("Receiver '" +receiver+"' not found!");
+					else;
+					//Todo User receives 2 Messages
+						server.sendMessage(message);
 				}
 				break;
 			case USERLIST:
 				System.out.println("Send online User list");
                 /** Send online Userlist to client*/
-                //TODO Exclude the receiving client/User?
+                //TODO Exclude the receiving client/User? Duplicates by Register+Login
+				//Todo Should be send to all User that Contact List can update on every client
                 server.sendToUser(connection,USERLIST,server.getOnlineUsers());
                 break;
+            //Todo Case for logoff of a client (update Contact list and send update to all client)
             default:
 				System.err.println("Received unknown Packet context:\t"+receivedPacket.getContext());
 				throw new Exception("Unknown Packet context('"+receivedPacket.getContext()+"') sent!");

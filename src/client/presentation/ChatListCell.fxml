@@ -4,14 +4,14 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox fx:id="hbox" prefHeight="35.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+<HBox fx:id="hbox" prefHeight="35.0" prefWidth="880.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label fx:id="labelSender" prefHeight="35.0" prefWidth="68.0" text="labelSender">
+      <Label fx:id="labelSender" prefHeight="35.0" prefWidth="70.0" text="labelSender">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="labelText" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="35.0" prefWidth="379.0" text="labelText" />
+      <Label fx:id="labelText" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="35.0" prefWidth="765.0" text="labelText" />
       <Label fx:id="labelTime" prefHeight="35.0" prefWidth="45.0" text="labelTime" textAlignment="RIGHT">
          <font>
             <Font size="9.0" />

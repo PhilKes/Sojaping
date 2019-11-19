@@ -12,16 +12,16 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.presentation.GUIController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800" prefWidth="1280" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.presentation.GUIController">
    <left>
-      <VBox fx:id="vBoxContacts" prefHeight="200.0" prefWidth="150.0" BorderPane.alignment="CENTER">
+      <VBox fx:id="vBoxContacts" prefHeight="800.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox fx:id="hBoxMe" prefHeight="150.0" prefWidth="200.0" />
-            <TabPane fx:id="tabPContacts" prefHeight="366.0" prefWidth="150.0" tabClosingPolicy="UNAVAILABLE">
+            <HBox fx:id="hBoxMe" prefHeight="200.0" prefWidth="200.0" />
+            <TabPane fx:id="tabPContacts" prefHeight="517.0" prefWidth="150.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab fx:id="tabContacts" text="Contacts">
                      <content>
-                        <ListView fx:id="tabContactsListView" prefHeight="200.0" prefWidth="200.0" />
+                        <ListView fx:id="tabContactsListView" prefHeight="517.0" prefWidth="200.0" />
                      </content></Tab>
                 <Tab fx:id="tabOnline" text="Online">
                      <content>
@@ -29,27 +29,31 @@
                      </content></Tab>
               </tabs>
             </TabPane>
-            <Button fx:id="btnMyProfile" mnemonicParsing="false" prefHeight="100.0" prefWidth="150.0" text="MyProfile" />
+            <Button fx:id="btnMyProfile" mnemonicParsing="false" prefHeight="100.0" prefWidth="200.0" text="MyProfile" />
          </children>
       </VBox>
    </left>
    <right>
       <VBox fx:id="vBoxInfo" prefHeight="200.0" prefWidth="150.0" BorderPane.alignment="CENTER">
          <children>
-            <ImageView fx:id="imageLogo" fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="imageLogo" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@SojaPingLogoQ.png" />
                </image></ImageView>
-            <ListView fx:id="listVInfo" prefHeight="342.0" prefWidth="150.0" />
-            <CheckBox fx:id="checkTranslate" mnemonicParsing="false" text="Translate" />
-            <Button fx:id="btnSend" mnemonicParsing="false" prefHeight="100.0" prefWidth="150.0" text="Send" />
+            <ListView fx:id="listVInfo" prefHeight="500.0" prefWidth="150.0" />
+            <HBox prefHeight="17.0" prefWidth="200.0">
+               <children>
+                  <CheckBox fx:id="checkTranslate" mnemonicParsing="false" text="Translate" />
+               </children>
+            </HBox>
+            <Button fx:id="btnSend" mnemonicParsing="false" prefHeight="100.0" prefWidth="200.0" text="Send" />
          </children></VBox>
    </right>
    <center>
-      <VBox fx:id="vBoxChat" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+      <VBox fx:id="vBoxChat" prefHeight="800.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <ListView fx:id="listVChat" prefHeight="511.0" prefWidth="500.0" />
-            <TextArea fx:id="textASendText" prefHeight="100.0" prefWidth="500.0" />
+            <ListView fx:id="listVChat" prefHeight="600.0" prefWidth="500.0" />
+            <TextArea fx:id="textASendText" prefHeight="217.0" prefWidth="500.0" />
          </children>
       </VBox>
    </center>

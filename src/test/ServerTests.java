@@ -3,6 +3,7 @@ package test;
 import common.data.Account;
 import common.data.AccountBuilder;
 import common.data.LoginUser;
+import common.data.Message;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,9 +14,9 @@ import server.DatabaseService;
 import server.Server;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class ServerTests {
 
@@ -72,14 +73,20 @@ public class ServerTests {
 		assertEquals("myPassword", resultAccount.getPassword());
 	}
 
-//	@Test
-//	public void testRegisterUser() throws Exception {
-//		Server server = new Server(9999, this.dbServiceMock);
-//
-//		Account account = new AccountBuilder().setAid(100).setUserName("myName").setPassword("myPassword").setStatus(0).setAboutMe("").setProfilePicture("").createAccount();
-//
-//		server.registerUser(account);
-//
-//		verify(this.dbServiceMock);
-//	}
+	@Test
+	public void testRegisterUser() throws Exception {
+		Server server = new Server(9999, this.dbServiceMock);
+		Account account = new AccountBuilder().setAid(100).setUserName("myName").setPassword("myPassword").setStatus(0).setAboutMe("").setProfilePicture("").createAccount();
+		server.registerUser(null, account);
+		verify(this.dbServiceMock, times(1)).insertAccount(eq(account));
+	}
+
+	@Test
+	public void testSendMessageFailed() {
+		Server server = new Server(9999, this.dbServiceMock);
+		Message msg = new Message();
+		assertFalse(server.sendMessage(msg));
+	}
+
+
 }

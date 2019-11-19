@@ -57,8 +57,8 @@ class ClientHandler implements Runnable {
 				System.out.println("Logged into "+account);
 				client.closeCurrentWindowNoexit();
 				client.openWindow("gui");
-				/** Request online user list from server -> Receive: case USERLIST */
-				client.sendToServer(USERLIST,null);
+				///** Request online user list from server -> Receive: case USERLIST */
+				//client.sendToServer(USERLIST,null);
 				break;
 			case MESSAGE_RECEIVED:
 				Message msg= receivedPacket.getData();

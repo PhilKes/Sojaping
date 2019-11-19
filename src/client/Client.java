@@ -81,7 +81,8 @@ public class Client {
 	}
 
 	public void stop(){
-		output.close();
+		if(output!=null)
+			output.close();
 		try {
 			connection.getSocket().close();
 		} catch (IOException e) {

@@ -68,6 +68,7 @@ public class ServerHandler implements Runnable {
 				Account loginAccount=server.loginUser(connection, loginUser);
 				server.sendToUser(connection, LOGIN_SUCCESS, loginAccount);
 				server.setLoggedUser(connection,loginAccount);
+				server.broadcastPacket(USERLIST,server.getOnlineUsers());
 				//server.sendToUser(connection,INFO,"Hi welcome back  " + connection.getNickname());
 				break;
 			//TODO LOGOUT
@@ -77,12 +78,10 @@ public class ServerHandler implements Runnable {
 				/** Check login credentials, send Account from DB to user or send failed Exception */
 				String receiver= message.getReceiver();
 				if(receiver==null){
-					server.broadcastMessages(connection,message);
+					server.broadcastMessages(message);
 				}
 				else{
 					/** Private message */
-
-
 					if(!server.sendMessage(message))
 						throw new Exception("Receiver not found!");
 				}

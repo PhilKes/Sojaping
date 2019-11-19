@@ -78,7 +78,7 @@ public class Message {
     }
 
     public void setReceiver(String receiver) {
-        receiver = receiver;
+        this.receiver = receiver;
     }
 
     @Override

@@ -20,8 +20,8 @@ import static common.JsonHelper.*;
 
 public class Server {
 	private static final String SOJAPING = "sojaping.db";
-	//public static String SERVER_HOST = "192.168.178.26";
-	public static String SERVER_HOST = "141.59.130.79";
+	public static String SERVER_HOST = "192.168.178.26";
+	//public static String SERVER_HOST = "141.59.130.79";
 
 	public static int SERVER_PORT = 9999;//443;
 
@@ -136,20 +136,32 @@ public class Server {
 		System.out.println("to "+connection.getNickname()+"\t:\t"+packet);
 	}
 
-	public void broadcastMessages(Connection sender,Message message) {
-		this.connections.values().forEach(client-> {
-			if(client!=sender)
-				sendToUser(client, MESSAGE_RECEIVED,message);}
-		);
+	public void broadcastPacket(String context, Object data){
+		connections.values().stream()
+				.filter(c -> c.isLoggedIn())
+				.forEach(c -> sendToUser(c,context,data));
 	}
 
+	public void broadcastMessages(Message message) {
+		this.connections.values().stream()
+				.filter(c->c.isLoggedIn())
+				.forEach(client-> {
+					if(!message.getSender().equals(client.getLoggedAccount().getUserName()))
+						sendToUser(client, MESSAGE_RECEIVED,message);}
+				);
+	}
 
 	public List<Profile> getOnlineUsers(){
 		synchronized (connections) {
-			//List<Profile> userList=new ArrayList<>();
-			return  dbService.getOnlineAccounts();
+			List<Profile> userList=new ArrayList<>();
+			userList.addAll(connections.values().stream()
+					.filter(c -> c.isLoggedIn())
+					.map(c -> c.getLoggedAccount().getProfile())
+					.collect(Collectors.toList()));
+			return userList;
 		}
 	}
+
 
 	public Connection getConnectionOfUser(String userName){
 		return connections.get(userName);

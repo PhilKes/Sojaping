@@ -54,10 +54,6 @@ public class GUIController extends UIController {
 		tabOnlineListView.setItems(profilesObservableList);
 		tabOnlineListView.setCellFactory(profilesListView -> new ContactListViewCell());
 
-
-
-
-
 		//TODO (Next Sprint) use ListView(of ContactList).getSelectionModel().selectedItemProperty().bind() to show correct chat
 
 	}
@@ -77,8 +73,11 @@ public class GUIController extends UIController {
 				e.printStackTrace();
 			}
 			 */
+			Profile selectedUser=tabOnlineListView.getSelectionModel().getSelectedItem();
+			String receiver= selectedUser==null? null : selectedUser.getUserName();
+
 			Message newMessage = new Message(checkTranslate.isSelected(), textASendText.getText(),
-					new Timestamp(System.currentTimeMillis()),client.getAccount().getUserName(), null);
+					new Timestamp(System.currentTimeMillis()),client.getAccount().getUserName(), receiver);
 			displayNewMessage(newMessage);
 			textASendText.clear();
 			client.sendToServer(MESSAGE_SENT,newMessage);
@@ -95,6 +94,7 @@ public class GUIController extends UIController {
 		//listVChat.getItems().add(listVChat.getItems().size(),message.getTimestamp().toString().split("\\.")[0] +" "+message.getSender()+": "+ message.getText());
 	}
 	public void displayOnlineProfiles(ArrayList<Profile> profiles){
+		profilesObservableList.clear();
 		for (Profile p:profiles) {
 			profilesObservableList.add(p);
 		}

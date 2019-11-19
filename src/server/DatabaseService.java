@@ -94,6 +94,7 @@ public class DatabaseService {
         }
     }
 
+    //This method is for debugging.
     public void selectAllAccounts(){
         String sql = "SELECT "+AID+", "+USERNAME+", "+STATUS+", " +
                 ABOUTME+", "+PROFILEPICTURE+" FROM account";
@@ -114,6 +115,7 @@ public class DatabaseService {
         }
     }
 
+    //This method is for debugging.
     public void selectAllContactsOfAccount(Account acc){
         String sql = "SELECT * FROM contactList WHERE "+AID+" = ?";
         try(Connection conn = this.connect();
@@ -173,6 +175,18 @@ public class DatabaseService {
             if(e.getMessage().contains("[SQLITE_CONSTRAINT]  Abort due to constraint violation (UNIQUE constraint failed: account.userName)")){
                 throw new Exception("Username is already in use!");
             }
+            e.printStackTrace();
+        }
+        String sql2 = "SELECT * FROM account WHERE userName = ?";
+        try(Connection conn2 = DriverManager.getConnection(DatabaseService.URL);
+            PreparedStatement pstmt2 = conn2.prepareStatement(sql2)){
+            pstmt2.setString(1, acc.getUserName());
+            ResultSet rs = pstmt2.executeQuery();
+            while (rs.next()) {
+                acc.setAid(rs.getInt(AID));
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -320,11 +334,11 @@ public class DatabaseService {
         createNewTableContactList();
 
         System.out.println("Insert");
-        Account acc = new AccountBuilder().setUserName("ggg").setPassword("abc")
+        Account acc = new AccountBuilder().setUserName("iii").setPassword("abc")
                 .setAboutMe("I'm not happy.").createAccount();
-        Account acc2 = new AccountBuilder().setUserName("hhh").setPassword("aaa")
+        Account acc2 = new AccountBuilder().setUserName("jjj").setPassword("aaa")
                 .setAboutMe("Not nice.").setStatus(1).createAccount();
-        Account acc3 = new AccountBuilder().setUserName("fff").setPassword("aaa")
+        Account acc3 = new AccountBuilder().setUserName("kkk").setPassword("aaa")
                 .setAboutMe("Not nice.").setStatus(1).createAccount();
         db.insertAccount(acc);
         db.selectAllAccounts();

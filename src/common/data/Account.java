@@ -51,4 +51,13 @@ public class Account extends Profile {
                 '}';
     }
 
+    public boolean equals(Account acc) {
+        if(this.aid == acc.getAid() && this.userName.equals(acc.getUserName())
+        && this.password.equals(acc.getPassword()) && this.status == acc.getStatus()
+        && this.aboutMe.equals(acc.getAboutMe())
+                && ((this.profilePicture == null && acc.getProfile() == null) || this.profilePicture.equals(acc.getProfilePicture())))
+            return true;
+        else
+            return false;
+    }
 }

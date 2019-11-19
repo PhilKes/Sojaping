@@ -191,7 +191,7 @@ public class DatabaseService {
         }
     }
 
-    public void insertContactOfAccount(Account account, Profile contact) throws Exception {
+    public void insertContactOfAccount(Account account, Profile contact){
         String sql = "INSERT INTO contactList("+LID+", "+AID +", "+USERNAME+","+STATUS+", "
                 +ABOUTME+", "+PROFILEPICTURE+") VALUES(NULL,?,?,?,?,?)";
         try(Connection conn = this.connect();
@@ -248,6 +248,7 @@ public class DatabaseService {
         }
     }
 
+    //This method is for debugging.
     private void resetTable(){
         String sql = "DELETE FROM account WHERE "+AID+" = ?";
         try(Connection conn = this.connect();
@@ -262,7 +263,7 @@ public class DatabaseService {
 
     }
 
-    private void dropTableAccount(){
+    public void dropTableAccount(){
         String sql = "DROP TABLE account";
         try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -272,7 +273,7 @@ public class DatabaseService {
         }
     }
 
-    private void dropTableContactList(){
+    public void dropTableContactList(){
         String sql = "DROP TABLE contactList";
         try(Connection conn = this.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql)){

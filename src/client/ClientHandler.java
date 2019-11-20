@@ -70,7 +70,7 @@ class ClientHandler implements Runnable {
 				System.out.println("Profiles received:");
 				userList.forEach(u-> System.out.println(u));
 				Platform.runLater(()->{client.getGUIController().displayOnlineProfiles(userList);});
-				//TODO --> client.getGUIController().displayOnlineUsers(userList);
+
 				break;
 			default:
 				break;

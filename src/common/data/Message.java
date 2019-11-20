@@ -11,7 +11,6 @@ public class Message {
     private Timestamp timestamp;
     private String sender;
     private String receiver;
-
     public Message() {
 
     }
@@ -23,6 +22,7 @@ public class Message {
         this.timestamp = timestamp;
         this.sender = sender;
         this.receiver = receiver;
+
     }
     /*
     public String getSendLanguage() {

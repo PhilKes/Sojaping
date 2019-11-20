@@ -91,6 +91,8 @@ public class ServerHandler implements Runnable {
                 /** Send online Userlist to client*/
                 //TODO Exclude the receiving client/User?
                 server.sendToUser(connection,USERLIST,server.getOnlineUsers());
+                //Todo Update all clients when new user Connects/Disconnects
+                //server.broadcastMessages(server.getOnlineUsers());
                 break;
             default:
 				System.err.println("Received unknown Packet context:\t"+receivedPacket.getContext());

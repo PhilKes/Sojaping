@@ -7,15 +7,15 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.presentation.LoginController">
-      <ImageView fx:id="imgLogo" fitHeight="150.0" fitWidth="200.0" layoutX="201.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true" />
-   <AnchorPane layoutX="195.0" layoutY="157.0" prefHeight="28.0" prefWidth="211.0">
-      <children>
+    <ImageView fx:id="imgLogo" fitHeight="150.0" fitWidth="200.0" layoutX="201.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true" />
+    <AnchorPane layoutX="195.0" layoutY="157.0" prefHeight="28.0" prefWidth="211.0">
+        <children>
             <Label layoutX="1.0" layoutY="35.0" text="Username:" />
-            <TextField fx:id="txtUsername" layoutX="62.0" layoutY="31.0" text="aaa" />
+            <TextField fx:id="txtUsername" onAction="#onEnter" layoutX="62.0" layoutY="31.0" text="irina" />
             <Label layoutX="2.0" layoutY="65.0" text="Password:" />
-            <TextField fx:id="txtPassword" accessibleRole="PASSWORD_FIELD" layoutX="62.0" layoutY="61.0" text="abc" />
-      </children>
-   </AnchorPane>
-   <Button fx:id="btnLogin" layoutX="280.0" layoutY="253.0" mnemonicParsing="false" text="Login" />
-   <Button fx:id="btnRegister" layoutX="270.0" layoutY="341.0" mnemonicParsing="false" text="Register" />
+            <TextField fx:id="txtPassword" onAction="#onEnter" accessibleRole="PASSWORD_FIELD" layoutX="62.0" layoutY="61.0" text="irina" />
+        </children>
+    </AnchorPane>
+    <Button fx:id="btnLogin" layoutX="280.0" layoutY="253.0" mnemonicParsing="false" text="Login" />
+    <Button fx:id="btnRegister" layoutX="270.0" layoutY="341.0" mnemonicParsing="false" text="Register" />
 </AnchorPane>

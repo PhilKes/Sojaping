@@ -23,7 +23,6 @@ public class Packet {
             return "";
         return context;
     }
-
     public void setContext(String context) {
         this.context=context;
     }
@@ -32,7 +31,6 @@ public class Packet {
     public <T> T getData() {
         return (T)data;
     }
-
     public void setData(Object data) {
         this.data=data;
     }

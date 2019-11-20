@@ -44,7 +44,6 @@ public class Message {
     public boolean isTranslate() {
         return translate;
     }
-
     public void setTranslate(boolean translate) {
         this.translate = translate;
     }
@@ -52,7 +51,6 @@ public class Message {
     public String getText() {
         return text;
     }
-
     public void setText(String text) {
         this.text = text;
     }
@@ -60,7 +58,6 @@ public class Message {
     public Timestamp getTimestamp() {
         return timestamp;
     }
-
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
@@ -68,7 +65,6 @@ public class Message {
     public String getSender() {
         return sender;
     }
-
     public void setSender(String sender) {
         this.sender = sender;
     }
@@ -76,7 +72,6 @@ public class Message {
     public String getReceiver() {
         return receiver;
     }
-
     public void setReceiver(String receiver) {
         this.receiver = receiver;
     }

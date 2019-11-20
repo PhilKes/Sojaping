@@ -1,10 +1,11 @@
 package server;
 
-import common.data.LoginUser;
 import common.data.*;
 
-import javax.xml.crypto.Data;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -16,12 +17,12 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import static common.Constants.Contexts.*;
-import static common.JsonHelper.*;
+import static common.JsonHelper.getPacketFromJson;
 
 public class Server {
 	private static final String SOJAPING = "sojaping.db";
-	public static String SERVER_HOST = "192.168.178.26";
-	//public static String SERVER_HOST = "141.59.130.79";
+	//public static String SERVER_HOST = "192.168.178.26";
+	public static String SERVER_HOST = "141.59.129.129";
 
 	public static int SERVER_PORT = 9999;//443;
 
@@ -172,9 +173,14 @@ public class Server {
 	public void setLoggedUser(Connection connection, Account account) {
 		/** Replace clientIP with newly logged in account.userName */
 		synchronized (connections) {
-			connections.remove(connection.getNickname());
-			connection.setLoggedAccount(account);
-			connections.put(account.getUserName(), connection);
+			/** Logout */
+			if(account== null){
+				connections.remove(connection.getLoggedAccount().getUserName());
+			}else {
+				connections.remove(connection.getNickname());
+				connection.setLoggedAccount(account);
+				connections.put(account.getUserName(), connection);
+			}
 		}
 	}
 

@@ -20,6 +20,7 @@ public class Constants {
                 REGISTER_SUCCESS="registerSuccess",
                 LOGIN="login",
                 LOGIN_SUCCESS="loginSuccess",
+                LOGOFF="logoff",
                 INFO="info",
                 MESSAGE_SENT="messageSent",
                 MESSAGE_RECEIVED="messageRec",

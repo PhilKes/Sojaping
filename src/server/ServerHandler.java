@@ -94,6 +94,10 @@ public class ServerHandler implements Runnable {
                 //Todo Update all clients when new user Connects/Disconnects
                 //server.broadcastMessages(server.getOnlineUsers());
                 break;
+			case LOGOFF:
+				server.setLoggedUser(connection,null);
+				server.broadcastPacket(USERLIST, server.getOnlineUsers());
+				break;
             default:
 				System.err.println("Received unknown Packet context:\t"+receivedPacket.getContext());
 				throw new Exception("Unknown Packet context('"+receivedPacket.getContext()+"') sent!");

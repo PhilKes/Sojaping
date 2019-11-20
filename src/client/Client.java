@@ -74,20 +74,23 @@ public class Client {
 		output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
 						connection.getOutStream(), StandardCharsets.UTF_8)), true);
 		ClientHandler handler=new ClientHandler(this, connection.getInputStream());
-		sendToServer(CONNECT, connection.getSocket().getInetAddress().getHostAddress());
+		sendToServer(CONNECT, connection.getNickname());
 		if(handler.waitForConnectSuccess())
 			/** Start Thread to handle packets from the server if CONNECT_SUCCESS received*/
 			new Thread(handler).start();
 	}
 
 	public void stop(){
-		if(output!=null)
+		if(output!=null) {
+			sendToServer(LOGOFF,account);
 			output.close();
-		try {
-			connection.getSocket().close();
-		} catch (IOException e) {
-			e.printStackTrace();
+			try {
+				connection.getSocket().close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+
 	}
 
 	/** Send Object as JSON to Server*/

@@ -84,6 +84,8 @@ public class JsonHelper {
 		}
 		catch(JsonProcessingException e) {
 			e.printStackTrace();
+		} catch (Exception e) {
+			return null;
 		}
 		return null;
 	}

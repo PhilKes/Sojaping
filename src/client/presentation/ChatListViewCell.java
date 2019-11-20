@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat;
 
 
 public class ChatListViewCell extends ListCell<Message> {
-    //Todo https://www.turais.de/how-to-custom-listview-cell-in-javafx/
+    //https://www.turais.de/how-to-custom-listview-cell-in-javafx/
     //Todo new line for long text
     @FXML
     private Label labelSender;

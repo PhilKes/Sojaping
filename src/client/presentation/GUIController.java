@@ -37,19 +37,19 @@ public class GUIController extends UIController {
 	private ObservableList<Message> messageObservableList;
 	private ObservableList<Profile> profilesObservableList;
 
-	//Todo Display all online users(status)
 	//Todo ListView does not Auto scroll to newest message
 
 	@FXML
 	private void initialize() {
+	    //Basic GUI initialize
 		btnSend.setOnMouseClicked(ev -> onSendClicked());
 		textASendText.setOnKeyReleased(event -> {if(event.getCode() == KeyCode.ENTER)onSendClicked();});
 		client=Client.getInstance(Server.SERVER_HOST, Server.SERVER_PORT);
-		// Message initialize
+		// Message Window initialize
 		messageObservableList = FXCollections.observableArrayList();
 		listVChat.setItems(messageObservableList);
 		listVChat.setCellFactory(messagesListView -> new ChatListViewCell());
-		//show online Profiles initialize
+		//display online Profiles initialize
 		profilesObservableList = FXCollections.observableArrayList();
 		tabOnlineListView.setItems(profilesObservableList);
 		tabOnlineListView.setCellFactory(profilesListView -> new ContactListViewCell());
@@ -60,28 +60,15 @@ public class GUIController extends UIController {
 
 	private void onSendClicked() {
 		if(!textASendText.getText().isEmpty()){
-			//Todo Receiver Null = Broadcast otherwise fill receiver with information from GUI Contact list
-			/*
-			String receiver =null;
-			try {
-				receiver = tabOnlineListView.getSelectionModel().getSelectedItem().getUserName();
-			}
-			catch (NullPointerException e){
-				receiver = null;
-			}
-			catch (Exception e){
-				e.printStackTrace();
-			}
-			 */
-			Profile selectedUser=tabOnlineListView.getSelectionModel().getSelectedItem();
-			String receiver= selectedUser==null? null : selectedUser.getUserName();
+			Profile selectedUser = tabOnlineListView.getSelectionModel().getSelectedItem();
+			String receiver = selectedUser==null? null : selectedUser.getUserName();
 
 			Message newMessage = new Message(checkTranslate.isSelected(), textASendText.getText(),
 					new Timestamp(System.currentTimeMillis()),client.getAccount().getUserName(), receiver);
 			displayNewMessage(newMessage);
 			textASendText.clear();
 			client.sendToServer(MESSAGE_SENT,newMessage);
-			//Todo send Message to Server, Sender / Receiver -> Message
+
 			//client.sendObject(newMessage);
 		}
 		else{
@@ -89,9 +76,7 @@ public class GUIController extends UIController {
 		}
 	}
 	public void displayNewMessage(Message message) {
-		//listVChat = listVChat.getItems().add(listVChat.getItems().size(), )
 		messageObservableList.add(message);
-		//listVChat.getItems().add(listVChat.getItems().size(),message.getTimestamp().toString().split("\\.")[0] +" "+message.getSender()+": "+ message.getText());
 	}
 	public void displayOnlineProfiles(ArrayList<Profile> profiles){
 		profilesObservableList.clear();
@@ -106,7 +91,6 @@ public class GUIController extends UIController {
 
 	}
 	private void onChatsClicked(){
-		//necessary? Chats are not saved
 	}
 
 	@Override

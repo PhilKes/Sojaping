@@ -90,9 +90,8 @@ public class ServerHandler implements Runnable {
 				System.out.println("Send online User list");
                 /** Send online Userlist to client*/
                 //TODO Exclude the receiving client/User?
-                server.sendToUser(connection,USERLIST,server.getOnlineUsers());
-                //Todo Update all clients when new user Connects/Disconnects
-                //server.broadcastMessages(server.getOnlineUsers());
+                //server.sendToUser(connection,USERLIST,server.getOnlineUsers());
+                server.broadcastPacket(USERLIST, server.getOnlineUsers());
                 break;
 			case LOGOFF:
 				server.setLoggedUser(connection,null);

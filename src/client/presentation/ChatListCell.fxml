@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<HBox fx:id="hbox" prefHeight="35.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+<HBox fx:id="hbox" prefHeight="35.0" prefWidth="880.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label fx:id="labelSender" prefHeight="35.0" prefWidth="68.0" text="labelSender">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="labelText" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="35.0" prefWidth="379.0" text="labelText" />
+      <Label fx:id="labelText" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="35.0" prefWidth="767.0" text="labelText" />
       <Label fx:id="labelTime" prefHeight="35.0" prefWidth="45.0" text="labelTime" textAlignment="RIGHT">
          <font>
             <Font size="9.0" />

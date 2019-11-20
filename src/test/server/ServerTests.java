@@ -1,4 +1,4 @@
-package test;
+package test.server;
 
 import common.data.Account;
 import common.data.AccountBuilder;

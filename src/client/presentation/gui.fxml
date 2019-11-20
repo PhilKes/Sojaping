@@ -17,7 +17,7 @@
         <VBox fx:id="vBoxContacts" prefHeight="800.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <children>
                 <HBox fx:id="hBoxMe" prefHeight="200.0" prefWidth="200.0" />
-                <TabPane fx:id="tabPContacts" prefHeight="500.0" prefWidth="150.0" tabClosingPolicy="UNAVAILABLE">
+                <TabPane fx:id="tabPContacts" prefHeight="519.0" prefWidth="150.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                         <Tab fx:id="tabContacts" text="Contacts">
                             <content>
@@ -50,7 +50,7 @@
             </children></VBox>
     </right>
     <center>
-        <VBox fx:id="vBoxChat" prefHeight="800.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+        <VBox fx:id="vBoxChat" prefHeight="819.0" prefWidth="100.0" BorderPane.alignment="CENTER">
             <children>
                 <ListView fx:id="listVChat" prefHeight="600.0" prefWidth="500.0" />
                 <TextArea fx:id="textASendText" prefHeight="217.0" prefWidth="500.0" />

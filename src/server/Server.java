@@ -142,7 +142,6 @@ public class Server {
 				.filter(c -> c.isLoggedIn())
 				.forEach(c -> sendToUser(c,context,data));
 	}
-
 	public void broadcastMessages(Message message) {
 		this.connections.values().stream()
 				.filter(c->c.isLoggedIn())

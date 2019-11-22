@@ -9,7 +9,6 @@ public class Profile {
 
     public Profile() {
     }
-
     public Profile(String userName, int status, String aboutMe, String profilePicture) {
         this.userName=userName;
         this.status=status;
@@ -20,7 +19,6 @@ public class Profile {
     public String getUserName() {
         return userName;
     }
-
     public void setUserName(String userName) {
         this.userName=userName;
     }
@@ -28,7 +26,6 @@ public class Profile {
     public int getStatus() {
         return status;
     }
-
     public void setStatus(int status) {
         this.status=status;
     }
@@ -36,7 +33,6 @@ public class Profile {
     public String getAboutMe() {
         return aboutMe;
     }
-
     public void setAboutMe(String aboutMe) {
         this.aboutMe=aboutMe;
     }
@@ -44,7 +40,6 @@ public class Profile {
     public String getProfilePicture() {
         return profilePicture;
     }
-
     public void setProfilePicture(String profilePicture) {
         this.profilePicture=profilePicture;
     }

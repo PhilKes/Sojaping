@@ -43,7 +43,7 @@ public class ServerTests {
 
 		exceptionRule.expect(Exception.class);
 		exceptionRule.expectMessage("Invalid password");
-		server.loginUser(null, loginUser);
+		server.loginUser(loginUser);
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class ServerTests {
 
 		exceptionRule.expect(Exception.class);
 		exceptionRule.expectMessage("Unknown username");
-		server.loginUser(null, loginUser);
+		server.loginUser(loginUser);
 	}
 
 	@Test
@@ -68,7 +68,7 @@ public class ServerTests {
 		Account account = new AccountBuilder().setAid(100).setUserName("myName").setPassword("myPassword").setStatus(0).setAboutMe("").setProfilePicture("").createAccount();
 
 		when(this.dbServiceMock.getAccountByLoginUser(eq(loginUser))).thenReturn(account);
-		Account resultAccount = server.loginUser(null, loginUser);
+		Account resultAccount = server.loginUser(loginUser);
 		assertEquals("myName", resultAccount.getUserName());
 		assertEquals("myPassword", resultAccount.getPassword());
 	}
@@ -77,7 +77,7 @@ public class ServerTests {
 	public void testRegisterUser() throws Exception {
 		Server server = new Server(9999, this.dbServiceMock);
 		Account account = new AccountBuilder().setAid(100).setUserName("myName").setPassword("myPassword").setStatus(0).setAboutMe("").setProfilePicture("").createAccount();
-		server.registerUser(null, account);
+		server.registerUser(account);
 		verify(this.dbServiceMock, times(1)).insertAccount(eq(account));
 	}
 

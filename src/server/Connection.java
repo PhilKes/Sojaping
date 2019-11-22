@@ -1,61 +1,59 @@
 package server;
 
 import common.data.Account;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 
-/** Socket connection to host with Input/Output Streams and loggedAcount if logged in*/
+/**
+ * Socket connection to host with Input/Output Streams and loggedAcount if logged in
+ */
 public class Connection {
 
-	private PrintStream streamOut;
-	private InputStream streamIn;
-	private String nickname;
-	private Socket socket;
+    private PrintStream streamOut;
+    private InputStream streamIn;
+    private Socket socket;
+    private String nickname;
+    private Account loggedAccount;
 
-	private Account loggedAccount;
+    public Connection(String host, int port, String name) throws IOException {
+        this(new Socket(host, port), name);
+    }
 
-	public Connection(String host,int port, String name) throws IOException {
-		this.socket=new Socket(host,port);
-		this.streamOut = new PrintStream(socket.getOutputStream());
-		this.streamIn = socket.getInputStream();
-		this.nickname = name;
-		this.loggedAccount=null;
-	}
+    public Connection(Socket socket, String name) throws IOException {
+        this.socket=socket;
+        this.nickname=name;
+        this.loggedAccount=null;
+        this.streamOut=new PrintStream(socket.getOutputStream());
+        this.streamIn=socket.getInputStream();
+    }
 
-	public Connection(Socket socket, String name) throws IOException{
-		this.socket	=	socket;
-		this.streamOut = new PrintStream(socket.getOutputStream());
-		this.streamIn = socket.getInputStream();
-		this.nickname = name;
-	}
+    public PrintStream getOutStream() {
+        return this.streamOut;
+    }
 
-	public PrintStream getOutStream() {
-		return this.streamOut;
-	}
+    public InputStream getInputStream() {
+        return this.streamIn;
+    }
 
-	public InputStream getInputStream() {
-		return this.streamIn;
-	}
+    public Socket getSocket() {
+        return socket;
+    }
 
-	public Socket getSocket() {
-		return socket;
-	}
+    public String getNickname() {
+        return this.nickname;
+    }
 
-	public String getNickname() {
-		return this.nickname;
-	}
+    public Account getLoggedAccount() {
+        return loggedAccount;
+    }
 
-	public Account getLoggedAccount() {
-		return loggedAccount;
-	}
+    public void setLoggedAccount(Account loggedAccount) {
+        this.loggedAccount=loggedAccount;
+    }
 
-	public void setLoggedAccount(Account loggedAccount) {
-		this.loggedAccount=loggedAccount;
-	}
-	public boolean isLoggedIn(){
-		return this.loggedAccount!=null;
-	}
+    public boolean isLoggedIn() {
+        return this.loggedAccount!=null;
+    }
 }

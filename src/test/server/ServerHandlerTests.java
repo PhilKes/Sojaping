@@ -48,7 +48,7 @@ public class ServerHandlerTests {
 		String json = "{\"method\":\"login\",\"data\":{\"userName\":\"aaa\",\"password\":\"abc\",\"_class\":\"common.data.LoginUser\"}}";
 		Account account = new AccountBuilder().setAid(100).setUserName("myName").setPassword("myPassword").setStatus(0).setAboutMe("").setProfilePicture("").createAccount();
 
-		when(this.serverMock.loginUser(any(), any())).thenReturn(account);
+		when(this.serverMock.loginUser(any())).thenReturn(account);
 
 		ServerHandler s = new ServerHandler(this.serverMock, this.connectionMock, json);
 		s.run();
@@ -62,7 +62,7 @@ public class ServerHandlerTests {
 		String json = "{\"method\":\"fail\",\"data\":{\"userName\":\"aaa\",\"password\":\"abc\",\"_class\":\"common.data.LoginUser\"}}";
 		Account account = new AccountBuilder().setAid(100).setUserName("myName").setPassword("myPassword").setStatus(0).setAboutMe("").setProfilePicture("").createAccount();
 
-		when(this.serverMock.loginUser(any(), any())).thenReturn(account);
+		when(this.serverMock.loginUser(any())).thenReturn(account);
 
 		ServerHandler s = new ServerHandler(this.serverMock, this.connectionMock, json);
 		s.run();

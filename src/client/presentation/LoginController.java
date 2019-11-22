@@ -13,23 +13,23 @@ import static common.Constants.Contexts.LOGIN;
 public class LoginController extends UIController {
 
     @FXML
-    private Button btnRegister,btnLogin;
+    private Button btnRegister, btnLogin;
     @FXML
-    private TextField txtUsername,txtPassword;
+    private TextField txtUsername, txtPassword;
 
     @FXML
-    private void initialize(){
-        btnRegister.setOnMouseClicked(ev->onRegisterClicked());
-        btnLogin.setOnMouseClicked(ev->onLoginClicked());
+    private void initialize() {
+        btnRegister.setOnMouseClicked(ev -> onRegisterClicked());
+        btnLogin.setOnMouseClicked(ev -> onLoginClicked());
     }
 
     private void onLoginClicked() {
-        if(txtUsername.getText().isEmpty() || txtPassword.getText().isEmpty()){
+        if(txtUsername.getText().isEmpty() || txtPassword.getText().isEmpty()) {
             System.err.println("Invalid Login Input");
             return;
         }
-        LoginUser loginUser= new LoginUser(txtUsername.getText(),txtPassword.getText());
-        client.sendToServer(LOGIN,loginUser);
+        LoginUser loginUser=new LoginUser(txtUsername.getText(), txtPassword.getText());
+        client.sendToServer(LOGIN, loginUser);
     }
 
     private void onRegisterClicked() {
@@ -37,10 +37,9 @@ public class LoginController extends UIController {
     }
 
     @Override
-    public void close(){
-        Platform.runLater(()-> ((Stage)btnRegister.getScene().getWindow()).close());
+    public void close() {
+        Platform.runLater(() -> ((Stage) btnRegister.getScene().getWindow()).close());
     }
-
 
 
 }

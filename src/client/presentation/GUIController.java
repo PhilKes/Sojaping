@@ -138,8 +138,9 @@ public class GUIController extends UIController {
             profilesObservableList.add(p);
         }
     }
-	private void onMyProfileClicked(){
 
+	public void onMyProfileClicked(){
+		client.openWindow("UserProfile");
 	}
 
 	//returns existing tab or create & returns new one

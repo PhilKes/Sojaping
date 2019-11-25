@@ -4,8 +4,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800" prefWidth="1280" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.presentation.GUIController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800" prefWidth="1280" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.presentation.GUIController">
     <left>
         <VBox fx:id="vBoxContacts" prefHeight="800.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <children>
@@ -27,7 +26,7 @@
                   </Tab>
                     </tabs>
                 </TabPane>
-                <Button fx:id="btnMyProfile" mnemonicParsing="false" prefHeight="100.0" prefWidth="200.0" text="MyProfile" />
+                <Button fx:id="btnMyProfile" mnemonicParsing="false" onMouseClicked="#onMyProfileClicked" prefHeight="100.0" prefWidth="200.0" text="MyProfile" />
             </children>
         </VBox>
     </left>

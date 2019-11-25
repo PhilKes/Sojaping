@@ -2,14 +2,18 @@ package client.presentation;
 
 
 import client.Client;
+import com.sun.xml.internal.ws.api.FeatureConstructor;
 import common.data.Message;
 import common.data.Profile;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import server.Server;
 
@@ -31,8 +35,13 @@ public class GUIController extends UIController {
 	private ListView<Message> listVChat;
 	@FXML
 	private CheckBox checkTranslate;
+    @FXML
+    private CheckBox checkBroadcast;
+    @FXML
+    private TabPane tabPaneChat;
 	@FXML
 	private ListView<Profile> tabOnlineListView;
+
 
 	private ObservableList<Message> messageObservableList;
 	private ObservableList<Profile> profilesObservableList;
@@ -42,6 +51,7 @@ public class GUIController extends UIController {
 	@FXML
 	private void initialize() {
 	    //Basic GUI initialize
+        tabOnlineListView.setOnMouseClicked(e -> onContactListItemClicked(e));
 		btnSend.setOnMouseClicked(ev -> onSendClicked());
 		textASendText.setOnKeyReleased(event -> {if(event.getCode() == KeyCode.ENTER)onSendClicked();});
 		client=Client.getInstance(Server.SERVER_HOST, Server.SERVER_PORT);
@@ -62,7 +72,6 @@ public class GUIController extends UIController {
 		if(!textASendText.getText().isEmpty()){
 			Profile selectedUser = tabOnlineListView.getSelectionModel().getSelectedItem();
 			String receiver = selectedUser==null? null : selectedUser.getUserName();
-
 			Message newMessage = new Message(checkTranslate.isSelected(), textASendText.getText(),
 					new Timestamp(System.currentTimeMillis()),client.getAccount().getUserName(), receiver);
 			displayNewMessage(newMessage);
@@ -78,18 +87,30 @@ public class GUIController extends UIController {
 	public void displayNewMessage(Message message) {
 		messageObservableList.add(message);
 	}
-	public void displayOnlineProfiles(ArrayList<Profile> profiles){
-		profilesObservableList.clear();
-		for (Profile p:profiles) {
-			profilesObservableList.add(p);
-		}
-	}
+	public void displayOnlineProfiles(ArrayList<Profile> profiles) {
+        profilesObservableList.clear();
+        for (Profile p : profiles) {
+            profilesObservableList.add(p);
+        }
+    }
 	private void onMyProfileClicked(){
 
 	}
-	private void onContactsClicked(){
+	private void onContactListItemClicked(MouseEvent click){
+            if(click.getClickCount() == 2){
+                Profile itemSelected = tabOnlineListView.getSelectionModel().getSelectedItem();
+                Tab newTab = new Tab();
+                newTab.setText(itemSelected.getUserName());
+                for(int i = 0; i< tabPaneChat.getTabs().size(); i++){
+                    if(tabPaneChat.getTabs().get(i).getText() == newTab.getText()){
+                        return;
+                    }
+                }
+                tabPaneChat.getTabs().add(newTab);
 
+            }
 	}
+
 	private void onChatsClicked(){
 	}
 

@@ -93,6 +93,10 @@ public class ServerHandler implements Runnable {
                     server.setLoggedUser(connection, null);
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     break;
+                case PROFILE_UPDATE:
+					Account updatedAccount = receivedPacket.getData();
+					server.updateUser(updatedAccount);
+                    break;
                 default:
                     System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());
                     throw new Exception("Unknown Packet context('" + receivedPacket.getContext() + "') sent!");

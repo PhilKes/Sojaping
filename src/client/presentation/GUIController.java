@@ -84,8 +84,9 @@ public class GUIController extends UIController {
 			profilesObservableList.add(p);
 		}
 	}
-	private void onMyProfileClicked(){
 
+	public void onMyProfileClicked(){
+		client.openWindow("UserProfile");
 	}
 	private void onContactsClicked(){
 

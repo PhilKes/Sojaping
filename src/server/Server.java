@@ -136,6 +136,10 @@ public class Server {
         this.dbService.insertAccount(account);
     }
 
+	public void updateUser(Account account) {
+		this.dbService.update(account);
+	}
+
     /**
      * Send object as JSON through user OutputStream
      */

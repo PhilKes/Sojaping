@@ -18,7 +18,7 @@ public class UserProfileController extends UIController {
 	private Button btnSave, btnCancel;
 
 	@FXML
-	private TextField txtAboutMe;
+	private TextField txtAboutMe, txtNewPassword, txtNewPasswordConfirm, txtCurrentPassword;
 
 	@FXML
 	private Label lblUserName;
@@ -38,8 +38,22 @@ public class UserProfileController extends UIController {
 
 	private void onSaveClick() {
 		this.loggedInAccount.setAboutMe(this.txtAboutMe.getText());
+		this.handlePasswordGuardedProfileChanges();
 		this.client.sendToServer(PROFILE_UPDATE, this.loggedInAccount);
 		this.close();
+	}
+
+	private void handlePasswordGuardedProfileChanges() {
+		if (this.loggedInAccount.getPassword().equals(this.txtCurrentPassword.getText())) {
+			if (txtNewPassword.getText().isEmpty() || !txtNewPassword.getText().equals(txtNewPasswordConfirm.getText())) {
+				System.err.println("New passwords do not match.");
+				return;
+			}
+		} else {
+			System.err.println("Invalid password.");
+			return;
+		}
+		this.loggedInAccount.setPassword(txtNewPassword.getText());
 	}
 
 	private void onCancelClick() {

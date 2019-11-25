@@ -2,27 +2,23 @@ package client.presentation;
 
 
 import client.Client;
-import com.sun.xml.internal.ws.api.FeatureConstructor;
+import common.data.Group;
 import common.data.Message;
 import common.data.Profile;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import server.Server;
 
 import java.sql.Timestamp;
-import java.text.BreakIterator;
 import java.util.ArrayList;
 
 import static common.Constants.Contexts.MESSAGE_SENT;
-import static common.Constants.Contexts.USERLIST;
 
 public class GUIController extends UIController {
 	@FXML
@@ -41,10 +37,15 @@ public class GUIController extends UIController {
     private TabPane tabPaneChat;
 	@FXML
 	private ListView<Profile> tabOnlineListView;
-
+	@FXML
+	private ListView<Group> tabGroupChatListView;
+	@FXML
+	private ListView<Profile> listVInfo;
 
 	private ObservableList<Message> messageObservableList;
 	private ObservableList<Profile> profilesObservableList;
+	private ObservableList<Group> groupsObservableList;
+	private ObservableList<Profile> participantsObservableList;
 
 	//Todo ListView does not Auto scroll to newest message
 
@@ -59,19 +60,43 @@ public class GUIController extends UIController {
 		messageObservableList = FXCollections.observableArrayList();
 		listVChat.setItems(messageObservableList);
 		listVChat.setCellFactory(messagesListView -> new ChatListViewCell());
+		tabPaneChat.getSelectionModel().selectedItemProperty().addListener(e -> displayGroupInfo());
 		//display online Profiles initialize
 		profilesObservableList = FXCollections.observableArrayList();
 		tabOnlineListView.setItems(profilesObservableList);
 		tabOnlineListView.setCellFactory(profilesListView -> new ContactListViewCell());
+		//groupchats
+		tabGroupChatListView.setOnMouseClicked(e -> onGroupClicked(e));
+		groupsObservableList = FXCollections.observableArrayList();
+		tabGroupChatListView.setItems(groupsObservableList);
+		tabGroupChatListView.setCellFactory(groupsListView -> new GroupChatListViewCell());
+		groupsObservableList.add(new Group("test", new Profile("a",0,null,null)));
+		//list participants of the selected group
+		participantsObservableList = FXCollections.observableArrayList();
+		listVInfo.setItems(participantsObservableList);
+		listVInfo.setCellFactory(profilesListView -> new ContactListViewCell());
 
 		//TODO (Next Sprint) use ListView(of ContactList).getSelectionModel().selectedItemProperty().bind() to show correct chat
 
+	}
+
+	private void displayGroupInfo() {
+		//TODO: how to get the info, that this is a group?
+		//tabPaneChat.getSelectionModel().getSelectedItem().getText();
+		// gibt Name von Tab zurück
+	}
+
+	private void onGroupClicked(MouseEvent click) {
+		if(click.isPrimaryButtonDown()){
+
+		}
 	}
 
 	private void onSendClicked() {
 		if(!textASendText.getText().isEmpty()){
 			Profile selectedUser = tabOnlineListView.getSelectionModel().getSelectedItem();
 			String receiver = selectedUser==null? null : selectedUser.getUserName();
+
 			Message newMessage = new Message(checkTranslate.isSelected(), textASendText.getText(),
 					new Timestamp(System.currentTimeMillis()),client.getAccount().getUserName(), receiver);
 			displayNewMessage(newMessage);

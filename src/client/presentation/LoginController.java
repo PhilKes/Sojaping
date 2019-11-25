@@ -2,6 +2,7 @@ package client.presentation;
 
 import common.data.LoginUser;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -34,6 +35,11 @@ public class LoginController extends UIController {
 
     private void onRegisterClicked() {
         client.openWindow("register");
+    }
+
+    @FXML
+    public void onEnter(ActionEvent ae){
+        this.onLoginClicked();
     }
 
     @Override

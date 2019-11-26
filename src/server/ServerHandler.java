@@ -67,7 +67,6 @@ public class ServerHandler implements Runnable {
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     //server.sendToUser(connection,INFO,"Hi welcome back  " + connection.getNickname());
                     break;
-                //TODO LOGOUT
                 case MESSAGE_SENT:
                     System.out.println("Send message");
                     Message message=receivedPacket.getData();

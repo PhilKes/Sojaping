@@ -8,17 +8,18 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import server.Server;
 
 import java.sql.Timestamp;
-import java.text.BreakIterator;
 import java.util.ArrayList;
 
 import static common.Constants.Contexts.MESSAGE_SENT;
-import static common.Constants.Contexts.USERLIST;
 
 public class GUIController extends UIController {
 	@FXML
@@ -45,6 +46,7 @@ public class GUIController extends UIController {
 		btnSend.setOnMouseClicked(ev -> onSendClicked());
 		textASendText.setOnKeyReleased(event -> {if(event.getCode() == KeyCode.ENTER)onSendClicked();});
 		client=Client.getInstance(Server.SERVER_HOST, Server.SERVER_PORT);
+
 		// Message Window initialize
 		messageObservableList = FXCollections.observableArrayList();
 		listVChat.setItems(messageObservableList);
@@ -55,7 +57,6 @@ public class GUIController extends UIController {
 		tabOnlineListView.setCellFactory(profilesListView -> new ContactListViewCell());
 
 		//TODO (Next Sprint) use ListView(of ContactList).getSelectionModel().selectedItemProperty().bind() to show correct chat
-
 	}
 
 	private void onSendClicked() {

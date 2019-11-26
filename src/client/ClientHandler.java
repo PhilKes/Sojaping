@@ -61,6 +61,9 @@ class ClientHandler implements Runnable {
                     client.closeCurrentWindowNoexit();
                     client.openWindow("gui");
                     break;
+                case REGISTER_SUCCESS:
+                    System.out.println("Successfully registered !");
+                    break;
                 case MESSAGE_RECEIVED:
                     Message msg=receivedPacket.getData();
                     Platform.runLater(() -> {

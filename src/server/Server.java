@@ -7,9 +7,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,8 +20,8 @@ import static common.JsonHelper.getPacketFromJson;
 
 public class Server {
     private static final String SOJAPING="sojaping.db";
-    //public static String SERVER_HOST="192.168.178.26";
-    public static String SERVER_HOST = "141.59.129.129";
+    public static String SERVER_HOST="192.168.178.26";
+    //public static String SERVER_HOST = "141.59.129.129";
 
     public static int SERVER_PORT=9999;//443;
 
@@ -35,13 +33,14 @@ public class Server {
      */
     private final HashMap<String, Connection> connections;
 
-    private TranslationService translationService;
-    private DatabaseService dbService;
+    private final DatabaseService dbService;
+    private final TranslationService translateService;
 
     public Server(int port, DatabaseService dbService) {
         this.port=port;
         this.connections=new HashMap<>();
         this.dbService=dbService;
+        this.translateService=new TranslationService();
     }
 
     public static void main(String[] args) throws IOException {
@@ -52,19 +51,28 @@ public class Server {
     }
 
     private void run() throws IOException {
-        String inetAddress=InetAddress.getLocalHost().getHostAddress();
+        InetAddress localHost = InetAddress.getLocalHost();
+        String inetAddress=localHost.getHostAddress();
         server=new ServerSocket(port, 50, InetAddress.getByName(inetAddress)) {
             protected void finalize() throws IOException {
                 this.close();
             }
         };
+        InterfaceAddress network=NetworkInterface.getByInetAddress(localHost)
+                .getInterfaceAddresses().get(0);
         System.out.println("Server started on Host: " + inetAddress + " Port: " + port);
+        System.out.println("Network: "+network.getAddress()+"\tMask: /"+network.getNetworkPrefixLength());
 
         /** Start Dispatcher Thread */
         new Thread(new ServerDispatcher(this, connections)).start();
         /** Continouesly accept new Socket connections, add connection to list if CONNECT received*/
         while(true) {
             Socket clientSocket=server.accept();
+            /** Do not accept connections from outside the network of the Server */
+            if(!Util.sameNetwork(localHost,clientSocket.getInetAddress(),network.getNetworkPrefixLength())){
+                System.err.println("Refused external connection from: "+clientSocket.getInetAddress().getHostAddress());
+                continue;
+            }
             /** Receive connectPacket with Clients IP as data, add to connection list*/
             Packet connectPacket=getPacketFromJson(new Scanner(clientSocket.getInputStream(), "UTF-8").nextLine());
             if(connectPacket==null) {
@@ -158,8 +166,31 @@ public class Server {
         if(!connections.containsKey(receiver)) {
             return false;
         }
-        Connection con=connections.get(receiver);
-        sendToUser(con, MESSAGE_RECEIVED, message);
+        Connection receiverCon=connections.get(receiver);
+        Profile receiverProfile= receiverCon.getLoggedAccount().getProfile();
+
+        //Connection senderCon=connections.get(message.getSender());
+        //Profile senderProfile= senderCon.getLoggedAccount().getProfile();
+        /** Only check translation if user wants message to be translated */
+        if(message.isTranslate()) {
+            /** Identify message's original language*/
+            String msgLanguage=translateService.identifyLanguage(message.getText());
+            if(msgLanguage!=null) {
+                String receiverLanguage=receiverProfile.getLanguages().get(0);
+                /** Check if receiver doesnt speak message's language */
+                if(!msgLanguage.equals(receiverLanguage)) {
+                    /** Translate to receiver's language*/
+                    String translated=translateService.translate(message.getText(), msgLanguage, receiverLanguage);
+                    message.putTranslation(receiverLanguage, translated);
+                    /** Store original message text and langauge*/
+                    message.setOriginalLang(msgLanguage);
+                    message.setOriginalText(message.getText());
+                    /** Set text to translated text for receiver*/
+                    message.setText(translated);
+                }
+            }
+        }
+        sendToUser(receiverCon, MESSAGE_RECEIVED, message);
         return true;
     }
 

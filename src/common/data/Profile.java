@@ -1,19 +1,25 @@
 package common.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Profile {
     protected String userName;
     protected int status;
     protected String aboutMe;
     protected String profilePicture;
+    protected List<String> languages;
 
 
     public Profile() {
+        languages=new ArrayList<>();
     }
-    public Profile(String userName, int status, String aboutMe, String profilePicture) {
+    public Profile(String userName, int status, String aboutMe, String profilePicture, List<String> languages) {
         this.userName=userName;
         this.status=status;
         this.aboutMe=aboutMe;
         this.profilePicture=profilePicture;
+        this.languages=languages;
     }
 
     public String getUserName() {
@@ -44,6 +50,13 @@ public class Profile {
         this.profilePicture=profilePicture;
     }
 
+    public List<String> getLanguages() {
+        return languages;
+    }
+    public void setLanguages(List<String> languages) {
+        this.languages=languages;
+    }
+
     @Override
     public String toString() {
         return "Profile{" +
@@ -51,6 +64,7 @@ public class Profile {
                 ", status=" + status +
                 ", aboutMe='" + aboutMe + '\'' +
                 ", profilePicture='" + profilePicture + '\'' +
+                ", languages=" + languages +
                 '}';
     }
 }

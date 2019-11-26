@@ -21,7 +21,7 @@ public class UserProfileController extends UIController {
 	private TextField txtAboutMe, txtNewPassword, txtNewPasswordConfirm, txtCurrentPassword;
 
 	@FXML
-	private Label lblUserName;
+	private Label lblUserName, lblError;
 
 	private Account loggedInAccount;
 
@@ -38,22 +38,27 @@ public class UserProfileController extends UIController {
 
 	private void onSaveClick() {
 		this.loggedInAccount.setAboutMe(this.txtAboutMe.getText());
-		this.handlePasswordGuardedProfileChanges();
-		this.client.sendToServer(PROFILE_UPDATE, this.loggedInAccount);
-		this.close();
+		try {
+			this.handlePasswordGuardedProfileChanges();
+			this.client.sendToServer(PROFILE_UPDATE, this.loggedInAccount);
+			this.close();
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			lblError.setText(e.getMessage());
+		}
 	}
 
-	private void handlePasswordGuardedProfileChanges() {
-		if (this.loggedInAccount.getPassword().equals(this.txtCurrentPassword.getText())) {
-			if (txtNewPassword.getText().isEmpty() || !txtNewPassword.getText().equals(txtNewPasswordConfirm.getText())) {
-				System.err.println("New passwords do not match.");
-				return;
+	private void handlePasswordGuardedProfileChanges() throws Exception {
+		if (!"".equals(this.txtNewPassword.getText())) {
+			if (this.loggedInAccount.getPassword().equals(this.txtCurrentPassword.getText())) {
+				if (txtNewPassword.getText().isEmpty() || !txtNewPassword.getText().equals(txtNewPasswordConfirm.getText())) {
+					throw new Exception("New passwords do not match.");
+				}
+			} else {
+				throw new Exception("Current password is invalid");
 			}
-		} else {
-			System.err.println("Invalid password.");
-			return;
+			this.loggedInAccount.setPassword(txtNewPassword.getText());
 		}
-		this.loggedInAccount.setPassword(txtNewPassword.getText());
 	}
 
 	private void onCancelClick() {

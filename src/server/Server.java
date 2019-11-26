@@ -177,7 +177,6 @@ public class Server {
     /**
      * Links Connection to Account, updates clients HashMap
      */
-    //TODO Multiple logged in instances on same PC?(Next Sprint)
     public void setLoggedUser(Connection connection, Account account) {
         /** Replace clientIP with newly logged in account.userName */
         synchronized (connections) {

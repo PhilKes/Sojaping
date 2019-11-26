@@ -45,6 +45,7 @@ class ClientHandler implements Runnable {
             }
         }
         scanner.close();
+        System.out.println("Shutting down ClientHandler");
     }
 
     private void handlePacket(Packet receivedPacket) throws Exception {
@@ -77,6 +78,11 @@ class ClientHandler implements Runnable {
                     Platform.runLater(() -> {
                         client.getGUIController().displayOnlineProfiles(userList);
                     });
+                    break;
+                case SHUTDOWN:
+                    String text= receivedPacket.getData();
+                    System.out.println("SERVER is shutting down: "+text);
+                    running=false;
                     break;
                 default:
                     System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static common.Constants.Contexts.*;
@@ -28,6 +29,7 @@ public class Server {
 
     private int port;
     private ServerSocket server;
+    private AtomicBoolean running;
     /**
      * userName -> Connection
      * is used by Server Thread and ServerDispatcher Thread -> synchronized
@@ -37,11 +39,15 @@ public class Server {
     private final DatabaseService dbService;
     private final TranslationService translateService;
 
+    private final ServerDispatcher dispatcher;
+
     public Server(int port, DatabaseService dbService) {
         this.port=port;
         this.connections=new HashMap<>();
         this.dbService=dbService;
         this.translateService=new TranslationService();
+        dispatcher=new ServerDispatcher(this, connections);
+        running=new AtomicBoolean(true);
     }
 
     public static void main(String[] args) throws IOException {
@@ -64,11 +70,20 @@ public class Server {
         System.out.println("Server started on Host: " + inetAddress + " Port: " + port);
         System.out.println("Network: "+network.getAddress()+"\tMask: /"+network.getNetworkPrefixLength());
 
+        /** Start Command Handler Thread */
+        new Thread(this::handleCommands).start();
         /** Start Dispatcher Thread */
-        new Thread(new ServerDispatcher(this, connections)).start();
+        new Thread(dispatcher).start();
+
         /** Continouesly accept new Socket connections, add connection to list if CONNECT received*/
-        while(true) {
-            Socket clientSocket=server.accept();
+        while(running.get()) {
+            Socket clientSocket=null;
+            try {
+                 clientSocket=server.accept();
+            }catch(SocketException e){
+                System.out.println("Interrupted Accept Connection");
+                continue;
+            }
             /** Do not accept connections from outside the network of the Server */
             if(!Util.sameNetwork(localHost,clientSocket.getInetAddress(),network.getNetworkPrefixLength())){
                 System.err.println("Refused external connection from: "+clientSocket.getInetAddress().getHostAddress());
@@ -100,6 +115,44 @@ public class Server {
                  /				-> dispatch Handler Thread (ServerHandler) for individual new Packets */
             }
         }
+        System.out.println("Shutting down server...");
+        broadcastPacket(SHUTDOWN,"Shutdown");
+        dispatcher.setRunning(false);
+    }
+
+    /** Runnable for reading commands in Console */
+    private void handleCommands() {
+        Scanner in = new Scanner(System.in);
+        while(in.hasNextLine()) {
+            String command=in.nextLine();
+            switch(command.toLowerCase()) {
+                case "stop":
+                    setRunning(false);
+                    try {
+                        server.close();
+                    }
+                    catch(IOException e) {
+                        e.printStackTrace();
+                    }
+                    in.close();
+                    return;
+                case "clients":
+                    System.out.println("Connected clients:");
+                    synchronized (connections) {
+                        if(connections.isEmpty()) {
+                            System.out.println("No connections...");
+                        }else {
+                            connections.forEach((k, v) -> {
+                                System.out.println(k+" ("+v.getNickname()+")\t" + (v.isLoggedIn() ? v.getLoggedAccount() : "Not logged in"));
+                            });
+                        }
+                    }
+                    break;
+                default:
+                    System.err.println("Invalid COMMAND entered: " + command);
+                    break;
+            }
+        }
     }
 
     /**
@@ -125,7 +178,6 @@ public class Server {
     /**
      * Links Connection to Account, updates clients HashMap
      */
-    //TODO Multiple logged in instances on same PC?(Next Sprint)
     public void setLoggedUser(Connection connection, Account account) {
         /** Replace clientIP with newly logged in account.userName */
         synchronized (connections) {
@@ -225,5 +277,13 @@ public class Server {
 
     public Connection getConnectionOfUser(String userName) {
         return connections.get(userName);
+    }
+
+    public boolean isRunning() {
+        return running.get();
+    }
+
+    public void setRunning(boolean running) {
+        this.running.set(running);
     }
 }

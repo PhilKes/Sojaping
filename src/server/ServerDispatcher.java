@@ -3,20 +3,22 @@ package server;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServerDispatcher implements Runnable {
 
     private final Server server;
     private final HashMap<String, Connection> connections;
-    private boolean running;
-    private Executor executor;
+    private AtomicBoolean running;
+    /** Using ThreadPool for instantiating ServerHandler Threads*/
+    private ExecutorService executor;
 
     public ServerDispatcher(Server server, HashMap<String, Connection> connections) {
         this.server=server;
         this.connections=connections;
-        this.running=true;
+        this.running=new AtomicBoolean(true);
         executor = Executors.newFixedThreadPool(5);
     }
 
@@ -26,7 +28,7 @@ public class ServerDispatcher implements Runnable {
      */
     @Override
     public void run() {
-        while(running) {
+        while(running.get()) {
             synchronized (connections) {
                 for(Connection connection : connections.values()) {
                     try {
@@ -48,5 +50,14 @@ public class ServerDispatcher implements Runnable {
                 }
             }
         }
+        executor.shutdownNow();
+    }
+
+    public boolean isRunning() {
+        return running.get();
+    }
+
+    public void setRunning(boolean running) {
+        this.running.set(running);
     }
 }

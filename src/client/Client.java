@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static common.Constants.Contexts.CONNECT;
 import static common.Constants.Contexts.LOGOFF;
@@ -32,6 +33,7 @@ public class Client {
     private Connection connection;
     private int port;
     private PrintWriter output;
+    private AtomicBoolean running;
 
     /**
      * Storing all Controllers of open FXMLs, top of stack = current active Controller
@@ -53,6 +55,7 @@ public class Client {
         this.host=host;
         this.port=port;
         this.controllerStack=new Stack<>();
+        running=new AtomicBoolean(true);
     }
 
     public void run() {
@@ -71,6 +74,10 @@ public class Client {
                 catch(InterruptedException ex) {
                     ex.printStackTrace();
                 }
+            }
+            if(!running.get()) {
+                System.out.println("Cancel connection attempt");
+                return;
             }
         } while(true);
         System.out.println("Socket connection successfully established to server(" + host + ")!");
@@ -138,6 +145,8 @@ public class Client {
      * Called if last Window is closed
      */
     public void stop() {
+        System.out.println("Closing connection...");
+        running.set(false);
         if(output!=null) {
             if(account!=null) {
                 sendToServer(LOGOFF, account);

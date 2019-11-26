@@ -59,13 +59,15 @@ public class ServerHandler implements Runnable {
                 case LOGIN:
                     System.out.println("Login Account");
                     LoginUser loginUser=receivedPacket.getData();
-                    //TODO (Next Sprint) check if not already logged in on other Connection
                     /** Check login credentials, send Account from DB to user or throw failed Exception */
                     Account loginAccount=server.loginUser(loginUser);
+                    /** Check if user is already logged in somewhere else*/
+                    if(server.getConnectionOfUser(loginAccount.getUserName())!=null){
+                        throw new Exception("User is already logged in!");
+                    }
                     server.sendToUser(connection, LOGIN_SUCCESS, loginAccount);
                     server.setLoggedUser(connection, loginAccount);
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
-                    //server.sendToUser(connection,INFO,"Hi welcome back  " + connection.getNickname());
                     break;
                 case MESSAGE_SENT:
                     System.out.println("Send message");

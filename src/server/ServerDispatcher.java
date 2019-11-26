@@ -3,17 +3,21 @@ package server;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class ServerDispatcher implements Runnable {
 
     private final Server server;
     private final HashMap<String, Connection> connections;
     private boolean running;
+    private Executor executor;
 
     public ServerDispatcher(Server server, HashMap<String, Connection> connections) {
         this.server=server;
         this.connections=connections;
         this.running=true;
+        executor = Executors.newFixedThreadPool(5);
     }
 
     /**
@@ -29,8 +33,7 @@ public class ServerDispatcher implements Runnable {
                         /** If data is available start ServerHandler to handle the Packet */
                         if(connection.getInputStream().available()>0) {
                             Scanner sc=new Scanner(connection.getInputStream(), "UTF-8");
-                            //TODO use ThreadPool
-                            new Thread(new ServerHandler(server, connection, sc.nextLine())).start();
+                            executor.execute(new ServerHandler(server, connection, sc.nextLine()));
                         }
                     }
                     catch(IOException e) {

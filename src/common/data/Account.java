@@ -1,6 +1,8 @@
 package common.data;
 
 
+import java.util.List;
+
 public class Account extends Profile {
     int aid=-1;
     private String password;
@@ -11,13 +13,14 @@ public class Account extends Profile {
     /*Status = 0 : offline
     * Status = 1 : online
     */
-    public Account(int aid, String userName, String password, int status, String aboutMe, String profilePicture) {
+    public Account(int aid, String userName, String password, int status, String aboutMe, String profilePicture, List<String> langauges) {
         this.aid = aid;
         this.userName = userName;
         this.password = password;
         this.status = status;
         this.aboutMe = aboutMe;
         this.profilePicture = profilePicture;
+        this.languages=langauges;
     }
 
     public int getAid() {
@@ -37,17 +40,18 @@ public class Account extends Profile {
     }
 
     public Profile getProfile(){
-        return new Profile(userName,status,aboutMe,profilePicture);
+        return new Profile(userName,status,aboutMe,profilePicture,languages);
     }
+
     @Override
     public String toString() {
         return "Account{" +
-                "aid=" + aid +
+                "password='" + password + '\'' +
                 ", userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
                 ", status=" + status +
                 ", aboutMe='" + aboutMe + '\'' +
                 ", profilePicture='" + profilePicture + '\'' +
+                ", languages=" + languages +
                 '}';
     }
 

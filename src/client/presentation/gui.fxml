@@ -4,9 +4,8 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-            minWidth="-Infinity" prefHeight="800" prefWidth="1280" xmlns="http://javafx.com/javafx/10.0.2-internal"
-            fx:controller="client.presentation.GUIController">
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800" prefWidth="1280" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.presentation.GUIController">
     <left>
         <VBox fx:id="vBoxContacts" prefHeight="800.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <children>
@@ -42,7 +41,11 @@
                 <ListView fx:id="listVInfo" prefHeight="500.0" prefWidth="150.0" />
                 <HBox prefHeight="17.0" prefWidth="200.0">
                     <children>
+<<<<<<< HEAD
                         <CheckBox fx:id="checkTranslate" mnemonicParsing="false" prefHeight="17.0" prefWidth="109.0" text="Translate" />
+=======
+                        <CheckBox fx:id="checkTranslate" mnemonicParsing="false" selected="true" text="Translate" />
+>>>>>>> 6e3ac02... Translation Service class + Server translate Messages
                     </children>
                 </HBox>
                 <Button fx:id="btnSend" mnemonicParsing="false" prefHeight="100.0" prefWidth="200.0" text="Send" />

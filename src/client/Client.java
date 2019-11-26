@@ -109,10 +109,12 @@ public class Client {
                 Stage stage=new Stage();
                 stage.initModality(Modality.APPLICATION_MODAL);
                 stage.initStyle(StageStyle.DECORATED);
-                stage.setTitle(window);
+                stage.setTitle(window.toUpperCase());
                 stage.setScene(new Scene(root1));
                 stage.setOnCloseRequest(ev -> closeCurrentWindow());
                 stage.setResizable(false);
+                if(account!=null)
+                    stage.setTitle(window.toUpperCase()+" "+account.getUserName());
                 stage.show();
             }
             catch(IOException e) {
@@ -137,7 +139,9 @@ public class Client {
      */
     public void stop() {
         if(output!=null) {
-            sendToServer(LOGOFF, account);
+            if(account!=null) {
+                sendToServer(LOGOFF, account);
+            }
             output.close();
             try {
                 connection.getSocket().close();

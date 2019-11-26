@@ -20,7 +20,6 @@ import javafx.stage.Stage;
 import server.Server;
 
 import java.sql.Timestamp;
-import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +27,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static common.Constants.Contexts.MESSAGE_SENT;
-import static common.Constants.Contexts.USERLIST;
 
 public class GUIController extends UIController {
 	@FXML
@@ -69,6 +67,7 @@ public class GUIController extends UIController {
 		btnSend.setOnMouseClicked(ev -> onSendClicked());
 		textASendText.setOnKeyReleased(event -> {if(event.getCode() == KeyCode.ENTER)onSendClicked();});
 		client=Client.getInstance(Server.SERVER_HOST, Server.SERVER_PORT);
+
 		// Message Window initialize
 		broadcastObservableList = FXCollections.observableArrayList();
 		listViewBroadcast.setItems(broadcastObservableList);
@@ -93,7 +92,6 @@ public class GUIController extends UIController {
 		listVInfo.setCellFactory(profilesListView -> new ContactListViewCell());
 
 		//TODO (Next Sprint) use ListView(of ContactList).getSelectionModel().selectedItemProperty().bind() to show correct chat
-
 	}
 
 	private void displayGroupInfo() {

@@ -12,7 +12,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800" prefWidth="1280" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.presentation.GUIController">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+            minWidth="-Infinity" prefHeight="800" prefWidth="1280" xmlns="http://javafx.com/javafx/8.0.141"
+            fx:controller="client.presentation.GUIController">
     <left>
         <VBox fx:id="vBoxContacts" prefHeight="800.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <children>
@@ -62,7 +64,7 @@
               <tabs>
                 <Tab closable="false" text="Broadcast">
                      <content>
-                            <ListView fx:id="listVChat" prefHeight="358.0" prefWidth="880.0" />
+                         <ListView fx:id="listViewBroadcast" prefHeight="358.0" prefWidth="880.0"/>
                      </content>
                 </Tab>
               </tabs>

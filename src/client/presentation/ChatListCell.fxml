@@ -4,7 +4,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<HBox fx:id="hbox" prefHeight="35.0" prefWidth="880.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+<HBox xmlns:fx="http://javafx.com/fxml/1" fx:id="hbox" prefHeight="35.0" prefWidth="870.0"
+      xmlns="http://javafx.com/javafx/10.0.2-internal">
    <children>
       <Label fx:id="labelSender" prefHeight="35.0" prefWidth="68.0" text="labelSender">
          <font>

@@ -73,7 +73,7 @@ public class ServerHandler implements Runnable {
                     Message message=receivedPacket.getData();
                     /** Check login credentials, send Account from DB to user or send failed Exception */
                     String receiver=message.getReceiver();
-                    if(receiver==null) {
+                    if (receiver.equals("broadcast")) {
                         server.broadcastMessages(message);
                     }
                     else {

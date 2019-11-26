@@ -8,17 +8,27 @@ import common.data.Profile;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import server.Server;
 
 import java.sql.Timestamp;
+import java.text.BreakIterator;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import static common.Constants.Contexts.MESSAGE_SENT;
+import static common.Constants.Contexts.USERLIST;
 
 public class GUIController extends UIController {
 	@FXML
@@ -28,13 +38,13 @@ public class GUIController extends UIController {
 	@FXML
 	private TextArea textASendText;
 	@FXML
-	private ListView<Message> listVChat;
-	@FXML
 	private CheckBox checkTranslate;
     @FXML
     private CheckBox checkBroadcast;
     @FXML
     private TabPane tabPaneChat;
+	@FXML
+	private ListView<Message> listViewBroadcast;
 	@FXML
 	private ListView<Profile> tabOnlineListView;
 	@FXML
@@ -42,8 +52,10 @@ public class GUIController extends UIController {
 	@FXML
 	private ListView<Profile> listVInfo;
 
-	private ObservableList<Message> messageObservableList;
+	//Message broadcast
+	private ObservableList<Message> broadcastObservableList;
 	private ObservableList<Profile> profilesObservableList;
+	//Group Contact (Left in Gui)
 	private ObservableList<Group> groupsObservableList;
 	private ObservableList<Profile> participantsObservableList;
 
@@ -51,22 +63,28 @@ public class GUIController extends UIController {
 
 	@FXML
 	private void initialize() {
-	    //Basic GUI initialize
-        tabOnlineListView.setOnMouseClicked(e -> onContactListItemClicked(e));
+		//Basic GUI initialize + Listener
+		tabOnlineListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2)
+				createNewChatTab(tabOnlineListView.getSelectionModel().getSelectedItem().getUserName());
+		});
 		btnSend.setOnMouseClicked(ev -> onSendClicked());
 		textASendText.setOnKeyReleased(event -> {if(event.getCode() == KeyCode.ENTER)onSendClicked();});
 		client=Client.getInstance(Server.SERVER_HOST, Server.SERVER_PORT);
 		// Message Window initialize
-		messageObservableList = FXCollections.observableArrayList();
-		listVChat.setItems(messageObservableList);
-		listVChat.setCellFactory(messagesListView -> new ChatListViewCell());
-		tabPaneChat.getSelectionModel().selectedItemProperty().addListener(e -> displayGroupInfo());
+		broadcastObservableList = FXCollections.observableArrayList();
+		listViewBroadcast.setItems(broadcastObservableList);
+		listViewBroadcast.setCellFactory(messagesListView -> new ChatListViewCell());
+		tabPaneChat.getTabs().get(0).setId("broadcast");
 		//display online Profiles initialize
 		profilesObservableList = FXCollections.observableArrayList();
 		tabOnlineListView.setItems(profilesObservableList);
 		tabOnlineListView.setCellFactory(profilesListView -> new ContactListViewCell());
 		//groupchats
-		tabGroupChatListView.setOnMouseClicked(e -> onGroupClicked(e));
+		tabGroupChatListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2)
+				createNewChatTab(tabGroupChatListView.getSelectionModel().getSelectedItem().getName());
+		});
 		groupsObservableList = FXCollections.observableArrayList();
 		tabGroupChatListView.setItems(groupsObservableList);
 		tabGroupChatListView.setCellFactory(groupsListView -> new GroupChatListViewCell());
@@ -86,32 +104,33 @@ public class GUIController extends UIController {
 		// gibt Name von Tab zurück
 	}
 
-	private void onGroupClicked(MouseEvent click) {
-		if(click.isPrimaryButtonDown()){
-
-		}
-	}
 
 	private void onSendClicked() {
 		if(!textASendText.getText().isEmpty()){
 			Profile selectedUser = tabOnlineListView.getSelectionModel().getSelectedItem();
-			String receiver = selectedUser==null? null : selectedUser.getUserName();
-
+			String receiver = tabPaneChat.getSelectionModel().getSelectedItem().getId();
+			//String receiver = selectedUser==null? "broadcast" : selectedUser.getUserName();
 			Message newMessage = new Message(checkTranslate.isSelected(), textASendText.getText(),
 					new Timestamp(System.currentTimeMillis()),client.getAccount().getUserName(), receiver);
 			displayNewMessage(newMessage);
 			textASendText.clear();
 			client.sendToServer(MESSAGE_SENT,newMessage);
-
 			//client.sendObject(newMessage);
 		}
 		else{
 
 		}
 	}
+
+	//ToDo Sender -> show Tab with Receiver || Receiver -> show Tab with sender
 	public void displayNewMessage(Message message) {
-		messageObservableList.add(message);
+		// createNewChatTab returns existing tab or returns new one
+		Tab displayTab = createNewChatTab(message.getReceiver());
+		//add text to right tab
+		ListView<Message> lv = (ListView<Message>) displayTab.getContent();
+		lv.getItems().add(message);
 	}
+
 	public void displayOnlineProfiles(ArrayList<Profile> profiles) {
         profilesObservableList.clear();
         for (Profile p : profiles) {
@@ -121,24 +140,25 @@ public class GUIController extends UIController {
 	private void onMyProfileClicked(){
 
 	}
-	private void onContactListItemClicked(MouseEvent click){
-            if(click.getClickCount() == 2){
-                Profile itemSelected = tabOnlineListView.getSelectionModel().getSelectedItem();
-                Tab newTab = new Tab();
-                newTab.setText(itemSelected.getUserName());
-                for(int i = 0; i< tabPaneChat.getTabs().size(); i++){
-                    if(tabPaneChat.getTabs().get(i).getText() == newTab.getText()){
-                        return;
-                    }
-                }
-                tabPaneChat.getTabs().add(newTab);
 
-            }
+	private Tab createNewChatTab(String tabName) {
+		Tab newTab = new Tab();
+		newTab.setText(tabName);
+		//Check if tab already exists then return
+		for (Tab tab : tabPaneChat.getTabs()) {
+			if (tab.getId().equals(tabName))
+				return tab;
+		}
+		//max of Tabs 10
+		ObservableList<Message> newObservableList = FXCollections.observableArrayList();
+		ListView<Message> newListView = new ListView<>();
+		newListView.setItems(newObservableList);
+		newListView.setCellFactory(messagesListView -> new ChatListViewCell());
+		newTab.setContent(newListView);
+		newTab.setId(tabName);
+		tabPaneChat.getTabs().add(newTab);
+		return newTab;
 	}
-
-	private void onChatsClicked(){
-	}
-
 	@Override
 	public void close() {
 		Platform.runLater(()-> ((Stage)btnSend.getScene().getWindow()).close());

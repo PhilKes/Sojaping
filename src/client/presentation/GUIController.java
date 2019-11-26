@@ -40,8 +40,6 @@ public class GUIController extends UIController {
 	@FXML
 	private CheckBox checkTranslate;
     @FXML
-    private CheckBox checkBroadcast;
-    @FXML
     private TabPane tabPaneChat;
 	@FXML
 	private ListView<Message> listViewBroadcast;
@@ -112,7 +110,9 @@ public class GUIController extends UIController {
 			//String receiver = selectedUser==null? "broadcast" : selectedUser.getUserName();
 			Message newMessage = new Message(checkTranslate.isSelected(), textASendText.getText(),
 					new Timestamp(System.currentTimeMillis()),client.getAccount().getUserName(), receiver);
-			displayNewMessage(newMessage);
+			//Display new message in chat
+			ListView<Message> lv = (ListView<Message>) tabPaneChat.getSelectionModel().getSelectedItem().getContent();
+			lv.getItems().add(newMessage);
 			textASendText.clear();
 			client.sendToServer(MESSAGE_SENT,newMessage);
 			//client.sendObject(newMessage);
@@ -124,9 +124,8 @@ public class GUIController extends UIController {
 
 	//ToDo Sender -> show Tab with Receiver || Receiver -> show Tab with sender
 	public void displayNewMessage(Message message) {
-		// createNewChatTab returns existing tab or returns new one
-		Tab displayTab = createNewChatTab(message.getReceiver());
-		//add text to right tab
+		Tab displayTab = createNewChatTab(message.getSender());
+		//get ListView from tab to add text
 		ListView<Message> lv = (ListView<Message>) displayTab.getContent();
 		lv.getItems().add(message);
 	}
@@ -141,6 +140,7 @@ public class GUIController extends UIController {
 
 	}
 
+	//returns existing tab or create & returns new one
 	private Tab createNewChatTab(String tabName) {
 		Tab newTab = new Tab();
 		newTab.setText(tabName);

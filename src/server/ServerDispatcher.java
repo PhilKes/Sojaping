@@ -3,17 +3,25 @@ package server;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServerDispatcher implements Runnable {
 
     private final Server server;
     private final HashMap<String, Connection> connections;
-    private boolean running;
+    private AtomicBoolean running;
+    /**
+     * Using ThreadPool for instantiating ServerHandler Threads
+     */
+    private ExecutorService executor;
 
     public ServerDispatcher(Server server, HashMap<String, Connection> connections) {
         this.server=server;
-        this.connections=connections;
-        this.running=true;
+        this.connections= connections;
+        this.running = new AtomicBoolean(true);
+        executor = Executors.newFixedThreadPool(5);
     }
 
     /**
@@ -22,28 +30,34 @@ public class ServerDispatcher implements Runnable {
      */
     @Override
     public void run() {
-        while(running) {
+        while (running.get()) {
             synchronized (connections) {
                 for(Connection connection : connections.values()) {
                     try {
                         /** If data is available start ServerHandler to handle the Packet */
                         if(connection.getInputStream().available()>0) {
                             Scanner sc=new Scanner(connection.getInputStream(), "UTF-8");
-                            //TODO use ThreadPool
-                            new Thread(new ServerHandler(server, connection, sc.nextLine())).start();
+                            executor.execute(new ServerHandler(server, connection, sc.nextLine()));
                         }
-                    }
-                    catch(IOException e) {
+                    } catch(IOException e) {
                         e.printStackTrace();
                     }
                 }
                 try {
                     Thread.sleep(50);
-                }
-                catch(InterruptedException e) {
+                } catch(InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }
+        executor.shutdownNow();
+    }
+
+    public boolean isRunning() {
+        return running.get();
+    }
+
+    public void setRunning(boolean running) {
+        this.running.set(running);
     }
 }

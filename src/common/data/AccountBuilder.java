@@ -1,12 +1,15 @@
 package common.data;
 
+import java.util.List;
+
 public class AccountBuilder {
-    private int aid=-1;
+    private int aid;
     private String userName;
     private String password;
     private int status;
     private String aboutMe;
     private String profilePicture;
+    private List<String> languages;
 
     public AccountBuilder setAid(int aid) {
         this.aid = aid;
@@ -38,7 +41,12 @@ public class AccountBuilder {
         return this;
     }
 
+    public AccountBuilder setLanguages(List<String> languages) {
+        this.languages = languages;
+        return this;
+    }
+
     public Account createAccount() {
-        return new Account(aid, userName, password, status, aboutMe, profilePicture);
+        return new Account(aid, userName, password, status, aboutMe, profilePicture, languages);
     }
 }

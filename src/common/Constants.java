@@ -27,7 +27,8 @@ public class Constants {
                 MESSAGE="message",
                 BRDCAST_MSG="broadcastMsg",
                 BRDCAST_USERS="broadcastUsers",
-                USERLIST="userlist",
-                SHUTDOWN="shutdown";
+                USERLIST = "userlist",
+                SHUTDOWN = "shutdown",
+                BROADCAST = "broadcast";
     }
 }

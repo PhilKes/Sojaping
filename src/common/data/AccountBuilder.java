@@ -1,5 +1,9 @@
 package common.data;
 
+import server.TranslationService;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AccountBuilder {
@@ -9,7 +13,7 @@ public class AccountBuilder {
     private int status;
     private String aboutMe;
     private String profilePicture;
-    private List<String> languages;
+    private List<String> languages=new ArrayList<>(Arrays.asList(TranslationService.ENGLISH_VALUE));
 
     public AccountBuilder setAid(int aid) {
         this.aid=aid;

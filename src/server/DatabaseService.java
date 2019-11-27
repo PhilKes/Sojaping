@@ -6,21 +6,36 @@ import common.data.Account;
 import common.data.AccountBuilder;
 import common.data.LoginUser;
 import common.data.Profile;
+import javafx.util.Pair;
 
 import java.sql.Connection;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class DatabaseService {
-    private static final String AID="aid";
-    private static final String USERNAME="userName";
-    private static final String PASSWORD="password";
-    //private static final String STATUS="status";
-    private static final String ABOUTME="aboutMe";
-    private static final String PROFILEPICTURE="profilePicture";
-    private static final String LID="lid";
-    private static final String LANGUAGES="languages";
+    public static class TableAccount {
+        public static final String NAME="account";
+        public static final String AID="aid";
+
+        public static final String USERNAME="userName";
+        public static final String PASSWORD="password";
+        public static final String ABOUTME="aboutMe";
+        public static final String PROFILEPICTURE="profilePicture";
+        public static final String LANGUAGES="languages";
+    }
+
+    public static class TableContact {
+        public static final String NAME="contact";
+        public static final String CID="cid";
+        public static final String AIDO="aido";
+        public static final String AIDC="aidc";
+    }
+
     private static final String SOJAPING="sojaping.db";
+
     public static String URL="";
     static int lastRow;
 
@@ -57,13 +72,13 @@ public class DatabaseService {
     public static void createNewTableAccount() {
         // SQL statement for creating a new table
         String sql="CREATE TABLE IF NOT EXISTS account (\n"
-                + AID + " integer PRIMARY KEY autoincrement,\n"
-                + USERNAME + " text NOT NULL UNIQUE,\n"
-                + PASSWORD + " text NOT NULL,\n"
+                + TableAccount.AID + " integer PRIMARY KEY autoincrement,\n"
+                + TableAccount.USERNAME + " text NOT NULL UNIQUE,\n"
+                + TableAccount.PASSWORD + " text NOT NULL,\n"
                 //+ STATUS + " integer NOT NULL,\n"
-                + ABOUTME + " text,\n"
-                + PROFILEPICTURE + " text,\n"
-                + LANGUAGES + " text NOT NULL"
+                + TableAccount.ABOUTME + " text,\n"
+                + TableAccount.PROFILEPICTURE + " text,\n"
+                + TableAccount.LANGUAGES + " text NOT NULL"
                 + ");";
 
         try(Connection conn=DriverManager.getConnection(URL);
@@ -77,15 +92,14 @@ public class DatabaseService {
     }
 
     public static void createNewTableContactList() {
-        String sql="CREATE TABLE IF NOT EXISTS contactList (\n"
-                + LID + " integer PRIMARY KEY,\n"
-                + AID + " integer NOT NULL,\n" //aid of the "owner" of this list
-                + USERNAME + " text NOT NULL,\n"
-                //+ STATUS + " integer NOT NULL,\n"
-                + ABOUTME + " text,\n"
-                + PROFILEPICTURE + " text,\n"
-                + "FOREIGN KEY (" + AID + ")\n"
-                + "REFERENCES account(" + AID + ")\n"
+        String sql="CREATE TABLE IF NOT EXISTS contact (\n"
+                + TableContact.CID + " integer PRIMARY KEY,\n"
+                + TableContact.AIDO + " integer NOT NULL,\n" //aid of the "owner" of this list
+                + TableContact.AIDC + " integer NOT NULL,\n"
+                + "FOREIGN KEY (" + TableContact.AIDO + ")\n"
+                + "REFERENCES account(" + TableAccount.AID + ")\n"
+                + "FOREIGN KEY (" + TableContact.AIDC + ")\n"
+                + "REFERENCES account(" + TableAccount.AID + ")\n"
                 + "ON DELETE CASCADE"
                 + ");";
         try(Connection conn=DriverManager.getConnection(URL);
@@ -100,18 +114,18 @@ public class DatabaseService {
 
     //This method is for debugging.
     public void selectAllAccounts() {
-        String sql="SELECT " + AID + ", " + USERNAME + ", " + PASSWORD + ", " +
-                ABOUTME + ", " + PROFILEPICTURE + ", " + LANGUAGES + " FROM account";
+        String sql="SELECT " + TableAccount.AID + ", " + TableAccount.USERNAME + ", " + TableAccount.PASSWORD + ", " +
+                TableAccount.ABOUTME + ", " + TableAccount.PROFILEPICTURE + ", " + TableAccount.LANGUAGES + " FROM account";
         try(Connection conn=this.connect();
             Statement stmt=conn.createStatement();
             ResultSet rs=stmt.executeQuery(sql)) {
 
             // loop through the result set
             while(rs.next()) {
-                Account acc=new AccountBuilder().setAid(rs.getInt(AID)).setUserName(rs.getString(USERNAME))
-                        .setPassword(rs.getString(PASSWORD)).setStatus(0)
-                        .setAboutMe(rs.getString(ABOUTME)).setProfilePicture(rs.getString(PROFILEPICTURE))
-                        .setLanguages(Util.joinedStringToList(rs.getString(LANGUAGES)))
+                Account acc=new AccountBuilder().setAid(rs.getInt(TableAccount.AID)).setUserName(rs.getString(TableAccount.USERNAME))
+                        .setPassword(rs.getString(TableAccount.PASSWORD)).setStatus(0)
+                        .setAboutMe(rs.getString(TableAccount.ABOUTME)).setProfilePicture(rs.getString(TableAccount.PROFILEPICTURE))
+                        .setLanguages(Util.joinedStringToList(rs.getString(TableAccount.LANGUAGES)))
                         .createAccount();
                 System.out.println(acc);
             }
@@ -122,8 +136,8 @@ public class DatabaseService {
     }
 
     public void insertAccount(Account acc) throws Exception {
-        String sql="INSERT INTO account(" + AID + ", " + USERNAME + ", " + PASSWORD + ", "
-                + ABOUTME + ", " + PROFILEPICTURE + ", " + LANGUAGES + ") VALUES(NULL,?,?,?,?,?)";
+        String sql="INSERT INTO " + TableAccount.NAME + "(" + TableAccount.AID + ", " + TableAccount.USERNAME + ", " + TableAccount.PASSWORD + ", "
+                + TableAccount.ABOUTME + ", " + TableAccount.PROFILEPICTURE + ", " + TableAccount.LANGUAGES + ") VALUES(NULL,?,?,?,?,?)";
         try(Connection conn=this.connect();
             PreparedStatement pstmt=conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, acc.getUserName());
@@ -146,13 +160,13 @@ public class DatabaseService {
             }
             e.printStackTrace();
         }
-        String sql2="SELECT * FROM account WHERE userName = ?";
+        String sql2="SELECT * FROM " + TableAccount.NAME + " WHERE userName = ?";
         try(Connection conn2=DriverManager.getConnection(DatabaseService.URL);
             PreparedStatement pstmt2=conn2.prepareStatement(sql2)) {
             pstmt2.setString(1, acc.getUserName());
             ResultSet rs=pstmt2.executeQuery();
             while(rs.next()) {
-                acc.setAid(rs.getInt(AID));
+                acc.setAid(rs.getInt(TableAccount.AID));
             }
         }
         catch(SQLException e) {
@@ -161,14 +175,14 @@ public class DatabaseService {
         }
     }
 
-    public void update(Account acc) {
-        String sql="UPDATE account SET " + USERNAME + " = ? , "
-                + PASSWORD + " = ? , "
+    public void updateAccount(Account acc) {
+        String sql="UPDATE " + TableAccount.NAME + " SET " + TableAccount.USERNAME + " = ? , "
+                + TableAccount.PASSWORD + " = ? , "
                 //+ STATUS + " = ? , "
-                + ABOUTME + " = ?, "
-                + PROFILEPICTURE + " = ? "
-                + LANGUAGES + " = ? "
-                + "WHERE " + AID + " = ?";
+                + TableAccount.ABOUTME + " = ?, "
+                + TableAccount.PROFILEPICTURE + " = ?, "
+                + TableAccount.LANGUAGES + " = ? "
+                + "WHERE " + TableAccount.AID + " = ?";
         try(Connection conn=this.connect();
             PreparedStatement pstmt=conn.prepareStatement(sql)) {
             pstmt.setString(1, acc.getUserName());
@@ -178,26 +192,46 @@ public class DatabaseService {
             pstmt.setString(5, String.join(",", acc.getLanguages()));
             pstmt.setInt(6, acc.getAid());
             pstmt.executeUpdate();
+            System.out.println();
         }
         catch(SQLException e) {
             System.out.println(e.getMessage());
         }
     }
 
+    public Account getAccountById(int aid) {
+        return getAccountByArgument(Arrays.asList(new Pair<>(TableAccount.AID, aid)));
+    }
+    public Account getAccountByUsername(String userName) {
+        return getAccountByArgument(Arrays.asList(new Pair<>(TableAccount.USERNAME, userName)));
+    }
+
     public Account getAccountByLoginUser(LoginUser user) {
-        String sql="SELECT * FROM account WHERE " + USERNAME + " = ? AND " + PASSWORD + " = ?";
+        return getAccountByArgument(Arrays.asList(new Pair<>(TableAccount.USERNAME, user.getUserName())
+                , new Pair<>(TableAccount.PASSWORD, user.getPassword())));
+    }
+
+    public Account getAccountByArgument(List<Pair<String, ?>> pars) {
+        StringBuilder builder=new StringBuilder("SELECT * FROM ").append(TableAccount.NAME);
+        if(pars.size()>0) {
+            builder.append(" WHERE ");
+        }
+        builder.append(String.join(" AND ", pars.stream().map(p -> p.getKey() + " = ?").collect(Collectors.toList())));
+
+        String sql=builder.toString();
         Account acc=null;
         try(Connection conn=this.connect();
             PreparedStatement pstmt=conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, user.getUserName());
-            pstmt.setString(2, user.getPassword());
+            for(int i=0; i<pars.size(); i++) {
+                pstmt.setObject(i + 1, pars.get(0).getValue());
+            }
             ResultSet rs=pstmt.executeQuery();
             while(rs.next()) {
-                acc=new AccountBuilder().setAid(rs.getInt(AID)).setUserName(rs.getString(USERNAME))
-                        .setPassword(rs.getString(PASSWORD)).setStatus(0)
-                        .setAboutMe(rs.getString(ABOUTME)).setProfilePicture(rs.getString(PROFILEPICTURE))
-                        .setLanguages(Util.joinedStringToList(rs.getString(LANGUAGES)))
+                acc=new AccountBuilder().setAid(rs.getInt(TableAccount.AID)).setUserName(rs.getString(TableAccount.USERNAME))
+                        .setPassword(rs.getString(TableAccount.PASSWORD)).setStatus(0)
+                        .setAboutMe(rs.getString(TableAccount.ABOUTME)).setProfilePicture(rs.getString(TableAccount.PROFILEPICTURE))
+                        .setLanguages(Util.joinedStringToList(rs.getString(TableAccount.LANGUAGES)))
                         .createAccount();
             }
         }
@@ -208,8 +242,28 @@ public class DatabaseService {
         return acc;
     }
 
+    public Profile getProfileByAccountId(int aid) {
+        String sql="SELECT " + TableAccount.USERNAME + "," + TableAccount.ABOUTME + "," + TableAccount.PROFILEPICTURE +
+                "," + TableAccount.LANGUAGES + " FROM " + TableAccount.NAME + " WHERE " + TableAccount.AID + " = ? ";
+        Profile profile=null;
+        try(Connection conn=this.connect();
+            PreparedStatement pstmt=conn.prepareStatement(sql)) {
+            pstmt.setInt(1, aid);
+            ResultSet rs=pstmt.executeQuery();
+            while(rs.next()) {
+                profile=new Profile(rs.getString(TableAccount.USERNAME), 0, rs.getString(TableAccount.ABOUTME)
+                        , rs.getString(TableAccount.PROFILEPICTURE), Util.joinedStringToList(rs.getString(TableAccount.LANGUAGES)));
+            }
+        }
+        catch(SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return profile;
+    }
+
     public void deleteAccount(Account acc) {
-        String sql="DELETE FROM account WHERE " + AID + " = ?";
+        String sql="DELETE FROM " + TableAccount.NAME + " WHERE " + TableAccount.AID + " = ?";
 
         try(Connection conn=this.connect();
             PreparedStatement pstmt=conn.prepareStatement(sql)) {
@@ -223,17 +277,15 @@ public class DatabaseService {
 
     //This method is for debugging.
     public void selectAllContactsOfAccount(Account acc) {
-        String sql="SELECT * FROM contactList WHERE " + AID + " = ?";
+        String sql="SELECT * FROM contact WHERE " + TableContact.AIDO + " = ?";
         try(Connection conn=this.connect();
             PreparedStatement pstmt=conn.prepareStatement(sql)) {
             pstmt.setInt(1, acc.getAid());
             ResultSet rs=pstmt.executeQuery();
             while(rs.next()) {
-                System.out.println(rs.getInt(LID) + "\t"
-                        + rs.getInt(AID) + "\t"
-                        + rs.getString(USERNAME) + "\t"
-                        + rs.getString(ABOUTME) + "\t"
-                        + rs.getString(PROFILEPICTURE));
+                System.out.println(rs.getInt(TableContact.CID) + "\t"
+                        + rs.getInt(TableContact.AIDO) + "\t"
+                        + rs.getInt(TableContact.AIDC) + "\t");
             }
         }
         catch(SQLException e) {
@@ -243,35 +295,32 @@ public class DatabaseService {
     }
 
     public ArrayList<Profile> getAllContactsOfAccount(Account acc) {
-        ArrayList<Profile> contacts=new ArrayList<>();
-        String sql="SELECT * FROM contactList WHERE " + AID + " = ?";
+        ArrayList<Profile> profiles=new ArrayList<>();
+        String sql="SELECT " + TableContact.AIDC + " FROM contact WHERE " + TableContact.AIDO + " = ?";
         try(Connection conn=this.connect();
             PreparedStatement pstmt=conn.prepareStatement(sql)) {
             pstmt.setInt(1, acc.getAid());
             ResultSet rs=pstmt.executeQuery();
             while(rs.next()) {
-                contacts.add(new Profile(rs.getString(USERNAME), 0,
-                        rs.getString(ABOUTME), rs.getString(PROFILEPICTURE),
-                        Util.joinedStringToList(rs.getString(LANGUAGES))));
+                // contacts.add(new Contact(rs.getInt(TableContact.CID), rs.getInt(TableContact.AIDO), rs.getInt(TableContact.AIDC)));
+                profiles.add(getProfileByAccountId(rs.getInt(TableContact.AIDC)));
             }
         }
         catch(SQLException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
-        return contacts;
+
+        return profiles;
     }
 
     public void insertContactOfAccount(Account account, Profile contact) {
-        String sql="INSERT INTO contactList(" + LID + ", " + AID + ", " + USERNAME + ", "
-                + LANGUAGES + ", " + ABOUTME + ", " + PROFILEPICTURE + ") VALUES(NULL,?,?,?,?,?)";
+        String sql="INSERT INTO " + TableContact.NAME + "(" + TableContact.CID + ", " + TableContact.AIDO + ", "
+                + TableContact.AIDC + ") VALUES(NULL,?,?)";
         try(Connection conn=this.connect();
             PreparedStatement pstmt=conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setInt(1, account.getAid());
-            pstmt.setString(2, contact.getUserName());
-            pstmt.setString(3, String.join(",", account.getLanguages()));
-            pstmt.setString(4, contact.getAboutMe());
-            pstmt.setString(5, contact.getProfilePicture());
+            pstmt.setInt(2, getAccountByUsername(contact.getUserName()).getAid());
             pstmt.executeUpdate();
             ResultSet rs=pstmt.getGeneratedKeys();
             if(rs.next()) {
@@ -289,7 +338,7 @@ public class DatabaseService {
 
     //This method is for debugging.
     private void resetTable() {
-        String sql="DELETE FROM account WHERE " + AID + " = ?";
+        String sql="DELETE FROM " + TableAccount.NAME + " WHERE " + TableAccount.AID + " = ?";
         try(Connection conn=this.connect();
             PreparedStatement pstmt=conn.prepareStatement(sql)) {
             for(int i=1; i<=lastRow; i++) {
@@ -304,7 +353,7 @@ public class DatabaseService {
     }
 
     public void dropTableAccount() {
-        String sql="DROP TABLE account";
+        String sql="DROP TABLE " + TableAccount.NAME;
         try(Connection conn=this.connect();
             PreparedStatement pstmt=conn.prepareStatement(sql)) {
             pstmt.executeUpdate();
@@ -315,7 +364,7 @@ public class DatabaseService {
     }
 
     public void dropTableContactList() {
-        String sql="DROP TABLE contactList";
+        String sql="DROP TABLE " + TableContact.NAME;
         try(Connection conn=this.connect();
             PreparedStatement pstmt=conn.prepareStatement(sql)) {
             pstmt.executeUpdate();
@@ -327,20 +376,20 @@ public class DatabaseService {
 
     /*    public ArrayList<Profile> getOnlineAccounts() {
             ArrayList<Profile> onlineAccounts=new ArrayList<>();
-            String sql="SELECT " + USERNAME + ", " + STATUS + ", " +
-                    ABOUTME + ", " + PROFILEPICTURE + " FROM account WHERE " + STATUS + " = 1";
+            String sql="SELECT " + TableAccount.USERNAME + ", " + STATUS + ", " +
+                    TableAccount.ABOUTME + ", " + TableAccount.PROFILEPICTURE + " FROM account WHERE " + STATUS + " = 1";
             try(Connection conn=this.connect();
                 Statement stmt=conn.createStatement();
                 ResultSet rs=stmt.executeQuery(sql)) {
                 while(rs.next()) {
-                    onlineAccounts.add(new Profile(rs.getString(USERNAME), rs.getInt(STATUS),
-                            rs.getString(ABOUTME), rs.getString(PROFILEPICTURE),
+                    onlineAccounts.add(new Profile(rs.getString(TableAccount.USERNAME), rs.getInt(STATUS),
+                            rs.getString(TableAccount.ABOUTME), rs.getString(TableAccount.PROFILEPICTURE),
 
                             Arrays.asList("de","en")));
-                    System.out.println(rs.getString(USERNAME) + "\t" +
+                    System.out.println(rs.getString(TableAccount.USERNAME) + "\t" +
                             rs.getInt(STATUS) + "\t" +
-                            rs.getString(ABOUTME) + "\t" +
-                            rs.getString(PROFILEPICTURE));
+                            rs.getString(TableAccount.ABOUTME) + "\t" +
+                            rs.getString(TableAccount.PROFILEPICTURE));
                 }
             }
             catch(SQLException e) {
@@ -351,42 +400,38 @@ public class DatabaseService {
     public static void main(String[] args) throws Exception {
         //createNewDatabase("sojaping.db");
         DatabaseService db=new DatabaseService(SOJAPING);
-        /*db.dropTableContactList();
+        db.dropTableContactList();
         db.dropTableAccount();
 
         createNewTableAccount();
         createNewTableContactList();
-
         System.out.println("Insert");
         Account acc=new AccountBuilder().setUserName("phil").setPassword("phil")
                 .setAboutMe("Hi, I'm using SOJAPING.")
-                .setLanguages(Arrays.asList("de","en"))
+                .setLanguages(Arrays.asList("de", "en"))
                 .createAccount();
         Account acc2=new AccountBuilder().setUserName("jan").setPassword("jan")
-                .setLanguages(Arrays.asList("de","en","es"))
+                .setLanguages(Arrays.asList("de", "en", "es", "hi"))
                 .setAboutMe("Hi, I'm using SOJAPING.").createAccount();
         Account acc3=new AccountBuilder().setUserName("irina").setPassword("irina")
-                .setLanguages(Arrays.asList("de","en","ru"))
+                .setLanguages(Arrays.asList("de", "en", "ru"))
                 .setAboutMe("Hi, I'm using SOJAPING.").createAccount();
         Account acc4=new AccountBuilder().setUserName("sophie").setPassword("sophie")
-                .setLanguages(Arrays.asList("de","en","fr"))
+                .setLanguages(Arrays.asList("de", "en", "fr"))
                 .setAboutMe("Hi, I'm using SOJAPING.").createAccount();
         db.insertAccount(acc);
-        //db.selectAllAccounts();
-        //System.out.println(acc.getAid());
-        //System.out.println();
-        //db.selectAllAccounts();
-        //db.deleteAccount(acc);
-        //System.out.println();
         db.insertAccount(acc2);
         db.insertAccount(acc3);
-        db.insertAccount(acc4);*/
+        db.insertAccount(acc4);
         db.selectAllAccounts();
-        //db.insertContactOfAccount(acc, acc2.getProfile());
-        //db.insertContactOfAccount(acc, acc3.getProfile());
-        //db.selectAllContactsOfAccount(acc);
+
+        db.insertContactOfAccount(acc, acc2.getProfile());
+        db.insertContactOfAccount(acc, acc3.getProfile());
+
+        Account accTest=db.getAccountByLoginUser(new LoginUser("phil", "phil"));
+        System.out.println("Contacts of " + accTest.getUserName());
+        db.getAllContactsOfAccount(accTest).forEach(System.out::println);
         //ArrayList<Profile> onlineUser = db.getOnlineAccounts();
     }
-
 
 }

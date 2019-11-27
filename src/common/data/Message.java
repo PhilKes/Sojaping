@@ -85,7 +85,8 @@ public class Message {
     public void putTranslation(String key,String value){
         this.translations.put(key,value);
     }
-    public String getTranslation(String key){
+
+    public String getTranslation(String key) {
         if(this.translations.containsKey(key))
             return this.translations.get(key);
         return null;
@@ -105,6 +106,7 @@ public class Message {
                 ", timestamp='"  + new SimpleDateFormat("HH:mm:ss \n dd-MM-yy").format(timestamp) + '\'' +
                 ", sender='" + sender + '\'' +
                 ", receiver='" + receiver + '\'' +
+                (originalLang!=null ? (", originalLang: '" + originalLang + "', originalTxt: '" + originalText + "'") : "") +
                 '}';
     }
 }

@@ -1,5 +1,6 @@
 package test.server;
 
+import common.Util;
 import common.data.Account;
 import common.data.AccountBuilder;
 import common.data.LoginUser;
@@ -12,6 +13,8 @@ import server.DatabaseService;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -69,7 +72,7 @@ public class DatabaseServiceTest {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        assertTrue(result.contains("contactList"));
+        assertTrue(result.contains(DatabaseService.TableContact.NAME));
     }
 
     @Test
@@ -111,7 +114,7 @@ public class DatabaseServiceTest {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        assertFalse(result.contains("contactList"));
+        assertFalse(result.contains(DatabaseService.TableContact.NAME));
     }
 
     @Test
@@ -120,25 +123,27 @@ public class DatabaseServiceTest {
         db.dropTableAccount();
         DatabaseService.createNewTableAccount();
         Account acc = new AccountBuilder().setUserName("aaa").setPassword("aaa")
-                .setAboutMe("This is the insert test.").createAccount();
+                .setAboutMe("This is the insert test.")
+                .setLanguages(Arrays.asList("de", "en", "ru")).createAccount();
         Account res = null;
         try {
             db.insertAccount(acc);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String sql = "SELECT * FROM account WHERE aid = ?";
+        String sql="SELECT * FROM " + DatabaseService.TableAccount.NAME + " WHERE " + DatabaseService.TableAccount.AID + " = ?";
         try(Connection conn = DriverManager.getConnection(DatabaseService.URL);
             PreparedStatement pstmt = conn.prepareStatement(sql)){
             pstmt.setInt(1, acc.getAid());
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                res = new AccountBuilder().setAid(rs.getInt("aid"))
-                        .setUserName(rs.getString("userName"))
-                        .setPassword(rs.getString("password"))
-                        .setStatus(rs.getInt("status"))
-                        .setAboutMe(rs.getString("aboutMe"))
-                        .setProfilePicture(rs.getString("profilePicture"))
+                res=new AccountBuilder().setAid(rs.getInt(DatabaseService.TableAccount.AID))
+                        .setUserName(rs.getString(DatabaseService.TableAccount.USERNAME))
+                        .setPassword(rs.getString(DatabaseService.TableAccount.PASSWORD))
+                        .setStatus(0)
+                        .setAboutMe(rs.getString(DatabaseService.TableAccount.ABOUTME))
+                        .setProfilePicture(rs.getString(DatabaseService.TableAccount.PROFILEPICTURE))
+                        .setLanguages(Util.joinedStringToList(rs.getString(DatabaseService.TableAccount.LANGUAGES)))
                         .createAccount();
             }
         }catch(SQLException e){
@@ -177,26 +182,27 @@ public class DatabaseServiceTest {
         }
         //Set the new password and update the changes to the database.
         acc.setPassword("bbb");
-        db.update(acc);
-        Account res = null;
-        String sql = "SELECT * FROM account WHERE aid = ?";
+        db.updateAccount(acc);
+        Account res=db.getAccountById(acc.getAid());
+                /*null;
+        String sql = "SELECT * FROM "+ DatabaseService.TableAccount.NAME +" WHERE "+ DatabaseService.TableAccount.AID +" = ?";
         try(Connection conn = DriverManager.getConnection(DatabaseService.URL);
             PreparedStatement pstmt = conn.prepareStatement(sql)){
             pstmt.setInt(1, acc.getAid());
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                res = new AccountBuilder().setAid(rs.getInt("aid"))
-                        .setUserName(rs.getString("userName"))
-                        .setPassword(rs.getString("password"))
-                        .setStatus(rs.getInt("status"))
-                        .setAboutMe(rs.getString("aboutMe"))
-                        .setProfilePicture(rs.getString("profilePicture"))
+                res = new AccountBuilder().setAid(rs.getInt(DatabaseService.TableAccount.AID))
+                        .setUserName(rs.getString(DatabaseService.TableAccount.USERNAME))
+                        .setPassword(rs.getString(DatabaseService.TableAccount.PASSWORD))
+                        .setStatus(0)
+                        .setAboutMe(rs.getString(DatabaseService.TableAccount.ABOUTME))
+                        .setProfilePicture(rs.getString(DatabaseService.TableAccount.PROFILEPICTURE))
                         .createAccount();
             }
         }catch(SQLException e){
             System.out.println(e.getMessage());
             e.printStackTrace();
-        }
+        }*/
         assertTrue(acc.equals(res));
     }
 
@@ -253,36 +259,23 @@ public class DatabaseServiceTest {
             e.printStackTrace();
         }
         db.insertContactOfAccount(acc, friend.getProfile());
-        int aidAccount = -1;
-        String userNameFriend = "";
-        String sql = "SELECT aid, userName FROM contactList WHERE aid = ?";
-        try(Connection conn = DriverManager.getConnection(DatabaseService.URL);
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
-            pstmt.setInt(1, acc.getAid());
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                aidAccount = rs.getInt("aid");
-                userNameFriend = rs.getString("userName");
-            }
-        }catch(SQLException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-        assertEquals(acc.getAid(), aidAccount);
-        assertEquals(friend.getUserName(), userNameFriend);
+        List<Profile> contacts=db.getAllContactsOfAccount(acc);
+        assertTrue(contacts.size()==1);
+        assertTrue(friend.getProfile().equals(contacts.get(0)));
     }
 
     @Test
     public void testGetAllContactsOfAccount(){
-        //Delete existing table to ensure that the username is free.
         db.dropTableAccount();
         db.dropTableContactList();
         DatabaseService.createNewTableAccount();
         DatabaseService.createNewTableContactList();
         Account acc = new AccountBuilder().setUserName("aaa").setPassword("aaa")
-                .setAboutMe("This is the get all contacts test.").createAccount();
+                .setAboutMe("This is the get all contacts test.")
+                .setLanguages(Arrays.asList("de", "en")).createAccount();
         Account friend = new AccountBuilder().setUserName("bbb").setPassword("aaa")
-                .setAboutMe("I am the friend.").createAccount();
+                .setAboutMe("I am the friend.")
+                .setLanguages(Arrays.asList("fr", "ru")).createAccount();
         try {
             db.insertAccount(acc);
             db.insertAccount(friend);
@@ -309,7 +302,9 @@ public class DatabaseServiceTest {
         db.dropTableAccount();
         DatabaseService.createNewTableAccount();
         Account acc = new AccountBuilder().setUserName("aaa").setPassword("aaa")
-                .setAboutMe("This is the get account by loginUser test.").createAccount();
+                .setAboutMe("This is the get account by loginUser test.")
+                .setLanguages(Arrays.asList("en"))
+                .createAccount();
         try {
             db.insertAccount(acc);
         } catch (Exception e) {

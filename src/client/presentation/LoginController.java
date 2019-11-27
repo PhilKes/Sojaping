@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -16,7 +17,10 @@ public class LoginController extends UIController {
     @FXML
     private Button btnRegister, btnLogin;
     @FXML
-    private TextField txtUsername, txtPassword;
+    private TextField txtUsername;
+    @FXML
+    private PasswordField txtPassword;
+
 
     @FXML
     private void initialize() {

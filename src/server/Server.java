@@ -21,7 +21,6 @@ import static common.JsonHelper.getPacketFromJson;
 
 public class Server {
     private static final String SOJAPING="sojaping.db";
-
     public static String SERVER_HOST="192.168.178.26";
     //public static String SERVER_HOST = "141.59.129.129";
 

@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static common.Constants.Contexts.MESSAGE_SENT;
-import static common.Constants.Contexts.USERLIST;
+import static common.Constants.Contexts.*;
 
 public class GUIController extends UIController {
 	@FXML
@@ -73,7 +72,7 @@ public class GUIController extends UIController {
 		broadcastObservableList = FXCollections.observableArrayList();
 		listViewBroadcast.setItems(broadcastObservableList);
 		listViewBroadcast.setCellFactory(messagesListView -> new ChatListViewCell());
-		tabPaneChat.getTabs().get(0).setId("broadcast");
+        tabPaneChat.getTabs().get(0).setId(BROADCAST);
 		//display online Profiles initialize
 		profilesObservableList = FXCollections.observableArrayList();
 		tabOnlineListView.setItems(profilesObservableList);
@@ -86,7 +85,7 @@ public class GUIController extends UIController {
 		groupsObservableList = FXCollections.observableArrayList();
 		tabGroupChatListView.setItems(groupsObservableList);
 		tabGroupChatListView.setCellFactory(groupsListView -> new GroupChatListViewCell());
-		groupsObservableList.add(new Group("test", new Profile("a",0,null,null)));
+        //groupsObservableList.add(new Group("test", new Profile("a",0,null,null)));
 		//list participants of the selected group
 		participantsObservableList = FXCollections.observableArrayList();
 		listVInfo.setItems(participantsObservableList);
@@ -124,7 +123,11 @@ public class GUIController extends UIController {
 
 	//ToDo Sender -> show Tab with Receiver || Receiver -> show Tab with sender
 	public void displayNewMessage(Message message) {
-		Tab displayTab = createNewChatTab(message.getSender());
+        Tab displayTab = null;
+        if (message.getReceiver().equals(BROADCAST))
+            displayTab = createNewChatTab(message.getReceiver());
+        else
+            displayTab = createNewChatTab(message.getSender());
 		//get ListView from tab to add text
 		ListView<Message> lv = (ListView<Message>) displayTab.getContent();
 		lv.getItems().add(message);

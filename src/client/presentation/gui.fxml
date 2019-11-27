@@ -42,7 +42,7 @@
                 <ListView fx:id="listVInfo" prefHeight="500.0" prefWidth="150.0" />
                 <HBox prefHeight="17.0" prefWidth="200.0">
                     <children>
-                        <CheckBox fx:id="checkTranslate" mnemonicParsing="false" text="Translate"/>
+                        <CheckBox fx:id="checkTranslate" mnemonicParsing="false" selected="true" text="Translate"/>
                     </children>
                 </HBox>
                 <Button fx:id="btnSend" mnemonicParsing="false" prefHeight="100.0" prefWidth="200.0" text="Send" />

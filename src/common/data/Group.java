@@ -47,6 +47,7 @@ public class Group {
     }
 
     public static void main(String[] args) {
+        /*
         Profile a = new Profile("a", 0, "a", null);
         Profile b = new Profile("b", 0, "b", null);
         Group g = new Group("test", a);
@@ -56,5 +57,7 @@ public class Group {
         System.out.println(g);
         g.changeName("test2");
         System.out.println(g);
+        */
+
     }
 }

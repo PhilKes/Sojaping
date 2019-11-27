@@ -21,8 +21,10 @@ import static common.JsonHelper.getPacketFromJson;
 
 public class Server {
     private static final String SOJAPING="sojaping.db";
+	
+    //public static String SERVER_HOST="141.59.128.171";
     public static String SERVER_HOST="192.168.178.26";
-    //public static String SERVER_HOST = "141.59.129.129";
+
 
     public static int SERVER_PORT=9999;//443;
 
@@ -175,20 +177,27 @@ public class Server {
     }
 
     /**
-     * Links Connection to Account, updates clients HashMap
+     * Links Connection to Account, updates connections HashMap
      */
-    public void setLoggedUser(Connection connection, Account account) {
+    public void setConnectionAccount(Connection connection, Account account) {
         /** Replace clientIP with newly logged in account.userName */
         synchronized (connections) {
-            /** Logout */
-            if(account==null) {
-                connections.remove(connection.getLoggedAccount().getUserName());
-            }
-            else {
-                connections.remove(connection.getNickname());
-                connection.setLoggedAccount(account);
-                connections.put(account.getUserName(), connection);
-            }
+            connections.remove(connection.getNickname());
+            connection.setLoggedAccount(account);
+            connections.put(account.getUserName(), connection);
+        }
+
+    }
+
+    /**
+     * User logs out, remove from connections
+     */
+    public void removeConnectionAccount(Connection connection, Account account) {
+        if(account==null) {
+            connections.remove(connection.getNickname());
+        }
+        else {
+            connections.remove(connection.getLoggedAccount().getUserName());
         }
     }
 
@@ -197,7 +206,11 @@ public class Server {
     }
 
 	public void updateUser(Account account) {
-		this.dbService.update(account);
+<<<<<<< HEAD
+        this.dbService.updateAccount(account);
+=======
+		this.dbService.updateAccount(account);
+>>>>>>> c604bde... Fix db method name
 	}
 
     /**

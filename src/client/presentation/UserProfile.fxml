@@ -30,19 +30,19 @@
                     <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="New password:"
                               wrappingWidth="216.6708984375"/>
-                        <TextField fx:id="txtNewPassword" prefHeight="31.0" prefWidth="293.0"/>
-                        <TextField fx:id="txtNewPasswordConfirm" prefHeight="31.0" prefWidth="293.0">
+                        <PasswordField fx:id="txtNewPassword" prefHeight="31.0" prefWidth="293.0"/>
+                        <PasswordField fx:id="txtNewPasswordConfirm" prefHeight="31.0" prefWidth="293.0">
                             <HBox.margin>
                                 <Insets left="20.0"/>
                             </HBox.margin>
-                        </TextField>
+                        </PasswordField>
                     </children>
                 </HBox>
                 <HBox prefHeight="39.0" prefWidth="1248.0">
                     <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Current password:"
                               wrappingWidth="216.6708984375"/>
-                        <TextField fx:id="txtCurrentPassword" prefHeight="31.0" prefWidth="607.0"/>
+                        <PasswordField fx:id="txtCurrentPassword" prefHeight="31.0" prefWidth="607.0"/>
                     </children>
                 </HBox>
                 <Label fx:id="lblError" alignment="BOTTOM_CENTER" contentDisplay="CENTER" prefHeight="205.0"

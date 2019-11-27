@@ -1,8 +1,8 @@
 package server;
 
 import common.Util;
-import common.data.LoginUser;
 import common.data.Account;
+import common.data.LoginUser;
 import common.data.Message;
 import common.data.Packet;
 
@@ -98,6 +98,10 @@ public class ServerHandler implements Runnable {
 					Account updatedAccount = receivedPacket.getData();
 					server.updateUser(updatedAccount);
                     break;
+				case DELETE_ACCOUNT:
+					Account accountForDeletion = receivedPacket.getData();
+					server.deleteUser(accountForDeletion);
+					break;
                 default:
                     System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());
                     throw new Exception("Unknown Packet context('" + receivedPacket.getContext() + "') sent!");

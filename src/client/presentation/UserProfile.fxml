@@ -38,6 +38,16 @@
                         </PasswordField>
                     </children>
                 </HBox>
+
+                <HBox prefHeight="39.0" prefWidth="1248.0">
+                    <children>
+                        <Button fx:id="btnDeleteAccount" layoutX="303.0" layoutY="575.0" mnemonicParsing="false"
+                                prefHeight="61.0"
+                                prefWidth="195.0" text="Delete Account"/>
+                    </children>
+                </HBox>
+
+
                 <HBox prefHeight="39.0" prefWidth="1248.0">
                     <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Current password:"

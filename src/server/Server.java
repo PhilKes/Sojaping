@@ -21,8 +21,9 @@ import static common.JsonHelper.getPacketFromJson;
 
 public class Server {
     private static final String SOJAPING="sojaping.db";
-    public static String SERVER_HOST="141.59.128.171";
-	//    public static String SERVER_HOST="10.0.75.1";
+
+	//    public static String SERVER_HOST="141.59.128.171";
+	public static String SERVER_HOST = "10.0.75.1";
     //public static String SERVER_HOST = "141.59.129.129";
 
     public static int SERVER_PORT=9999;//443;
@@ -199,6 +200,10 @@ public class Server {
 
 	public void updateUser(Account account) {
 		this.dbService.updateAccount(account);
+	}
+
+	public void deleteUser(Account account) {
+		this.dbService.deleteAccount(account);
 	}
 
     /**

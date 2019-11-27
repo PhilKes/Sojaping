@@ -4,10 +4,7 @@ import common.data.Account;
 import common.data.AccountBuilder;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import server.TranslationService;
 
@@ -21,7 +18,9 @@ import static common.Constants.Contexts.REGISTER;
 public class RegisterController extends UIController {
 
     @FXML
-    private TextField txtUsername, txtPassword, txtRepeat;
+    private TextField txtUsername;
+    @FXML
+    private PasswordField txtPassword, txtRepeat;
     @FXML
     private MenuButton menuLanguages;
     private List<String> selectedLanguages;

@@ -19,9 +19,9 @@ public class Message {
 
 
     public Message() {
-        translations = new HashMap<>();
-        originalLang = null;
-        originalText = null;
+        translations=new HashMap<>();
+        originalLang=null;
+        originalText=null;
     }
 
     public Message(boolean translate, String text, Timestamp timestamp, String sender, String receiver) {
@@ -71,17 +71,15 @@ public class Message {
     public String getOriginalLang() {
         return originalLang;
     }
-
     public void setOriginalLang(String originalLang) {
-        this.originalLang = originalLang;
+        this.originalLang=originalLang;
     }
 
     public HashMap<String, String> getTranslations() {
         return translations;
     }
-
     public void setTranslations(HashMap<String, String> translations) {
-        this.translations = translations;
+        this.translations=translations;
     }
 
     public void putTranslation(String key, String value) {
@@ -89,7 +87,7 @@ public class Message {
     }
 
     public String getTranslation(String key) {
-        if (this.translations.containsKey(key))
+        if(this.translations.containsKey(key))
             return this.translations.get(key);
         return null;
     }
@@ -97,9 +95,8 @@ public class Message {
     public String getOriginalText() {
         return originalText;
     }
-
     public void setOriginalText(String originalText) {
-        this.originalText = originalText;
+        this.originalText=originalText;
     }
 
     @Override
@@ -109,6 +106,7 @@ public class Message {
                 ", timestamp='"  + new SimpleDateFormat("HH:mm:ss \n dd-MM-yy").format(timestamp) + '\'' +
                 ", sender='" + sender + '\'' +
                 ", receiver='" + receiver + '\'' +
+                (originalLang!=null ? (", originalLang: '" + originalLang + "', originalTxt: '" + originalText + "'") : "") +
                 '}';
     }
 }

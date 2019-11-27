@@ -2,6 +2,7 @@ package common.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Profile {
     protected String userName;
@@ -57,6 +58,27 @@ public class Profile {
 
     public void setLanguages(List<String> languages) {
         this.languages = languages;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(this==o) {
+            return true;
+        }
+        if(o==null || getClass()!=o.getClass()) {
+            return false;
+        }
+        Profile profile=(Profile) o;
+        return status==profile.status &&
+                Objects.equals(userName, profile.userName) &&
+                Objects.equals(aboutMe, profile.aboutMe) &&
+                Objects.equals(profilePicture, profile.profilePicture) &&
+                Objects.equals(languages, profile.languages);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userName, status, aboutMe, profilePicture, languages);
     }
 
     @Override

@@ -163,8 +163,11 @@ public class TranslationService {
         IdentifiedLanguages languages = languageTranslator.identify(identifyOptions)
                 .execute().getResult();
         /** Check if identifiedlanguages is not empty and has at least 50% confidence */
-        if (languages.getLanguages().size() > 0 && languages.getLanguages().get(0).getConfidence() > 0.5) {
+        if(languages.getLanguages().size()>0 && languages.getLanguages().get(0).getConfidence()>0.19) {
             return languages.getLanguages().get(0).getLanguage();
+        }
+        else {
+            System.out.println("Couldnt identify language of: '" + text + "', confidence too small");
         }
         return null;
     }

@@ -6,11 +6,14 @@ import common.data.Account;
 import common.data.AccountBuilder;
 import common.data.LoginUser;
 import common.data.Profile;
+import javafx.util.Pair;
 
 import java.sql.Connection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class DatabaseService {
     public static class TableAccount {
@@ -196,36 +199,33 @@ public class DatabaseService {
         }
     }
 
-    public Account getAccountByLoginUser(LoginUser user) {
-        String sql="SELECT * FROM " + TableAccount.NAME + " WHERE " + TableAccount.USERNAME + " = ? AND " + TableAccount.PASSWORD + " = ?";
-        Account acc=null;
-        try(Connection conn=this.connect();
-            PreparedStatement pstmt=conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, user.getUserName());
-            pstmt.setString(2, user.getPassword());
-            ResultSet rs=pstmt.executeQuery();
-            while(rs.next()) {
-                acc=new AccountBuilder().setAid(rs.getInt(TableAccount.AID)).setUserName(rs.getString(TableAccount.USERNAME))
-                        .setPassword(rs.getString(TableAccount.PASSWORD)).setStatus(0)
-                        .setAboutMe(rs.getString(TableAccount.ABOUTME)).setProfilePicture(rs.getString(TableAccount.PROFILEPICTURE))
-                        .setLanguages(Util.joinedStringToList(rs.getString(TableAccount.LANGUAGES)))
-                        .createAccount();
-            }
-        }
-        catch(SQLException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-        return acc;
+    public Account getAccountById(int aid) {
+        return getAccountByArgument(Arrays.asList(new Pair<>(TableAccount.AID, aid)));
+    }
+    public Account getAccountByUsername(String userName) {
+        return getAccountByArgument(Arrays.asList(new Pair<>(TableAccount.USERNAME, userName)));
     }
 
-    public Account getAccountById(int aid) {
-        String sql="SELECT * FROM " + TableAccount.NAME + " WHERE " + TableAccount.AID + " = ? ";
+    public Account getAccountByLoginUser(LoginUser user) {
+        return getAccountByArgument(Arrays.asList(new Pair<>(TableAccount.USERNAME, user.getUserName())
+                , new Pair<>(TableAccount.PASSWORD, user.getPassword())));
+    }
+
+    public Account getAccountByArgument(List<Pair<String, ?>> pars) {
+        StringBuilder builder=new StringBuilder("SELECT * FROM ").append(TableAccount.NAME);
+        if(pars.size()>0) {
+            builder.append(" WHERE ");
+        }
+        builder.append(String.join(" AND ", pars.stream().map(p -> p.getKey() + " = ?").collect(Collectors.toList())));
+
+        String sql=builder.toString();
         Account acc=null;
         try(Connection conn=this.connect();
             PreparedStatement pstmt=conn.prepareStatement(sql)) {
-            pstmt.setInt(1, aid);
+
+            for(int i=0; i<pars.size(); i++) {
+                pstmt.setObject(i + 1, pars.get(0).getValue());
+            }
             ResultSet rs=pstmt.executeQuery();
             while(rs.next()) {
                 acc=new AccountBuilder().setAid(rs.getInt(TableAccount.AID)).setUserName(rs.getString(TableAccount.USERNAME))
@@ -260,28 +260,6 @@ public class DatabaseService {
             e.printStackTrace();
         }
         return profile;
-    }
-
-    public Account getAccountByUsername(String userName) {
-        String sql="SELECT * FROM " + TableAccount.NAME + " WHERE " + TableAccount.USERNAME + " = ? ";
-        Account acc=null;
-        try(Connection conn=this.connect();
-            PreparedStatement pstmt=conn.prepareStatement(sql)) {
-            pstmt.setString(1, userName);
-            ResultSet rs=pstmt.executeQuery();
-            while(rs.next()) {
-                acc=new AccountBuilder().setAid(rs.getInt(TableAccount.AID)).setUserName(rs.getString(TableAccount.USERNAME))
-                        .setPassword(rs.getString(TableAccount.PASSWORD)).setStatus(0)
-                        .setAboutMe(rs.getString(TableAccount.ABOUTME)).setProfilePicture(rs.getString(TableAccount.PROFILEPICTURE))
-                        .setLanguages(Util.joinedStringToList(rs.getString(TableAccount.LANGUAGES)))
-                        .createAccount();
-            }
-        }
-        catch(SQLException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-        return acc;
     }
 
     public void deleteAccount(Account acc) {

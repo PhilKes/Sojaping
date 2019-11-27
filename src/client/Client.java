@@ -148,14 +148,13 @@ public class Client {
         System.out.println("Closing connection...");
         running.set(false);
         if(output!=null) {
-            if (account != null) {
-                sendToServer(LOGOFF, account);
-            }
-            output.close();
+            sendToServer(LOGOFF, account);
             try {
+                Thread.sleep(500);
+                output.close();
                 connection.getSocket().close();
             }
-            catch(IOException e) {
+            catch(IOException | InterruptedException e) {
                 e.printStackTrace();
             }
             //TODO Stop ClientHandler Thread

@@ -47,3 +47,6 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+/assets/sojapingTest.db
+/src/client/META-INF/
+/src/server/META-INF/

@@ -21,7 +21,7 @@ import static common.JsonHelper.getPacketFromJson;
 
 public class Server {
     private static final String SOJAPING="sojaping.db";
-	
+
     //public static String SERVER_HOST="141.59.128.171";
     public static String SERVER_HOST="192.168.178.26";
 
@@ -206,11 +206,7 @@ public class Server {
     }
 
 	public void updateUser(Account account) {
-<<<<<<< HEAD
         this.dbService.updateAccount(account);
-=======
-		this.dbService.updateAccount(account);
->>>>>>> c604bde... Fix db method name
 	}
 
     /**

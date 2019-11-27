@@ -28,7 +28,7 @@
                   </Tab>
                     </tabs>
                 </TabPane>
-                <Button fx:id="btnMyProfile" mnemonicParsing="false" prefHeight="100.0" prefWidth="200.0" text="MyProfile" />
+                <Button fx:id="btnMyProfile" mnemonicParsing="false" onMouseClicked="#onMyProfileClicked" prefHeight="100.0" prefWidth="200.0" text="MyProfile" />
             </children>
         </VBox>
     </left>

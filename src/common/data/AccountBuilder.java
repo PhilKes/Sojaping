@@ -50,11 +50,6 @@ public class AccountBuilder {
         return this;
     }
 
-    public AccountBuilder setLanguages(List<String> languages) {
-        this.languages = languages;
-        return this;
-    }
-
     public Account createAccount() {
         return new Account(aid, userName, password, status, aboutMe, profilePicture, languages);
     }

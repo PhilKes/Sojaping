@@ -23,7 +23,7 @@
 }
 
 .tab-pane {
-    -fx-background-color: red;
+    -fx-background-color: -fx-brgnd;
 }
 
 /* Background of TabPane next to Tabs*/
@@ -57,6 +57,7 @@
 .list-cell {
     -fx-background-color: -fx-bgrnd-light;
     -fx-text-fill: -fx-bgrnd;
+    -fx-pref-width: 100%;
 }
 
 .list-cell:selected {

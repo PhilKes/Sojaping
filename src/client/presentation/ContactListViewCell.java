@@ -1,6 +1,7 @@
 package client.presentation;
 
 import common.data.Profile;
+import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -17,6 +18,12 @@ public class ContactListViewCell extends ListCell<Profile> {
     private HBox hBox;
 
     private FXMLLoader fxmlLoader;
+
+    private DoubleProperty listViewWidthProperty;
+
+    public ContactListViewCell(DoubleProperty listViewWidthProperty) {
+        this.listViewWidthProperty=listViewWidthProperty;
+    }
 
     @Override
     protected void updateItem(Profile profile, boolean empty){
@@ -36,6 +43,7 @@ public class ContactListViewCell extends ListCell<Profile> {
                 }
             }
             labelUsername.setText(profile.getUserName());
+            hBox.prefWidthProperty().bind(listViewWidthProperty);
             setGraphic(hBox);
         }
 

@@ -2,6 +2,7 @@ package client.presentation;
 
 
 import client.Client;
+import common.Util;
 import common.data.Account;
 import common.data.Group;
 import common.data.Message;
@@ -11,7 +12,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
@@ -68,12 +68,12 @@ public class GUIController extends UIController {
 		// Message Window initialize
 		broadcastObservableList = FXCollections.observableArrayList();
 		listViewBroadcast.setItems(broadcastObservableList);
-		listViewBroadcast.setCellFactory(messagesListView -> new ChatListViewCell());
+		listViewBroadcast.setCellFactory(messagesListView -> new ChatListViewCell(listViewBroadcast.prefWidthProperty()));
 		tabPaneChat.getTabs().get(0).setId(BROADCAST);
 		//display online Profiles initialize
 		profilesObservableList = FXCollections.observableArrayList();
 		tabOnlineListView.setItems(profilesObservableList);
-		tabOnlineListView.setCellFactory(profilesListView -> new ContactListViewCell());
+		tabOnlineListView.setCellFactory(profilesListView -> new ContactListViewCell(tabOnlineListView.prefWidthProperty()));
 		//groupchats
 		tabGroupChatListView.setOnMouseClicked(e -> {
 			if (e.getClickCount() == 2)
@@ -86,7 +86,7 @@ public class GUIController extends UIController {
 		//list participants of the selected group
 		participantsObservableList = FXCollections.observableArrayList();
 		listVInfo.setItems(participantsObservableList);
-		listVInfo.setCellFactory(profilesListView -> new ContactListViewCell());
+		listVInfo.setCellFactory(profilesListView -> new ContactListViewCell(listVInfo.prefWidthProperty()));
 
 		loadAccount(client.getAccount());
 
@@ -101,8 +101,7 @@ public class GUIController extends UIController {
 		//TODO Load Profilepicture (from DB?)
 		/** Default Avatar */
 		if(acc.getProfilePicture()==null) {
-			Image imProfile=new Image(getClass().getResourceAsStream("resources/default_avatar_min.png"));
-			imgAvatar.setImage(imProfile);
+			imgAvatar.setImage(Util.getDefaultAvatar());
 		}
 	}
 
@@ -111,7 +110,6 @@ public class GUIController extends UIController {
 		//tabPaneChat.getSelectionModel().getSelectedItem().getText();
 		// gibt Name von Tab zurück
 	}
-
 
 	private void onSendClicked() {
 		if(!textASendText.getText().isEmpty()){
@@ -168,7 +166,7 @@ public class GUIController extends UIController {
 		ObservableList<Message> newObservableList = FXCollections.observableArrayList();
 		ListView<Message> newListView = new ListView<>();
 		newListView.setItems(newObservableList);
-		newListView.setCellFactory(messagesListView -> new ChatListViewCell());
+		newListView.setCellFactory(messagesListView -> new ChatListViewCell(newListView.prefWidthProperty()));
 		newTab.setContent(newListView);
 		newTab.setId(tabName);
 		tabPaneChat.getTabs().add(newTab);

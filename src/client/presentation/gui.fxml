@@ -16,14 +16,12 @@
 <?import javafx.scene.text.Font?>
 
 <BorderPane id="rootPane" fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-            minWidth="-Infinity" prefHeight="800" prefWidth="1280" stylesheets="@resources/main.css"
-            xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="client.presentation.GUIController">
+            minWidth="-Infinity" stylesheets="@resources/main.css" xmlns="http://javafx.com/javafx/8.0.141"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.presentation.GUIController">
     <left>
-        <VBox fx:id="vBoxContacts" alignment="TOP_CENTER" prefHeight="800.0" prefWidth="200.0"
-              BorderPane.alignment="CENTER">
+        <VBox fx:id="vBoxContacts" alignment="TOP_CENTER" BorderPane.alignment="CENTER">
             <children>
-                <HBox fx:id="hBoxMe" alignment="CENTER_LEFT" prefWidth="200.0">
+                <HBox fx:id="hBoxMe" alignment="CENTER_LEFT">
                     <children>
                         <ImageView fx:id="imgAvatar" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true"
                                    preserveRatio="true">
@@ -49,69 +47,80 @@
                         <Insets bottom="20.0" top="20.0"/>
                     </VBox.margin>
                 </HBox>
-                <TabPane fx:id="tabPContacts" prefHeight="519.0" prefWidth="150.0" tabClosingPolicy="UNAVAILABLE">
+                <TabPane fx:id="tabPContacts" prefHeight="468.0" prefWidth="248.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                         <Tab fx:id="tabContacts" text="Contacts">
                             <content>
-                                <ListView fx:id="tabContactsListView" prefHeight="517.0" prefWidth="200.0" />
+                                <ListView fx:id="tabContactsListView"/>
                             </content></Tab>
                         <Tab fx:id="tabOnline" text="Online">
                             <content>
-                                <ListView fx:id="tabOnlineListView" prefHeight="200.0" prefWidth="200.0" />
+                                <ListView fx:id="tabOnlineListView"/>
                             </content></Tab>
                   <Tab text="Groups">
                      <content>
-                        <ListView fx:id="tabGroupChatListView" prefHeight="200.0" prefWidth="200.0" />
+                         <ListView fx:id="tabGroupChatListView" prefHeight="391.0" prefWidth="248.0"/>
                      </content>
                   </Tab>
                     </tabs>
                 </TabPane>
-                <Button fx:id="btnMyProfile" mnemonicParsing="false" onMouseClicked="#onMyProfileClicked"
-                        prefHeight="100.0" prefWidth="200.0" styleClass="orange" text="MyProfile"/>
             </children>
         </VBox>
     </left>
     <right>
-        <VBox fx:id="vBoxInfo" prefHeight="200.0" prefWidth="150.0" BorderPane.alignment="CENTER">
+        <VBox fx:id="vBoxInfo" prefHeight="550.0" prefWidth="154.0" BorderPane.alignment="CENTER">
             <children>
-                <ImageView fx:id="imageLogo" fitHeight="150.0" fitWidth="150.0" pickOnBounds="true"
-                           preserveRatio="true">
+                <ImageView fx:id="imageLogo" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@resources/SojaPing_border_color.png"/>
                     </image></ImageView>
-                <ListView fx:id="listVInfo" prefHeight="500.0" prefWidth="150.0" />
-                <HBox prefHeight="17.0" prefWidth="200.0">
-                    <children>
-                        <CheckBox fx:id="checkTranslate" mnemonicParsing="false" selected="true" text="Translate">
-                            <padding>
-                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                            </padding>
-                        </CheckBox>
-                    </children>
-                </HBox>
-                <Button fx:id="btnSend" mnemonicParsing="false" prefHeight="100.0" prefWidth="200.0" styleClass="green"
-                        text="Send">
-                    <VBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                    </VBox.margin>
-                </Button>
+                <ListView fx:id="listVInfo"/>
             </children></VBox>
     </right>
     <center>
-        <VBox fx:id="vBoxChat" prefHeight="819.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+        <VBox fx:id="vBoxChat" BorderPane.alignment="CENTER">
             <children>
-            <TabPane fx:id="tabPaneChat" prefHeight="600.0" prefWidth="200.0" tabClosingPolicy="ALL_TABS">
+                <TabPane fx:id="tabPaneChat" prefHeight="550.0" prefWidth="400.0" tabClosingPolicy="ALL_TABS">
               <tabs>
                 <Tab closable="false" text="Broadcast">
                      <content>
-                         <ListView fx:id="listViewBroadcast" prefHeight="358.0" prefWidth="880.0"/>
+                         <ListView fx:id="listViewBroadcast"/>
                      </content>
                 </Tab>
               </tabs>
             </TabPane>
-                <TextArea fx:id="textASendText" prefHeight="217.0" prefWidth="500.0" />
             </children>
         </VBox>
     </center>
+    <bottom>
+        <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button fx:id="btnMyProfile" mnemonicParsing="false" onMouseClicked="#onMyProfileClicked"
+                        prefHeight="100.0" prefWidth="210.0" styleClass="orange" text="MyProfile"
+                        BorderPane.alignment="CENTER"/>
+                <TextArea fx:id="textASendText" prefHeight="100.0" prefWidth="671.0">
+                    <BorderPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0"/>
+                    </BorderPane.margin>
+                </TextArea>
+                <VBox prefHeight="100.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <HBox prefHeight="17.0" prefWidth="200.0">
+                            <children>
+                                <CheckBox fx:id="checkTranslate" mnemonicParsing="false" selected="true"
+                                          text="Translate">
+                                    <padding>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                    </padding>
+                                </CheckBox>
+                            </children>
+                        </HBox>
+                        <Button fx:id="btnSend" mnemonicParsing="false" prefHeight="100.0" prefWidth="98.0"
+                                styleClass="green" text="Send"/>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </bottom>
 
 </BorderPane>

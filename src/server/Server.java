@@ -164,15 +164,10 @@ public class Server {
         //LoginUser loginUser = JsonHelper.convertJsonToObject(accountOrLoginAsJson);
         Account account=this.dbService.getAccountByLoginUser(loginUser);
         if(account!=null) {
-            if(account.getPassword().equals(loginUser.getPassword())) {
-                return account;
-            }
-            else {
-                throw new Exception("Invalid password");
-            }
+            return account;
         }
         else {
-            throw new Exception("Unknown username");
+            throw new Exception("Invalid credentials");
         }
     }
 

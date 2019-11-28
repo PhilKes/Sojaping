@@ -46,8 +46,8 @@ public class Account extends Profile {
     @Override
     public String toString() {
         return "Account{" +
-                "password='" + password + '\'' +
-                ", userName='" + userName + '\'' +
+                "userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
                 ", status=" + status +
                 ", aboutMe='" + aboutMe + '\'' +
                 ", profilePicture='" + profilePicture + '\'' +

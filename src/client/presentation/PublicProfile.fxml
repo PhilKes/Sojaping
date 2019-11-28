@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER_LEFT" stylesheets="@resources/main.css" xmlns="http://javafx.com/javafx/8.0.141"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.presentation.PublicProfileController">
+    <children>
+        <ImageView fx:id="imgAvatar" fitHeight="140.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@resources/default_avatar.png"/>
+            </image>
+        </ImageView>
+        <Label fx:id="labelUserName" text="UserName">
+            <font>
+                <Font size="17.0"/>
+            </font>
+            <VBox.margin>
+                <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
+            </VBox.margin>
+        </Label>
+        <Label fx:id="labelAbout" text="AboutMe">
+            <VBox.margin>
+                <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
+            </VBox.margin>
+        </Label>
+    </children>
+    <padding>
+        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
+    </padding>
+</VBox>

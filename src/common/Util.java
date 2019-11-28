@@ -1,6 +1,8 @@
 package common;
 
+import client.presentation.GUIController;
 import common.data.Packet;
+import javafx.scene.image.Image;
 import server.Connection;
 
 import java.net.InetAddress;
@@ -14,6 +16,7 @@ import static common.Constants.Contexts.FAIL;
  */
 public class Util {
 
+    private static final Image DEFAULT_AVATAR=new Image(GUIController.class.getResourceAsStream("resources/default_avatar_min.png"));
     /**
      * Log sent/received Packet in Console
      * from: true(received packet), from: false(sent packet)
@@ -52,5 +55,9 @@ public class Util {
     }
     public static boolean sameNetwork(final InetAddress a, final InetAddress b, final int mask) {
         return sameNetwork(a.getAddress(), b.getAddress(), mask);
+    }
+
+    public static Image getDefaultAvatar() {
+        return DEFAULT_AVATAR;
     }
 }

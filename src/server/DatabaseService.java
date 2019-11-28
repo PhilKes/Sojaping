@@ -114,8 +114,7 @@ public class DatabaseService {
 
     //This method is for debugging.
     public void selectAllAccounts() {
-        String sql="SELECT " + TableAccount.AID + ", " + TableAccount.USERNAME + ", " + TableAccount.PASSWORD + ", " +
-                TableAccount.ABOUTME + ", " + TableAccount.PROFILEPICTURE + ", " + TableAccount.LANGUAGES + " FROM account";
+        String sql="SELECT * FROM account";
         try(Connection conn=this.connect();
             Statement stmt=conn.createStatement();
             ResultSet rs=stmt.executeQuery(sql)) {
@@ -192,7 +191,8 @@ public class DatabaseService {
             pstmt.setString(5, String.join(",", acc.getLanguages()));
             pstmt.setInt(6, acc.getAid());
             pstmt.executeUpdate();
-            System.out.println();
+            /** Debug */
+            System.out.println(getAccountById(acc.getAid()));
         }
         catch(SQLException e) {
             System.out.println(e.getMessage());
@@ -226,7 +226,7 @@ public class DatabaseService {
         try(Connection conn=this.connect();
             PreparedStatement pstmt=conn.prepareStatement(sql)) {
             for(int i=0; i<pars.size(); i++) {
-                pstmt.setObject(i + 1, pars.get(0).getValue());
+                pstmt.setObject(i + 1, pars.get(i).getValue());
             }
             ResultSet rs=pstmt.executeQuery();
             while(rs.next()) {

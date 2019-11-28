@@ -30,6 +30,7 @@ public class Constants {
                 USERLIST = "userlist",
                 SHUTDOWN = "shutdown",
                 PROFILE_UPDATE="profileUpdate",
+                DELETE_ACCOUNT="deleteAccount",
                 BROADCAST = "broadcast";
     }
 }

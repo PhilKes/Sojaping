@@ -1,84 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.*?>
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="681.0"
-      prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="client.presentation.UserProfileController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="681.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.presentation.UserProfileController">
     <children>
         <VBox layoutX="80.0" layoutY="156.0" prefHeight="403.0" prefWidth="782.0">
             <children>
 
                 <HBox prefHeight="39.0" prefWidth="1248.0">
                     <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Status:" wrappingWidth="216.6708984375"/>
-                        <TextField fx:id="txtAboutMe" prefHeight="31.0" prefWidth="607.0"/>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Status:" wrappingWidth="216.6708984375" />
+                        <TextField fx:id="txtAboutMe" prefHeight="31.0" prefWidth="607.0" />
                     </children>
                 </HBox>
 
                 <!-- Horizontal Line -->
                 <HBox prefHeight="70.0" prefWidth="844.0">
                     <children>
-                        <Line endX="740.0" startX="-100.0" translateY="49.0"/>
+                        <Line endX="740.0" startX="-100.0" translateY="49.0" />
                     </children>
                 </HBox>
 
-                <HBox prefHeight="39.0" prefWidth="1248.0">
+                <HBox prefHeight="45.0" prefWidth="1248.0">
                     <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="New password:"
-                              wrappingWidth="216.6708984375"/>
-                        <PasswordField fx:id="txtNewPassword" prefHeight="31.0" prefWidth="293.0"/>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="New password:" wrappingWidth="216.6708984375" />
+                        <PasswordField fx:id="txtNewPassword" prefHeight="31.0" prefWidth="293.0" />
                         <PasswordField fx:id="txtNewPasswordConfirm" prefHeight="31.0" prefWidth="293.0">
                             <HBox.margin>
-                                <Insets left="20.0"/>
+                                <Insets bottom="10.0" left="20.0" />
                             </HBox.margin>
                         </PasswordField>
                     </children>
+                    <VBox.margin>
+                        <Insets bottom="10.0" top="20.0" />
+                    </VBox.margin>
                 </HBox>
 
-                <HBox prefHeight="39.0" prefWidth="1248.0">
+                <HBox prefHeight="50.0" prefWidth="1248.0">
                     <children>
-                        <Button fx:id="btnDeleteAccount" layoutX="303.0" layoutY="575.0" mnemonicParsing="false"
-                                prefHeight="61.0"
-                                prefWidth="195.0" text="Delete Account"/>
+                        <Button fx:id="btnDeleteAccount" layoutX="303.0" layoutY="575.0" mnemonicParsing="false" prefHeight="60.0" prefWidth="294.0" text="Delete Account">
+                            <padding>
+                                <Insets bottom="2.0" left="20.0" top="3.0" />
+                            </padding>
+                            <HBox.margin>
+                                <Insets left="217.0" />
+                            </HBox.margin></Button>
                     </children>
                 </HBox>
 
 
                 <HBox prefHeight="39.0" prefWidth="1248.0">
                     <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Current password:"
-                              wrappingWidth="216.6708984375"/>
-                        <PasswordField fx:id="txtCurrentPassword" prefHeight="31.0" prefWidth="607.0"/>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Current password:" wrappingWidth="216.6708984375">
+                            <HBox.margin>
+                                <Insets top="20.0" />
+                            </HBox.margin></Text>
+                        <PasswordField fx:id="txtCurrentPassword" prefHeight="31.0" prefWidth="607.0">
+                            <HBox.margin>
+                                <Insets top="20.0" />
+                            </HBox.margin></PasswordField>
                     </children>
                 </HBox>
-                <Label fx:id="lblError" alignment="BOTTOM_CENTER" contentDisplay="CENTER" prefHeight="205.0"
-                       prefWidth="952.0"
-                       textAlignment="CENTER" textFill="#e11010"/>
+                <Label fx:id="lblError" alignment="BOTTOM_CENTER" contentDisplay="CENTER" prefHeight="205.0" prefWidth="952.0" textAlignment="CENTER" textFill="#e11010" />
 
             </children>
         </VBox>
         <Pane layoutY="40.0" prefHeight="116.0" prefWidth="1280.0">
             <children>
-                <Text layoutX="66.0" layoutY="61.0" strokeType="OUTSIDE" strokeWidth="0.0" text="My Profile"
-                      wrappingWidth="437.6708984375">
+                <Text layoutX="66.0" layoutY="61.0" strokeType="OUTSIDE" strokeWidth="0.0" text="My Profile" wrappingWidth="437.6708984375">
                     <font>
-                        <Font size="41.0"/>
+                        <Font size="41.0" />
                     </font>
                 </Text>
-                <Label fx:id="lblUserName" layoutX="634.0" layoutY="20.0" prefHeight="53.0" prefWidth="314.0"
-                       text="Hi, ###!"/>
+                <Label fx:id="lblUserName" layoutX="634.0" layoutY="20.0" prefHeight="53.0" prefWidth="314.0" text="Hi, ###!" />
             </children>
         </Pane>
-        <Button fx:id="btnCancel" layoutX="303.0" layoutY="575.0" mnemonicParsing="false" prefHeight="61.0"
-                prefWidth="195.0" text="Cancel"/>
-        <Button fx:id="btnSave" layoutX="504.0" layoutY="575.0" mnemonicParsing="false" prefHeight="61.0"
-                prefWidth="195.0" text="Save"/>
+        <Button fx:id="btnCancel" layoutX="303.0" layoutY="575.0" mnemonicParsing="false" prefHeight="61.0" prefWidth="195.0" text="Cancel" />
+        <Button fx:id="btnSave" layoutX="504.0" layoutY="575.0" mnemonicParsing="false" prefHeight="61.0" prefWidth="195.0" text="Save" />
     </children>
     <padding>
-        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </padding>
 </Pane>

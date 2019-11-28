@@ -13,15 +13,14 @@ public class Profile {
 
 
     public Profile() {
-        languages = new ArrayList<>();
+        languages=new ArrayList<>();
     }
-
     public Profile(String userName, int status, String aboutMe, String profilePicture, List<String> languages) {
         this.userName=userName;
         this.status=status;
         this.aboutMe=aboutMe;
         this.profilePicture=profilePicture;
-        this.languages = languages;
+        this.languages=languages;
     }
 
     public String getUserName() {
@@ -55,9 +54,8 @@ public class Profile {
     public List<String> getLanguages() {
         return languages;
     }
-
     public void setLanguages(List<String> languages) {
-        this.languages = languages;
+        this.languages=languages;
     }
 
     @Override

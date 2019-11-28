@@ -20,7 +20,7 @@ public class Account extends Profile {
         this.status = status;
         this.aboutMe = aboutMe;
         this.profilePicture = profilePicture;
-        this.languages = langauges;
+        this.languages=langauges;
     }
 
     public int getAid() {
@@ -40,14 +40,14 @@ public class Account extends Profile {
     }
 
     public Profile getProfile(){
-        return new Profile(userName, status, aboutMe, profilePicture, languages);
+        return new Profile(userName,status,aboutMe,profilePicture,languages);
     }
 
     @Override
     public String toString() {
         return "Account{" +
-                "password='" + password + '\'' +
-                ", userName='" + userName + '\'' +
+                "userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
                 ", status=" + status +
                 ", aboutMe='" + aboutMe + '\'' +
                 ", profilePicture='" + profilePicture + '\'' +

@@ -114,8 +114,7 @@ public class DatabaseService {
 
     //This method is for debugging.
     public void selectAllAccounts() {
-        String sql="SELECT " + TableAccount.AID + ", " + TableAccount.USERNAME + ", " + TableAccount.PASSWORD + ", " +
-                TableAccount.ABOUTME + ", " + TableAccount.PROFILEPICTURE + ", " + TableAccount.LANGUAGES + " FROM account";
+        String sql="SELECT * FROM account";
         try(Connection conn=this.connect();
             Statement stmt=conn.createStatement();
             ResultSet rs=stmt.executeQuery(sql)) {
@@ -192,7 +191,8 @@ public class DatabaseService {
             pstmt.setString(5, String.join(",", acc.getLanguages()));
             pstmt.setInt(6, acc.getAid());
             pstmt.executeUpdate();
-            System.out.println();
+            /** Debug */
+            System.out.println(getAccountById(acc.getAid()));
         }
         catch(SQLException e) {
             System.out.println(e.getMessage());
@@ -202,6 +202,7 @@ public class DatabaseService {
     public Account getAccountById(int aid) {
         return getAccountByArgument(Arrays.asList(new Pair<>(TableAccount.AID, aid)));
     }
+
     public Account getAccountByUsername(String userName) {
         return getAccountByArgument(Arrays.asList(new Pair<>(TableAccount.USERNAME, userName)));
     }
@@ -211,20 +212,21 @@ public class DatabaseService {
                 , new Pair<>(TableAccount.PASSWORD, user.getPassword())));
     }
 
+    /**
+     * Selects Account based on WHERE's given by Arguments (Key,Value)-Pairs
+     */
     public Account getAccountByArgument(List<Pair<String, ?>> pars) {
         StringBuilder builder=new StringBuilder("SELECT * FROM ").append(TableAccount.NAME);
         if(pars.size()>0) {
             builder.append(" WHERE ");
         }
         builder.append(String.join(" AND ", pars.stream().map(p -> p.getKey() + " = ?").collect(Collectors.toList())));
-
         String sql=builder.toString();
         Account acc=null;
         try(Connection conn=this.connect();
             PreparedStatement pstmt=conn.prepareStatement(sql)) {
-
             for(int i=0; i<pars.size(); i++) {
-                pstmt.setObject(i + 1, pars.get(0).getValue());
+                pstmt.setObject(i + 1, pars.get(i).getValue());
             }
             ResultSet rs=pstmt.executeQuery();
             while(rs.next()) {
@@ -243,23 +245,7 @@ public class DatabaseService {
     }
 
     public Profile getProfileByAccountId(int aid) {
-        String sql="SELECT " + TableAccount.USERNAME + "," + TableAccount.ABOUTME + "," + TableAccount.PROFILEPICTURE +
-                "," + TableAccount.LANGUAGES + " FROM " + TableAccount.NAME + " WHERE " + TableAccount.AID + " = ? ";
-        Profile profile=null;
-        try(Connection conn=this.connect();
-            PreparedStatement pstmt=conn.prepareStatement(sql)) {
-            pstmt.setInt(1, aid);
-            ResultSet rs=pstmt.executeQuery();
-            while(rs.next()) {
-                profile=new Profile(rs.getString(TableAccount.USERNAME), 0, rs.getString(TableAccount.ABOUTME)
-                        , rs.getString(TableAccount.PROFILEPICTURE), Util.joinedStringToList(rs.getString(TableAccount.LANGUAGES)));
-            }
-        }
-        catch(SQLException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-        return profile;
+        return getAccountById(aid).getProfile();
     }
 
     public void deleteAccount(Account acc) {
@@ -374,29 +360,6 @@ public class DatabaseService {
         }
     }
 
-    /*    public ArrayList<Profile> getOnlineAccounts() {
-            ArrayList<Profile> onlineAccounts=new ArrayList<>();
-            String sql="SELECT " + TableAccount.USERNAME + ", " + STATUS + ", " +
-                    TableAccount.ABOUTME + ", " + TableAccount.PROFILEPICTURE + " FROM account WHERE " + STATUS + " = 1";
-            try(Connection conn=this.connect();
-                Statement stmt=conn.createStatement();
-                ResultSet rs=stmt.executeQuery(sql)) {
-                while(rs.next()) {
-                    onlineAccounts.add(new Profile(rs.getString(TableAccount.USERNAME), rs.getInt(STATUS),
-                            rs.getString(TableAccount.ABOUTME), rs.getString(TableAccount.PROFILEPICTURE),
-
-                            Arrays.asList("de","en")));
-                    System.out.println(rs.getString(TableAccount.USERNAME) + "\t" +
-                            rs.getInt(STATUS) + "\t" +
-                            rs.getString(TableAccount.ABOUTME) + "\t" +
-                            rs.getString(TableAccount.PROFILEPICTURE));
-                }
-            }
-            catch(SQLException e) {
-                System.out.println(e.getMessage());
-            }
-            return onlineAccounts;
-        }*/
     public static void main(String[] args) throws Exception {
         //createNewDatabase("sojaping.db");
         DatabaseService db=new DatabaseService(SOJAPING);

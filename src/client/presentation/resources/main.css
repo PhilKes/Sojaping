@@ -8,16 +8,73 @@
 .text{
     -fx-font: 9pt Roboto;
 }*/
+
+.root {
+    -fx-bgrnd: #363837;
+    -fx-bgrnd-light: #626463;
+    -fx-fgrnd: #c7cbc9;
+    -fx-green: #67d11a;
+    -fx-txt-light: #fffbee;
+    -fx-txt-dark: #000000;
+    -fx-background-color: -fx-bgrnd;
+}
 .anchor-pane {
-    -fx-background-color: #363837;
+    -fx-background-color: -fx-bgrnd;
 }
 
+.tab-pane {
+    -fx-background-color: -fx-brgnd;
+}
+
+/* Background of TabPane next to Tabs*/
+.tab-pane *.tab-header-background {
+    -fx-background-color: -fx-bgrnd;
+}
+
+/** Contacts,... TabPane and ListViews*/
+.tab {
+    -fx-background-color: linear-gradient(-fx-fgrnd, -fx-bgrnd-light);
+    -fx-text-fill: -fx-txt-light;
+}
+
+.tab:selected {
+    /*-fx-background-color: -fx-green;
+    -fx-text-fill: -fx-text-light;*/
+    -fx-background-color: linear-gradient(#ffd65b, #e68400),
+    linear-gradient(#ffef84, #f2ba44),
+    linear-gradient(#ffea6a, #efaa22),
+    linear-gradient(#ffe657 0%, #f8c202 50%, #eea10b 100%);
+
+    -fx-font-weight: bold;
+}
+
+.list-view {
+    -fx-background-color: -fx-bgrnd;
+    -fx-border-width: 1;
+    -fx-border-color: -fx-bgrnd;
+}
+
+.list-cell {
+    -fx-background-color: -fx-bgrnd-light;
+    -fx-text-fill: -fx-bgrnd;
+    -fx-pref-width: 100%;
+}
+
+.list-cell:selected {
+    /*-fx-background-color: -fx-green;*/
+    -fx-background-color: linear-gradient(#e68400, #ffd65b);
+    -fx-font-weight: bold;
+}
+
+#rootPane {
+    -fx-background-color: -fx-bgrnd;
+}
 * {
     -fx-focus-color: transparent;
 }
 
 .label {
-    -fx-text-fill: white;
+    -fx-text-fill: -fx-txt-light;
 }
 
 .menu-button {
@@ -25,15 +82,15 @@
 }
 
 .menu-button > .label {
-    -fx-text-fill: black;
+    -fx-text-fill: -fx-txt-dark;
 }
 
 .check-menu-item {
-    -fx-text-fill: black;
+    -fx-text-fill: -fx-txt-dark;
 }
 
 .check-menu-item > .label {
-    -fx-text-fill: black;
+    -fx-text-fill: -fx-txt-dark;
 }
 
 .invalid {
@@ -49,8 +106,11 @@
 }*/
 
 .avatar {
-
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.77), 10, 0, 0, 1);
+}
+
+#checkTranslate {
+    -fx-text-fill: -fx-txt-light;
 }
 
 .button {
@@ -70,6 +130,7 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.7), 10, 0, 0, 5);
 }
 
+/** Colors */
 .orange {
     -fx-background-color: linear-gradient(#ffd65b, #e68400),
     linear-gradient(#ffef84, #f2ba44),

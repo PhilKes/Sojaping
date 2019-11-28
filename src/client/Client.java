@@ -55,7 +55,7 @@ public class Client {
         this.host=host;
         this.port=port;
         this.controllerStack=new Stack<>();
-        running = new AtomicBoolean(true);
+        running=new AtomicBoolean(true);
     }
 
     public void run() {
@@ -75,7 +75,7 @@ public class Client {
                     ex.printStackTrace();
                 }
             }
-            if (!running.get()) {
+            if(!running.get()) {
                 System.out.println("Cancel connection attempt");
                 return;
             }
@@ -120,8 +120,8 @@ public class Client {
                 stage.setScene(new Scene(root1));
                 stage.setOnCloseRequest(ev -> closeCurrentWindow());
                 stage.setResizable(false);
-                if (account != null)
-                    stage.setTitle(window.toUpperCase() + " " + account.getUserName());
+                if(account!=null)
+                    stage.setTitle(window.toUpperCase()+" "+account.getUserName());
                 stage.show();
             }
             catch(IOException e) {
@@ -148,14 +148,13 @@ public class Client {
         System.out.println("Closing connection...");
         running.set(false);
         if(output!=null) {
-            if (account != null) {
-                sendToServer(LOGOFF, account);
-            }
-            output.close();
+            sendToServer(LOGOFF, account);
             try {
+                Thread.sleep(500);
+                output.close();
                 connection.getSocket().close();
             }
-            catch(IOException e) {
+            catch(IOException | InterruptedException e) {
                 e.printStackTrace();
             }
             //TODO Stop ClientHandler Thread

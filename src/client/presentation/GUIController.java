@@ -2,38 +2,30 @@ package client.presentation;
 
 
 import client.Client;
+import common.Util;
+import common.data.Account;
 import common.data.Group;
 import common.data.Message;
 import common.data.Profile;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import server.Server;
 
 import java.sql.Timestamp;
-import java.text.BreakIterator;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
-import static common.Constants.Contexts.*;
+import static common.Constants.Contexts.BROADCAST;
+import static common.Constants.Contexts.MESSAGE_SENT;
 
 public class GUIController extends UIController {
 	@FXML
-	private Button btnSend;
-	@FXML
-	private Button btnMyProfile;
+	private Button btnSend, btnMyProfile;
 	@FXML
 	private TextArea textASendText;
 	@FXML
@@ -48,6 +40,10 @@ public class GUIController extends UIController {
 	private ListView<Group> tabGroupChatListView;
 	@FXML
 	private ListView<Profile> listVInfo;
+	@FXML
+	private ImageView imgAvatar;
+	@FXML
+	private Label labelUserName, labelAbout;
 
 	//Message broadcast
 	private ObservableList<Message> broadcastObservableList;
@@ -68,15 +64,16 @@ public class GUIController extends UIController {
 		btnSend.setOnMouseClicked(ev -> onSendClicked());
 		textASendText.setOnKeyReleased(event -> {if(event.getCode() == KeyCode.ENTER)onSendClicked();});
 		client=Client.getInstance(Server.SERVER_HOST, Server.SERVER_PORT);
+
 		// Message Window initialize
 		broadcastObservableList = FXCollections.observableArrayList();
 		listViewBroadcast.setItems(broadcastObservableList);
-		listViewBroadcast.setCellFactory(messagesListView -> new ChatListViewCell());
-        tabPaneChat.getTabs().get(0).setId(BROADCAST);
+		listViewBroadcast.setCellFactory(messagesListView -> new ChatListViewCell(listViewBroadcast.prefWidthProperty()));
+		tabPaneChat.getTabs().get(0).setId(BROADCAST);
 		//display online Profiles initialize
 		profilesObservableList = FXCollections.observableArrayList();
 		tabOnlineListView.setItems(profilesObservableList);
-		tabOnlineListView.setCellFactory(profilesListView -> new ContactListViewCell());
+		tabOnlineListView.setCellFactory(profilesListView -> new ContactListViewCell(tabOnlineListView.prefWidthProperty()));
 		//groupchats
 		tabGroupChatListView.setOnMouseClicked(e -> {
 			if (e.getClickCount() == 2)
@@ -85,14 +82,27 @@ public class GUIController extends UIController {
 		groupsObservableList = FXCollections.observableArrayList();
 		tabGroupChatListView.setItems(groupsObservableList);
 		tabGroupChatListView.setCellFactory(groupsListView -> new GroupChatListViewCell());
-        //groupsObservableList.add(new Group("test", new Profile("a",0,null,null)));
+		//groupsObservableList.add(new Group("test", new Profile("a",0,null,null)));
 		//list participants of the selected group
 		participantsObservableList = FXCollections.observableArrayList();
 		listVInfo.setItems(participantsObservableList);
-		listVInfo.setCellFactory(profilesListView -> new ContactListViewCell());
+		listVInfo.setCellFactory(profilesListView -> new ContactListViewCell(listVInfo.prefWidthProperty()));
 
-		//TODO (Next Sprint) use ListView(of ContactList).getSelectionModel().selectedItemProperty().bind() to show correct chat
+		loadAccount(client.getAccount());
 
+	}
+
+	/**
+	 * Load Account into My Profile (Top left)
+	 */
+	private void loadAccount(Account acc) {
+		labelUserName.setText(acc.getUserName());
+		labelAbout.setText(acc.getAboutMe());
+		//TODO Load Profilepicture (from DB?)
+		/** Default Avatar */
+		if(acc.getProfilePicture()==null) {
+			imgAvatar.setImage(Util.getDefaultAvatar());
+		}
 	}
 
 	private void displayGroupInfo() {
@@ -100,7 +110,6 @@ public class GUIController extends UIController {
 		//tabPaneChat.getSelectionModel().getSelectedItem().getText();
 		// gibt Name von Tab zurück
 	}
-
 
 	private void onSendClicked() {
 		if(!textASendText.getText().isEmpty()){
@@ -139,6 +148,7 @@ public class GUIController extends UIController {
             profilesObservableList.add(p);
         }
     }
+
 	public void onMyProfileClicked(){
 		client.openWindow("UserProfile");
 	}
@@ -156,7 +166,7 @@ public class GUIController extends UIController {
 		ObservableList<Message> newObservableList = FXCollections.observableArrayList();
 		ListView<Message> newListView = new ListView<>();
 		newListView.setItems(newObservableList);
-		newListView.setCellFactory(messagesListView -> new ChatListViewCell());
+		newListView.setCellFactory(messagesListView -> new ChatListViewCell(newListView.prefWidthProperty()));
 		newTab.setContent(newListView);
 		newTab.setId(tabName);
 		tabPaneChat.getTabs().add(newTab);

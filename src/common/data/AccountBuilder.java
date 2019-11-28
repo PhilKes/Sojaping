@@ -16,37 +16,37 @@ public class AccountBuilder {
     private List<String> languages=new ArrayList<>(Arrays.asList(TranslationService.ENGLISH_VALUE));
 
     public AccountBuilder setAid(int aid) {
-        this.aid = aid;
+        this.aid=aid;
         return this;
     }
 
     public AccountBuilder setUserName(String userName) {
-        this.userName = userName;
+        this.userName=userName;
         return this;
     }
 
     public AccountBuilder setPassword(String password) {
-        this.password = password;
+        this.password=password;
         return this;
     }
 
     public AccountBuilder setStatus(int status) {
-        this.status = status;
+        this.status=status;
         return this;
     }
 
     public AccountBuilder setAboutMe(String aboutMe) {
-        this.aboutMe = aboutMe;
+        this.aboutMe=aboutMe;
         return this;
     }
 
     public AccountBuilder setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
+        this.profilePicture=profilePicture;
         return this;
     }
 
     public AccountBuilder setLanguages(List<String> languages) {
-        this.languages = languages;
+        this.languages=languages;
         return this;
     }
 

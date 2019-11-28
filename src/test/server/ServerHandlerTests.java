@@ -54,7 +54,7 @@ public class ServerHandlerTests {
 		s.run();
 
 		verify(this.serverMock, times(1)).sendToUser(eq(this.connectionMock), eq(LOGIN_SUCCESS), eq(account));
-		verify(this.serverMock, times(1)).setLoggedUser(eq(this.connectionMock), eq(account));
+        verify(this.serverMock, times(1)).setConnectionAccount(eq(this.connectionMock), eq(account));
 	}
 
 	@Test

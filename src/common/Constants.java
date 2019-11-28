@@ -29,7 +29,7 @@ public class Constants {
                 BRDCAST_USERS="broadcastUsers",
                 USERLIST = "userlist",
                 SHUTDOWN = "shutdown",
-                BROADCAST = "broadcast", DELETE_ACCOUNT = "deleteAccount",
-                PROFILE_UPDATE="profileUpdate";
+                PROFILE_UPDATE="profileUpdate",
+                BROADCAST = "broadcast";
     }
 }

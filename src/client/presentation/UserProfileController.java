@@ -51,7 +51,7 @@ public class UserProfileController extends UIController {
 		try {
 			this.handlePasswordGuardedProfileChanges();
 			this.client.sendToServer(PROFILE_UPDATE, this.loggedInAccount);
-			this.close();
+			client.closeCurrentWindowNoexit();
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 			lblError.setText(e.getMessage());

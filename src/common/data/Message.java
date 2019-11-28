@@ -15,7 +15,7 @@ public class Message {
     // INHERIT:
     private String originalText;
     private String originalLang;
-    private HashMap<String, String> translations;
+    private HashMap<String,String> translations;
 
 
     public Message() {
@@ -24,7 +24,7 @@ public class Message {
         originalText=null;
     }
 
-    public Message(boolean translate, String text, Timestamp timestamp, String sender, String receiver) {
+    public Message( boolean translate, String text, Timestamp timestamp, String sender, String receiver) {
         this();
         this.translate = translate;
         this.text = text;
@@ -82,8 +82,8 @@ public class Message {
         this.translations=translations;
     }
 
-    public void putTranslation(String key, String value) {
-        this.translations.put(key, value);
+    public void putTranslation(String key,String value){
+        this.translations.put(key,value);
     }
 
     public String getTranslation(String key) {

@@ -62,11 +62,13 @@ public class ServerHandler implements Runnable {
                     /** Check login credentials, send Account from DB to user or throw failed Exception */
                     Account loginAccount=server.loginUser(loginUser);
                     /** Check if user is already logged in somewhere else*/
-                    if (server.getConnectionOfUser(loginAccount.getUserName()) != null) {
+                    //TODO is already loggedin?
+                   /* if(server.getConnectionOfUser(loginAccount.getUserName())!=null){
                         throw new Exception("User is already logged in!");
-                    }
+                    }*/
+                    //TODO Check Account profilepicture
                     server.sendToUser(connection, LOGIN_SUCCESS, loginAccount);
-                    server.setLoggedUser(connection, loginAccount);
+                    server.setConnectionAccount(connection, loginAccount);
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     break;
                 case MESSAGE_SENT:
@@ -91,7 +93,7 @@ public class ServerHandler implements Runnable {
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     break;
                 case LOGOFF:
-                    server.setLoggedUser(connection, null);
+                    server.removeConnectionAccount(connection, (Account) receivedPacket.getData());
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     break;
                 case PROFILE_UPDATE:

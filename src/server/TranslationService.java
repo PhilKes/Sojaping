@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
  * https://cloud.ibm.com/apidocs/language-translator
  */
 public class TranslationService {
-    private final static String API_KEY = "0jVDMEAoG3a7rEOfzvaA5WVzxrSbnSrmW_GyYnInySk2";
-    private final static String SERVICE_URL = "https://gateway-fra.watsonplatform.net/language-translator/api";
-    private final static String DATE = "2019-04-30";
-    public final static String ENGLISH_VALUE = "en",
-            ENGLISH_KEY = "English";
+    private final static String API_KEY="0jVDMEAoG3a7rEOfzvaA5WVzxrSbnSrmW_GyYnInySk2";
+    private final static String SERVICE_URL="https://gateway-fra.watsonplatform.net/language-translator/api";
+    private final static String DATE="2019-04-30";
+    public final static String ENGLISH_VALUE="en",
+            ENGLISH_KEY="English";
     /**
      * All Options for languages
      */
@@ -26,7 +26,7 @@ public class TranslationService {
 
     /** Fill languages Map*/
     static {
-        languages = new HashMap<>();
+        languages=new HashMap<>();
         languages.put("Afrikaans", "af");
         languages.put("Arabic", "ar");
         languages.put("Azerbaijani", "az");
@@ -98,7 +98,7 @@ public class TranslationService {
     }
 
     public static Map<String, String> getSupportedLanguages() {
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map=new HashMap<>();
         map.put("German", "de");
         map.put("English", "en");
         map.put("Spanish", "es");
@@ -119,8 +119,8 @@ public class TranslationService {
     private final LanguageTranslator languageTranslator;
 
     public TranslationService() {
-        authenticator = new IamAuthenticator(API_KEY);
-        languageTranslator = new LanguageTranslator(DATE, authenticator);
+        authenticator=new IamAuthenticator(API_KEY);
+        languageTranslator=new LanguageTranslator(DATE, authenticator);
         languageTranslator.setServiceUrl(SERVICE_URL);
     }
 
@@ -129,25 +129,26 @@ public class TranslationService {
      * if direct translation fails, try translating to english and then to exitLanguage
      */
     public String translate(String text, String entryLanguage, String exitLanguage) {
-        TranslateOptions translateOptions = new TranslateOptions.Builder()
+        TranslateOptions translateOptions=new TranslateOptions.Builder()
                 .addText(text)
                 .modelId(entryLanguage + "-" + exitLanguage)
                 .build();
         TranslationResult result;
         /** Try direct translation*/
         try {
-            result = languageTranslator.translate(translateOptions)
+            result=languageTranslator.translate(translateOptions)
                     .execute().getResult();
-        } catch (NotFoundException e) {
+        }
+        catch(NotFoundException e) {
             /** Translation failed if translate to English failed*/
-            if (exitLanguage.equals(ENGLISH_VALUE)) {
+            if(exitLanguage.equals(ENGLISH_VALUE)) {
                 return null;
             }
             /** First translate to english and then to exitLanguage if direct translation failed */
-            String enTxt = translate(text, entryLanguage, ENGLISH_VALUE);
+            String enTxt=translate(text, entryLanguage, ENGLISH_VALUE);
             return translate(enTxt, ENGLISH_VALUE, exitLanguage);
         }
-        if (result.getTranslations().size() > 0) {
+        if(result.getTranslations().size()>0) {
             return result.getTranslations().get(0).getTranslation();
         }
         return null;
@@ -157,10 +158,10 @@ public class TranslationService {
      * Return most likely language of text (language key), confidence at least 50% otherwise returns null
      */
     public String identifyLanguage(String text) {
-        IdentifyOptions identifyOptions = new IdentifyOptions.Builder()
+        IdentifyOptions identifyOptions=new IdentifyOptions.Builder()
                 .text(text)
                 .build();
-        IdentifiedLanguages languages = languageTranslator.identify(identifyOptions)
+        IdentifiedLanguages languages=languageTranslator.identify(identifyOptions)
                 .execute().getResult();
         /** Check if identifiedlanguages is not empty and has at least 50% confidence */
         if(languages.getLanguages().size()>0 && languages.getLanguages().get(0).getConfidence()>0.19) {
@@ -176,9 +177,9 @@ public class TranslationService {
      * Get all available Languages of IBM Translation API
      */
     public Map<String, String> getIBMLanguages() {
-        IdentifiableLanguages languages = languageTranslator.listIdentifiableLanguages()
+        IdentifiableLanguages languages=languageTranslator.listIdentifiableLanguages()
                 .execute().getResult();
-        Map<String, String> languageMap = languages.getLanguages().stream()
+        Map<String, String> languageMap=languages.getLanguages().stream()
                 .collect(Collectors.toMap(IdentifiableLanguage::getName, IdentifiableLanguage::getLanguage));
         return languageMap;
     }

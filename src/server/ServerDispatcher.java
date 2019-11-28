@@ -12,15 +12,13 @@ public class ServerDispatcher implements Runnable {
     private final Server server;
     private final HashMap<String, Connection> connections;
     private AtomicBoolean running;
-    /**
-     * Using ThreadPool for instantiating ServerHandler Threads
-     */
+    /** Using ThreadPool for instantiating ServerHandler Threads*/
     private ExecutorService executor;
 
     public ServerDispatcher(Server server, HashMap<String, Connection> connections) {
         this.server=server;
-        this.connections= connections;
-        this.running = new AtomicBoolean(true);
+        this.connections=connections;
+        this.running=new AtomicBoolean(true);
         executor = Executors.newFixedThreadPool(5);
     }
 
@@ -30,7 +28,7 @@ public class ServerDispatcher implements Runnable {
      */
     @Override
     public void run() {
-        while (running.get()) {
+        while(running.get()) {
             synchronized (connections) {
                 for(Connection connection : connections.values()) {
                     try {
@@ -39,13 +37,15 @@ public class ServerDispatcher implements Runnable {
                             Scanner sc=new Scanner(connection.getInputStream(), "UTF-8");
                             executor.execute(new ServerHandler(server, connection, sc.nextLine()));
                         }
-                    } catch(IOException e) {
+                    }
+                    catch(IOException e) {
                         e.printStackTrace();
                     }
                 }
                 try {
                     Thread.sleep(50);
-                } catch(InterruptedException e) {
+                }
+                catch(InterruptedException e) {
                     e.printStackTrace();
                 }
             }

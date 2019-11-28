@@ -22,9 +22,9 @@ import static common.JsonHelper.getPacketFromJson;
 public class Server {
     private static final String SOJAPING="sojaping.db";
 
-	//    public static String SERVER_HOST="141.59.128.171";
-	public static String SERVER_HOST = "10.0.75.1";
-    //public static String SERVER_HOST = "141.59.129.129";
+    //public static String SERVER_HOST="141.59.128.171";
+    public static String SERVER_HOST="192.168.178.26";
+
 
     public static int SERVER_PORT=9999;//443;
 
@@ -46,9 +46,9 @@ public class Server {
         this.port=port;
         this.connections=new HashMap<>();
         this.dbService=dbService;
-        this.translateService = new TranslationService();
-        dispatcher = new ServerDispatcher(this, connections);
-        running = new AtomicBoolean(true);
+        this.translateService=new TranslationService();
+        dispatcher=new ServerDispatcher(this, connections);
+        running=new AtomicBoolean(true);
     }
 
     public static void main(String[] args) throws IOException {
@@ -60,16 +60,16 @@ public class Server {
 
     private void run() throws IOException {
         InetAddress localHost = InetAddress.getLocalHost();
-        String inetAddress = localHost.getHostAddress();
+        String inetAddress=localHost.getHostAddress();
         server=new ServerSocket(port, 50, InetAddress.getByName(inetAddress)) {
             protected void finalize() throws IOException {
                 this.close();
             }
         };
-        InterfaceAddress network = NetworkInterface.getByInetAddress(localHost)
+        InterfaceAddress network=NetworkInterface.getByInetAddress(localHost)
                 .getInterfaceAddresses().get(0);
         System.out.println("Server started on Host: " + inetAddress + " Port: " + port);
-        System.out.println("Network: " + network.getAddress() + "\tMask: /" + network.getNetworkPrefixLength());
+        System.out.println("Network: "+network.getAddress()+"\tMask: /"+network.getNetworkPrefixLength());
 
         /** Start Command Handler Thread */
         new Thread(this::handleCommands).start();
@@ -77,17 +77,17 @@ public class Server {
         new Thread(dispatcher).start();
 
         /** Continouesly accept new Socket connections, add connection to list if CONNECT received*/
-        while (running.get()) {
-            Socket clientSocket = null;
+        while(running.get()) {
+            Socket clientSocket=null;
             try {
-                clientSocket = server.accept();
-            } catch (SocketException e) {
+                 clientSocket=server.accept();
+            }catch(SocketException e){
                 System.out.println("Interrupted Accept Connection");
                 continue;
             }
             /** Do not accept connections from outside the network of the Server */
-            if (!Util.sameNetwork(localHost, clientSocket.getInetAddress(), network.getNetworkPrefixLength())) {
-                System.err.println("Refused external connection from: " + clientSocket.getInetAddress().getHostAddress());
+            if(!Util.sameNetwork(localHost,clientSocket.getInetAddress(),network.getNetworkPrefixLength())){
+                System.err.println("Refused external connection from: "+clientSocket.getInetAddress().getHostAddress());
                 continue;
             }
             /** Receive connectPacket with Clients IP as data, add to connection list*/
@@ -106,7 +106,8 @@ public class Server {
                         connections.put(clientIP, newConnection);
                     }
                     sendToUser(newConnection, CONNECT_SUCCESS, "Hello " + clientIP);
-                } catch(IOException e) {
+                }
+                catch(IOException e) {
                     e.printStackTrace();
                     continue;
                 }
@@ -116,23 +117,22 @@ public class Server {
             }
         }
         System.out.println("Shutting down server...");
-        broadcastPacket(SHUTDOWN, "Shutdown");
+        broadcastPacket(SHUTDOWN,"Shutdown");
         dispatcher.setRunning(false);
     }
 
-    /**
-     * Runnable for reading commands in Console
-     */
+    /** Runnable for reading commands in Console */
     private void handleCommands() {
         Scanner in = new Scanner(System.in);
-        while (in.hasNextLine()) {
-            String command = in.nextLine();
-            switch (command.toLowerCase()) {
+        while(in.hasNextLine()) {
+            String command=in.nextLine();
+            switch(command.toLowerCase()) {
                 case "stop":
                     setRunning(false);
                     try {
                         server.close();
-                    } catch (IOException e) {
+                    }
+                    catch(IOException e) {
                         e.printStackTrace();
                     }
                     in.close();
@@ -140,11 +140,11 @@ public class Server {
                 case "clients":
                     System.out.println("Connected clients:");
                     synchronized (connections) {
-                        if (connections.isEmpty()) {
+                        if(connections.isEmpty()) {
                             System.out.println("No connections...");
-                        } else {
+                        }else {
                             connections.forEach((k, v) -> {
-                                System.out.println(k + " (" + v.getNickname() + ")\t" + (v.isLoggedIn() ? v.getLoggedAccount() : "Not logged in"));
+                                System.out.println(k+" ("+v.getNickname()+")\t" + (v.isLoggedIn() ? v.getLoggedAccount() : "Not logged in"));
                             });
                         }
                     }
@@ -164,33 +164,35 @@ public class Server {
         //LoginUser loginUser = JsonHelper.convertJsonToObject(accountOrLoginAsJson);
         Account account=this.dbService.getAccountByLoginUser(loginUser);
         if(account!=null) {
-            if(account.getPassword().equals(loginUser.getPassword())) {
-                return account;
-            }
-            else {
-                throw new Exception("Invalid password");
-            }
+            return account;
         }
         else {
-            throw new Exception("Unknown username");
+            throw new Exception("Invalid credentials");
         }
     }
 
     /**
-     * Links Connection to Account, updates clients HashMap
+     * Links Connection to Account, updates connections HashMap
      */
-    public void setLoggedUser(Connection connection, Account account) {
+    public void setConnectionAccount(Connection connection, Account account) {
         /** Replace clientIP with newly logged in account.userName */
         synchronized (connections) {
-            /** Logout */
-            if(account==null) {
-                connections.remove(connection.getLoggedAccount().getUserName());
-            }
-            else {
-                connections.remove(connection.getNickname());
-                connection.setLoggedAccount(account);
-                connections.put(account.getUserName(), connection);
-            }
+            connections.remove(connection.getNickname());
+            connection.setLoggedAccount(account);
+            connections.put(account.getUserName(), connection);
+        }
+
+    }
+
+    /**
+     * User logs out, remove from connections
+     */
+    public void removeConnectionAccount(Connection connection, Account account) {
+        if(account==null) {
+            connections.remove(connection.getNickname());
+        }
+        else {
+            connections.remove(connection.getLoggedAccount().getUserName());
         }
     }
 
@@ -199,11 +201,7 @@ public class Server {
     }
 
 	public void updateUser(Account account) {
-		this.dbService.updateAccount(account);
-	}
-
-	public void deleteUser(Account account) {
-		this.dbService.deleteAccount(account);
+        this.dbService.updateAccount(account);
 	}
 
     /**
@@ -228,21 +226,21 @@ public class Server {
         if(!connections.containsKey(receiver)) {
             return false;
         }
-        Connection receiverCon = connections.get(receiver);
-        Profile receiverProfile = receiverCon.getLoggedAccount().getProfile();
+        Connection receiverCon=connections.get(receiver);
+        Profile receiverProfile= receiverCon.getLoggedAccount().getProfile();
 
         //Connection senderCon=connections.get(message.getSender());
         //Profile senderProfile= senderCon.getLoggedAccount().getProfile();
         /** Only check translation if user wants message to be translated */
-        if (message.isTranslate()) {
+        if(message.isTranslate()) {
             /** Identify message's original language*/
-            String msgLanguage = translateService.identifyLanguage(message.getText());
-            if (msgLanguage != null) {
-                String receiverLanguage = receiverProfile.getLanguages().get(0);
+            String msgLanguage=translateService.identifyLanguage(message.getText());
+            if(msgLanguage!=null) {
+                String receiverLanguage=receiverProfile.getLanguages().get(0);
                 /** Check if receiver doesnt speak message's language */
-                if (!msgLanguage.equals(receiverLanguage)) {
+                if(!msgLanguage.equals(receiverLanguage)) {
                     /** Translate to receiver's language*/
-                    String translated = translateService.translate(message.getText(), msgLanguage, receiverLanguage);
+                    String translated=translateService.translate(message.getText(), msgLanguage, receiverLanguage);
                     message.putTranslation(receiverLanguage, translated);
                     /** Store original message text and langauge*/
                     message.setOriginalLang(msgLanguage);

@@ -1,6 +1,8 @@
 package common;
 
+import client.presentation.GUIController;
 import common.data.Packet;
+import javafx.scene.image.Image;
 import server.Connection;
 
 import java.net.InetAddress;
@@ -14,6 +16,7 @@ import static common.Constants.Contexts.FAIL;
  */
 public class Util {
 
+    private static final Image DEFAULT_AVATAR=new Image(GUIController.class.getResourceAsStream("resources/default_avatar_min.png"));
     /**
      * Log sent/received Packet in Console
      * from: true(received packet), from: false(sent packet)
@@ -33,27 +36,28 @@ public class Util {
         logPacket(from, (con.isLoggedIn() ? ("(" + con.getLoggedAccount().getUserName() + ")") : "\t\t") + con.getNickname(), packet);
     }
 
-    public static List<String> joinedStringToList(String str) {
+    public static List<String> joinedStringToList(String str){
         return Arrays.asList(str.split(","));
     }
 
     /** Check if two InetAdresses are in same network */
-    /**
-     * Source: https://stackoverflow.com/questions/8555847/test-with-java-if-two-ips-are-in-the-same-network
-     */
+    /** Source: https://stackoverflow.com/questions/8555847/test-with-java-if-two-ips-are-in-the-same-network*/
     private static boolean sameNetwork(final byte[] x, final byte[] y, final int mask) {
-        if (x == y) return true;
-        if (x == null || y == null) return false;
-        if (x.length != y.length) return false;
-        final int bits = mask & 7;
+        if(x == y) return true;
+        if(x == null || y == null) return false;
+        if(x.length != y.length) return false;
+        final int bits  = mask &   7;
         final int bytes = mask >>> 3;
-        for (int i = 0; i < bytes; i++) if (x[i] != y[i]) return false;
+        for(int i=0;i<bytes;i++)  if(x[i] != y[i]) return false;
         final int shift = 8 - bits;
-        if (bits != 0 && x[bytes] >>> shift != y[bytes] >>> shift) return false;
+        if(bits != 0 && x[bytes]>>>shift != y[bytes]>>>shift) return false;
         return true;
     }
-
     public static boolean sameNetwork(final InetAddress a, final InetAddress b, final int mask) {
         return sameNetwork(a.getAddress(), b.getAddress(), mask);
+    }
+
+    public static Image getDefaultAvatar() {
+        return DEFAULT_AVATAR;
     }
 }

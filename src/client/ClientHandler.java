@@ -62,8 +62,8 @@ class ClientHandler implements Runnable {
                     client.closeCurrentWindowNoexit();
                     client.openWindow("gui");
                     break;
-                case (LOGIN + FAIL):
-                    String error = receivedPacket.getData();
+                case (LOGIN+FAIL):
+                    String error= receivedPacket.getData();
 
                     break;
                 case REGISTER_SUCCESS:
@@ -84,9 +84,9 @@ class ClientHandler implements Runnable {
                     });
                     break;
                 case SHUTDOWN:
-                    String text = receivedPacket.getData();
-                    System.out.println("SERVER is shutting down: " + text);
-                    running = false;
+                    String text= receivedPacket.getData();
+                    System.out.println("SERVER is shutting down: "+text);
+                    running=false;
                     break;
                 default:
                     System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());

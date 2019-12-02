@@ -69,6 +69,7 @@ public class ServerHandler implements Runnable {
                     server.sendToUser(connection, LOGIN_SUCCESS, loginAccount);
                     server.setConnectionAccount(connection, loginAccount);
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
+                    server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
                     break;
                 case MESSAGE_SENT:
                     System.out.println("Send message");
@@ -100,14 +101,18 @@ public class ServerHandler implements Runnable {
                     server.putIPConnection(connection);
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     break;
-                case PROFILE_UPDATE:
-					Account updatedAccount = receivedPacket.getData();
-					server.updateUser(updatedAccount);
+                case ADD_FRIEND:
+                    server.addFriend(connection.getLoggedAccount(), receivedPacket.getData());
+                    server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
                     break;
-				case DELETE_ACCOUNT:
-					Account accountForDeletion = receivedPacket.getData();
-					server.deleteUser(accountForDeletion);
-					break;
+                case PROFILE_UPDATE:
+                    Account updatedAccount = receivedPacket.getData();
+                    server.updateUser(updatedAccount);
+                    break;
+                case DELETE_ACCOUNT:
+                    Account accountForDeletion = receivedPacket.getData();
+                    server.deleteUser(accountForDeletion);
+                    break;
                 default:
                     System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());
                     throw new Exception("Unknown Packet context('" + receivedPacket.getContext() + "') sent!");

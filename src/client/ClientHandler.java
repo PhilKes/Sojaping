@@ -82,8 +82,8 @@ class ClientHandler implements Runnable {
                     break;
                 case SHUTDOWN:
                     String text= receivedPacket.getData();
-                    System.out.println("SERVER is shutting down: "+text);
-                    running=false;
+                    System.out.println("SERVER is shutting down: " + text);
+                    running = false;
                 case GROUPLIST:
                     ArrayList<Group> groupList = receivedPacket.getData();
                     System.out.println("Groups received:");
@@ -92,6 +92,10 @@ class ClientHandler implements Runnable {
                         client.getGUIController().displayGroupChats(groupList);
                     });
                     break;
+                case FRIEND_LIST:
+                    Platform.runLater(() -> client.getGUIController().displayContactsProfiles(receivedPacket.getData()));
+                    break;
+
                 default:
                     System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());
                     throw new Exception("Unknown Packet context('" + receivedPacket.getContext() + "') sent!");

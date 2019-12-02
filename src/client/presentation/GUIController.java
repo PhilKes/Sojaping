@@ -8,8 +8,6 @@ import common.data.Group;
 import common.data.Message;
 import common.data.Profile;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;

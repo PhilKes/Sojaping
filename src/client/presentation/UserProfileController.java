@@ -76,10 +76,12 @@ public class UserProfileController extends UIController {
 	}
 
 	private void onCancelClick() {
-		Platform.runLater(() -> ((Stage) btnCancel.getScene().getWindow()).close());
-	}
+        //Platform.runLater(() -> ((Stage) btnCancel.getScene().getWindow()).close());
+        client.closeCurrentWindowNoexit();
+    }
 
-	public void close() {
-		Platform.runLater(() -> ((Stage) btnSave.getScene().getWindow()).close());
-	}
+    @Override
+    public void close() {
+        Platform.runLater(() -> ((Stage) btnSave.getScene().getWindow()).close());
+    }
 }

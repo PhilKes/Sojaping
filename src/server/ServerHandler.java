@@ -62,10 +62,9 @@ public class ServerHandler implements Runnable {
                     /** Check login credentials, send Account from DB to user or throw failed Exception */
                     Account loginAccount=server.loginUser(loginUser);
                     /** Check if user is already logged in somewhere else*/
-                    //TODO is already loggedin?
-                   /* if(server.getConnectionOfUser(loginAccount.getUserName())!=null){
+                    if (server.getConnectionOfUser(loginAccount.getUserName()) != null) {
                         throw new Exception("User is already logged in!");
-                    }*/
+                    }
                     //TODO Check Account profilepicture
                     server.sendToUser(connection, LOGIN_SUCCESS, loginAccount);
                     server.setConnectionAccount(connection, loginAccount);
@@ -92,8 +91,13 @@ public class ServerHandler implements Runnable {
                     //TODO Exclude the receiving client/User?
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     break;
+                case SHUTDOWN:
+                    server.removeConnectionAccount(connection, (Account) receivedPacket.getData());
+                    server.broadcastPacket(USERLIST, server.getOnlineUsers());
+                    break;
                 case LOGOFF:
                     server.removeConnectionAccount(connection, (Account) receivedPacket.getData());
+                    server.putIPConnection(connection);
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     break;
                 case PROFILE_UPDATE:

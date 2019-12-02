@@ -192,7 +192,7 @@ public class DatabaseService {
             pstmt.setInt(6, acc.getAid());
             pstmt.executeUpdate();
             /** Debug */
-            System.out.println(getAccountById(acc.getAid()));
+            System.out.println("Updated: " + getAccountById(acc.getAid()));
         }
         catch(SQLException e) {
             System.out.println(e.getMessage());

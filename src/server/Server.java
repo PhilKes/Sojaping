@@ -22,8 +22,8 @@ import static common.JsonHelper.getPacketFromJson;
 public class Server {
     private static final String SOJAPING="sojaping.db";
 
-    public static String SERVER_HOST="141.59.128.171";
-//    public static String SERVER_HOST="192.168.178.26";
+    //    public static String SERVER_HOST="141.59.128.171";
+    public static String SERVER_HOST = "192.168.178.26";
 //    public static String SERVER_HOST="10.0.75.1";
 
 
@@ -103,9 +103,7 @@ public class Server {
                 try {
                     Connection newConnection=new Connection(clientSocket, clientSocket.getInetAddress().getHostAddress());
                     /** Temporarily put clientIP as userName until client loggs into an Account */
-                    synchronized (connections) {
-                        connections.put(clientIP, newConnection);
-                    }
+                    putIPConnection(newConnection);
                     sendToUser(newConnection, CONNECT_SUCCESS, "Hello " + clientIP);
                 }
                 catch(IOException e) {
@@ -120,6 +118,12 @@ public class Server {
         System.out.println("Shutting down server...");
         broadcastPacket(SHUTDOWN,"Shutdown");
         dispatcher.setRunning(false);
+    }
+
+    public void putIPConnection(Connection connection) {
+        synchronized (connections) {
+            connections.put(connection.getNickname(), connection);
+        }
     }
 
     /** Runnable for reading commands in Console */
@@ -189,12 +193,14 @@ public class Server {
      * User logs out, remove from connections
      */
     public void removeConnectionAccount(Connection connection, Account account) {
-        if(account==null) {
-            connections.remove(connection.getNickname());
+        synchronized (connections) {
+            if (account == null) {
+                connections.remove(connection.getNickname());
+            } else {
+                connections.remove(account.getUserName());
+            }
         }
-        else {
-            connections.remove(connection.getLoggedAccount().getUserName());
-        }
+        connection.setLoggedAccount(null);
     }
 
     public void registerUser(Account account) throws Exception {
@@ -228,48 +234,55 @@ public class Server {
      */
     public boolean sendMessage(Message message) {
         String receiver=message.getReceiver();
-        if(!connections.containsKey(receiver)) {
-            return false;
-        }
-        Connection receiverCon=connections.get(receiver);
-        Profile receiverProfile= receiverCon.getLoggedAccount().getProfile();
+        synchronized (connections) {
+            if (!connections.containsKey(receiver)) {
+                return false;
+            }
+            Connection receiverCon = connections.get(receiver);
+            Profile receiverProfile = receiverCon.getLoggedAccount().getProfile();
 
-        //Connection senderCon=connections.get(message.getSender());
-        //Profile senderProfile= senderCon.getLoggedAccount().getProfile();
-        /** Only check translation if user wants message to be translated */
-        if(message.isTranslate()) {
-            /** Identify message's original language*/
-            String msgLanguage=translateService.identifyLanguage(message.getText());
-            if(msgLanguage!=null) {
-                String receiverLanguage=receiverProfile.getLanguages().get(0);
-                /** Check if receiver doesnt speak message's language */
-                if(!msgLanguage.equals(receiverLanguage)) {
-                    /** Translate to receiver's language*/
-                    String translated=translateService.translate(message.getText(), msgLanguage, receiverLanguage);
-                    message.putTranslation(receiverLanguage, translated);
-                    /** Store original message text and langauge*/
-                    message.setOriginalLang(msgLanguage);
-                    message.setOriginalText(message.getText());
-                    /** Set text to translated text for receiver*/
-                    message.setText(translated);
+            //Connection senderCon=connections.get(message.getSender());
+            //Profile senderProfile= senderCon.getLoggedAccount().getProfile();
+            /** Only check translation if user wants message to be translated */
+            if (message.isTranslate()) {
+                /** Identify message's original language*/
+                String msgLanguage = translateService.identifyLanguage(message.getText());
+                if (msgLanguage != null) {
+                    String receiverLanguage = receiverProfile.getLanguages().get(0);
+                    /** Check if receiver doesnt speak message's language */
+                    // TODO if(!receiverProfile.getLanguages().contains(msgLanguage))
+                    if (!msgLanguage.equals(receiverLanguage)) {
+                        /** Translate to receiver's language*/
+                        // TODO String translated=translateService.translate(message.getText(),
+                        //  msgLanguage, receiverLanguage.get(0));
+                        String translated = translateService.translate(message.getText(), msgLanguage, receiverLanguage);
+                        message.putTranslation(receiverLanguage, translated);
+                        /** Store original message text and langauge*/
+                        message.setOriginalLang(msgLanguage);
+                        message.setOriginalText(message.getText());
+                        /** Set text to translated text for receiver*/
+                        message.setText(translated);
+                    }
                 }
             }
+            sendToUser(receiverCon, MESSAGE_RECEIVED, message);
+            return true;
         }
-        sendToUser(receiverCon, MESSAGE_RECEIVED, message);
-        return true;
     }
 
     public void broadcastPacket(String context, Object data) {
-        connections.values().stream()
-                .filter(c -> c.isLoggedIn())
-                .forEach(c -> sendToUser(c, context, data));
+        synchronized (connections) {
+            connections.values().stream()
+                    .filter(Connection::isLoggedIn)
+                    .forEach(c -> sendToUser(c, context, data));
+        }
     }
 
     public void broadcastMessages(Message message) {
         this.connections.values().stream()
-                .filter(c -> c.isLoggedIn())
+                .filter(Connection::isLoggedIn)
                 .forEach(client -> {
-                            if(!message.getSender().equals(client.getLoggedAccount().getUserName())) {
+                    if (!message.getSender().equals(client.getLoggedAccount().getUserName())) {
                                 sendToUser(client, MESSAGE_RECEIVED, message);
                             }
                         }
@@ -288,7 +301,9 @@ public class Server {
     }
 
     public Connection getConnectionOfUser(String userName) {
-        return connections.get(userName);
+        synchronized (connections) {
+            return connections.get(userName);
+        }
     }
 
     public boolean isRunning() {

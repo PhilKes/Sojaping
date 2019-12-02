@@ -1,32 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
-<?import java.lang.String?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
 <AnchorPane prefHeight="400.0" prefWidth="400.0" styleClass="anchor-pane" stylesheets="@resources/main.css"
             xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.presentation.RegisterController">
-    <AnchorPane layoutX="107.0" layoutY="79.0" prefHeight="219.0" prefWidth="230.0">
+    <GridPane layoutX="111.0" layoutY="114.0">
       <children>
-         <Label layoutX="1.0" layoutY="35.0" text="Username:" />
-         <TextField fx:id="txtUsername" layoutX="62.0" layoutY="31.0" />
-         <Label layoutX="2.0" layoutY="65.0" text="Password:" />
-          <PasswordField fx:id="txtPassword" layoutX="62.0" layoutY="61.0"/>
-         <Label layoutX="-1.0" layoutY="137.0" text="Languages:" />
-          <PasswordField fx:id="txtRepeat" layoutX="62.0" layoutY="93.0"/>
-          <Label layoutX="2.0" layoutY="97.0" text="Repeat:"/>
-          <MenuButton fx:id="menuLanguages" layoutX="62.0" layoutY="133.0" maxWidth="149.0" minWidth="149.0"/>
+          <Label layoutX="1.0" layoutY="35.0" text="Username">
+              <graphic>
+                  <FontIcon iconLiteral="fa-user" iconSize="18"/>
+              </graphic>
+
+          </Label>
+          <TextField fx:id="txtUsername" layoutX="62.0" layoutY="31.0" GridPane.columnIndex="1">
+          </TextField>
+          <Label layoutX="2.0" layoutY="65.0" text="Password" GridPane.rowIndex="1">
+              <graphic>
+                  <FontIcon iconLiteral="fa-lock" iconSize="18"/>
+              </graphic>
+          </Label>
+          <PasswordField fx:id="txtPassword" layoutX="62.0" layoutY="61.0" GridPane.columnIndex="1"
+                         GridPane.rowIndex="1"/>
+          <Label layoutX="2.0" layoutY="97.0" text="Repeat" GridPane.rowIndex="2">
+              <graphic>
+                  <FontIcon iconLiteral="fa-lock" iconSize="18"/>
+              </graphic>
+          </Label>
+          <PasswordField fx:id="txtRepeat" layoutX="62.0" layoutY="93.0" GridPane.columnIndex="1"
+                         GridPane.rowIndex="2"/>
+          <Label layoutX="-1.0" layoutY="137.0" text="Languages" GridPane.rowIndex="3">
+              <graphic>
+                  <FontIcon iconLiteral="fa-flag" iconSize="18"/>
+              </graphic>
+              <GridPane.margin>
+                  <Insets right="10"/>
+              </GridPane.margin>
+          </Label>
+          <MenuButton fx:id="menuLanguages" layoutX="62.0" layoutY="133.0" maxWidth="1.7976931348623157E308"
+                      GridPane.columnIndex="1" GridPane.rowIndex="3"/>
           <!--<ChoiceBox fx:id="boxLanguages" layoutX="62.0" layoutY="133.0" prefWidth="150.0" />-->
       </children>
-   </AnchorPane>
-    <Button fx:id="btnRegister" layoutX="183.0" layoutY="319.0" mnemonicParsing="false" text="Register">
+        <columnConstraints>
+            <ColumnConstraints/>
+            <ColumnConstraints minWidth="10.0" prefWidth="100.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0"/>
+        </rowConstraints>
+    </GridPane>
+    <Button fx:id="btnRegister" layoutX="140.0" layoutY="303.0" mnemonicParsing="false" text="Register">
         <styleClass>
             <String fx:value="orange"/>
             <String fx:value="button"/>
         </styleClass>
+        <graphic>
+            <FontIcon iconLiteral="fa-user-plus" iconSize="18"/>
+        </graphic>
     </Button>
     <Label layoutX="97.0" layoutY="44.0" text="Register to Sojaping">
         <font>

@@ -14,12 +14,14 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <BorderPane id="rootPane" fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-            minWidth="-Infinity" stylesheets="@resources/main.css" xmlns="http://javafx.com/javafx/8.0.141"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.presentation.GUIController">
+            minWidth="-Infinity" prefHeight="690.0" prefWidth="911.0" stylesheets="@resources/main.css"
+            xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.presentation.GUIController">
     <left>
-        <VBox fx:id="vBoxContacts" alignment="TOP_CENTER" BorderPane.alignment="CENTER">
+        <VBox fx:id="vBoxContacts" alignment="TOP_CENTER" prefHeight="595.0" BorderPane.alignment="CENTER_LEFT">
             <children>
                 <HBox fx:id="hBoxMe" alignment="CENTER_LEFT">
                     <children>
@@ -52,7 +54,11 @@
                         <Tab fx:id="tabContacts" text="Contacts">
                             <content>
                                 <ListView fx:id="tabContactsListView"/>
-                            </content></Tab>
+                            </content>
+                            <graphic>
+                                <FontIcon iconLiteral="fa-user-circle" iconSize="16"/>
+                            </graphic>
+                        </Tab>
                         <Tab fx:id="tabOnline" text="Online">
                             <content>
                                 <ListView fx:id="tabOnlineListView"/>
@@ -61,9 +67,31 @@
                      <content>
                          <ListView fx:id="tabGroupChatListView" prefHeight="391.0" prefWidth="248.0"/>
                      </content>
+                      <graphic>
+                          <FontIcon iconLiteral="fa-users" iconSize="16"/>
+                      </graphic>
                   </Tab>
                     </tabs>
                 </TabPane>
+                <HBox alignment="CENTER">
+                    <children>
+                        <Button fx:id="btnLogout" layoutX="51.0" layoutY="10.0" mnemonicParsing="false"
+                                onMouseClicked="#onMyProfileClicked" prefHeight="37.0" prefWidth="94.0"
+                                styleClass="red">
+                            <HBox.margin>
+                                <Insets right="6.0"/>
+                            </HBox.margin>
+                            <graphic>
+                                <FontIcon iconLiteral="fa-sign-out" iconSize="22"/>
+                            </graphic>
+                        </Button>
+                        <Button fx:id="btnMyProfile" mnemonicParsing="false" onMouseClicked="#onMyProfileClicked"
+                                prefHeight="34.0" prefWidth="123.0" styleClass="orange" text="MyProfile"/>
+                    </children>
+                    <padding>
+                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
+                    </padding>
+                </HBox>
             </children>
         </VBox>
     </left>
@@ -75,17 +103,24 @@
                         <Image url="@resources/SojaPing_border_color.png"/>
                     </image></ImageView>
                 <ListView fx:id="listVInfo"/>
-            </children></VBox>
+            </children>
+            <BorderPane.margin>
+                <Insets/>
+            </BorderPane.margin>
+        </VBox>
     </right>
     <center>
         <VBox fx:id="vBoxChat" BorderPane.alignment="CENTER">
             <children>
-                <TabPane fx:id="tabPaneChat" prefHeight="550.0" prefWidth="400.0" tabClosingPolicy="ALL_TABS">
+                <TabPane fx:id="tabPaneChat" prefWidth="400.0" tabClosingPolicy="ALL_TABS">
               <tabs>
                 <Tab closable="false" text="Broadcast">
                      <content>
                          <ListView fx:id="listViewBroadcast"/>
                      </content>
+                    <graphic>
+                        <FontIcon iconLiteral="fa-bullhorn"/>
+                    </graphic>
                 </Tab>
               </tabs>
             </TabPane>
@@ -93,33 +128,53 @@
         </VBox>
     </center>
     <bottom>
-        <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <HBox fx:id="bottomHbox" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <children>
-                <Button fx:id="btnMyProfile" mnemonicParsing="false" onMouseClicked="#onMyProfileClicked"
-                        prefHeight="100.0" prefWidth="210.0" styleClass="orange" text="MyProfile"
-                        BorderPane.alignment="CENTER"/>
-                <TextArea fx:id="textASendText" prefHeight="100.0" prefWidth="671.0">
+                <TextArea fx:id="textASendText" prefHeight="80.0" prefWidth="781.0" styleClass="text-area">
                     <BorderPane.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0"/>
                     </BorderPane.margin>
+                    <HBox.margin>
+                        <Insets right="10.0"/>
+                    </HBox.margin>
                 </TextArea>
                 <VBox prefHeight="100.0" BorderPane.alignment="CENTER">
                     <children>
-                        <HBox prefHeight="17.0" prefWidth="200.0">
+                        <HBox alignment="CENTER_LEFT">
                             <children>
                                 <CheckBox fx:id="checkTranslate" mnemonicParsing="false" selected="true"
                                           text="Translate">
                                     <padding>
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                                     </padding>
+                                    <graphic>
+                                        <FontIcon iconLiteral="fa-language" iconSize="24" strokeType="OUTSIDE"
+                                                  strokeWidth="0.0"/>
+                                    </graphic>
+                                    <font>
+                                        <Font name="System Bold" size="12.0"/>
+                                    </font>
                                 </CheckBox>
                             </children>
                         </HBox>
-                        <Button fx:id="btnSend" mnemonicParsing="false" prefHeight="100.0" prefWidth="98.0"
-                                styleClass="green" text="Send"/>
+                        <Button fx:id="btnSend" mnemonicParsing="false" prefHeight="125.0" prefWidth="153.0"
+                                styleClass="green" text="Send">
+                            <graphic>
+                                <FontIcon iconLiteral="fa-commenting" iconSize="20"/>
+                            </graphic>
+                            <VBox.margin>
+                                <Insets top="4.0"/>
+                            </VBox.margin>
+                        </Button>
                     </children>
                 </VBox>
             </children>
+            <BorderPane.margin>
+                <Insets/>
+            </BorderPane.margin>
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+            </padding>
         </HBox>
     </bottom>
 

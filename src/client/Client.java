@@ -1,14 +1,17 @@
 package client;
 
 import client.presentation.GUIController;
+import client.presentation.TitleBarController;
 import client.presentation.UIController;
 import common.Util;
 import common.data.Account;
 import common.data.Packet;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -24,7 +27,7 @@ import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static common.Constants.Contexts.CONNECT;
-import static common.Constants.Contexts.LOGOFF;
+import static common.Constants.Contexts.SHUTDOWN;
 
 public class Client {
 
@@ -108,18 +111,34 @@ public class Client {
     public void openWindow(String window) {
         Platform.runLater(() -> {
             try {
-                FXMLLoader fxmlLoader=new FXMLLoader(getClass().getResource("presentation/" + window + ".fxml"));
-                Parent root1=(Parent) fxmlLoader.load();
-                UIController controller=(UIController) fxmlLoader.getController();
+                FXMLLoader windowLoader = new FXMLLoader(getClass().getResource("presentation/" + window + ".fxml"));
+                Pane root1 = windowLoader.load();
+                UIController controller = (UIController) windowLoader.getController();
                 controller.setClient(this);
                 setController(controller);
                 Stage stage=new Stage();
                 stage.initModality(Modality.APPLICATION_MODAL);
-                stage.initStyle(StageStyle.DECORATED);
+                stage.initStyle(StageStyle.UNDECORATED);
                 stage.setTitle(window.toUpperCase());
-                stage.setScene(new Scene(root1));
+
+                /** Wrap Window in custom VBox with TitleBar*/
+                VBox wrapBox = new VBox();
+                wrapBox.setId("window-wrapper");
+                wrapBox.getStylesheets().add(getClass().getResource("presentation/resources/main.css").toExternalForm());
+                FXMLLoader titleBarLoader = new FXMLLoader(getClass().getResource("presentation/TitleBar.fxml"));
+                TitleBarController titleBarController = new TitleBarController();
+                titleBarController.setClient(this);
+                titleBarController.setStage(stage);
+                titleBarLoader.setController(titleBarController);
+
+                HBox titleBar = titleBarLoader.load();
+                titleBar.prefWidthProperty().bind(root1.prefWidthProperty());
+                wrapBox.getChildren().addAll(titleBar, root1);
+
+                stage.setScene(new Scene(wrapBox));
                 stage.setOnCloseRequest(ev -> closeCurrentWindow());
                 stage.setResizable(false);
+                stage.getIcons().add(Util.getDefaultIcon());
                 if(account!=null)
                     stage.setTitle(window.toUpperCase()+" "+account.getUserName());
                 stage.show();
@@ -148,7 +167,7 @@ public class Client {
         System.out.println("Closing connection...");
         running.set(false);
         if(output!=null) {
-            sendToServer(LOGOFF, account);
+            sendToServer(SHUTDOWN, account);
             try {
                 Thread.sleep(500);
                 output.close();

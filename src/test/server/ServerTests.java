@@ -39,10 +39,10 @@ public class ServerTests {
 
 		Account account = new AccountBuilder().setAid(100).setUserName("myName").setPassword("myPassword").setStatus(0).setAboutMe("").setProfilePicture("").createAccount();
 
-		when(this.dbServiceMock.getAccountByLoginUser(eq(loginUser))).thenReturn(account);
+        when(this.dbServiceMock.getAccountByLoginUser(eq(loginUser))).thenReturn(null);
 
 		exceptionRule.expect(Exception.class);
-		exceptionRule.expectMessage("Invalid password");
+        exceptionRule.expectMessage("Invalid credentials");
 		server.loginUser(loginUser);
 	}
 
@@ -55,7 +55,7 @@ public class ServerTests {
 		when(this.dbServiceMock.getAccountByLoginUser(loginUser)).thenReturn(null);
 
 		exceptionRule.expect(Exception.class);
-		exceptionRule.expectMessage("Unknown username");
+        exceptionRule.expectMessage("Invalid credentials");
 		server.loginUser(loginUser);
 	}
 

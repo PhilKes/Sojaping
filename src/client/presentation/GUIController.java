@@ -14,18 +14,19 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import server.Server;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
-import static common.Constants.Contexts.BROADCAST;
-import static common.Constants.Contexts.MESSAGE_SENT;
+import static common.Constants.Contexts.*;
 
 public class GUIController extends UIController {
 	@FXML
-	private Button btnSend, btnMyProfile;
+	private Button btnSend, btnMyProfile, btnLogout;
 	@FXML
 	private TextArea textASendText;
 	@FXML
@@ -44,6 +45,8 @@ public class GUIController extends UIController {
 	private ImageView imgAvatar;
 	@FXML
 	private Label labelUserName, labelAbout;
+	@FXML
+	private VBox centerVbox;
 
 	//Message broadcast
 	private ObservableList<Message> broadcastObservableList;
@@ -88,8 +91,17 @@ public class GUIController extends UIController {
 		listVInfo.setItems(participantsObservableList);
 		listVInfo.setCellFactory(profilesListView -> new ContactListViewCell(listVInfo.prefWidthProperty()));
 
+		btnLogout.setOnMouseClicked(e -> onLogoutClicked());
+		VBox.setVgrow(tabPaneChat, Priority.ALWAYS);
 		loadAccount(client.getAccount());
 
+	}
+
+	private void onLogoutClicked() {
+		client.sendToServer(LOGOFF, client.getAccount());
+		client.setAccount(null);
+		client.closeCurrentWindowNoexit();
+		client.openWindow("login");
 	}
 
 	/**

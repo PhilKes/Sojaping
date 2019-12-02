@@ -72,7 +72,7 @@ public class ServerHandlerTests {
 
 	@Test
 	public void testMessageBroadcastPackage() {
-		String json = "{\"method\":\"messageSent\",\"data\":{\"translate\":false,\"text\":\"my message hi\\n\",\"timestamp\":1574255059370,\"sender\":\"aaa\",\"receiver\":null,\"_class\":\"common.data.Message\"}}";
+        String json = "{\"method\":\"messageSent\",\"data\":{\"translate\":false,\"text\":\"my message hi\\n\",\"timestamp\":1574255059370,\"sender\":\"aaa\",\"receiver\":\"broadcast\",\"_class\":\"common.data.Message\"}}";
 		ServerHandler s = new ServerHandler(this.serverMock, this.connectionMock, json);
 		s.run();
 		verify(this.serverMock, times(1)).broadcastMessages(isA(Message.class));

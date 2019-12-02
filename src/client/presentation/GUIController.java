@@ -1,6 +1,5 @@
 package client.presentation;
 
-
 import client.Client;
 import common.Util;
 import common.data.Account;
@@ -19,6 +18,7 @@ import server.Server;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static common.Constants.Contexts.BROADCAST;
 import static common.Constants.Contexts.MESSAGE_SENT;
@@ -63,6 +63,7 @@ public class GUIController extends UIController {
 		});
 		btnSend.setOnMouseClicked(ev -> onSendClicked());
 		textASendText.setOnKeyReleased(event -> {if(event.getCode() == KeyCode.ENTER)onSendClicked();});
+		textASendText.setOnMouseClicked(ev -> this.removeNotification());
 		client=Client.getInstance(Server.SERVER_HOST, Server.SERVER_PORT);
 
 		// Message Window initialize
@@ -90,6 +91,11 @@ public class GUIController extends UIController {
 
 		loadAccount(client.getAccount());
 
+	}
+	private void removeNotification() {
+		String selectedUserName = this.tabOnlineListView.getSelectionModel().getSelectedItem().getUserName();
+		Optional<Tab> selectedTabPane = this.tabPaneChat.getTabs().stream().filter(tab -> tab.getText().equals(selectedUserName)).findFirst();
+		selectedTabPane.ifPresent(tab -> tab.getStyleClass().remove("tab-notification"));
 	}
 
 	/**
@@ -137,8 +143,10 @@ public class GUIController extends UIController {
             displayTab = createNewChatTab(message.getReceiver());
         else
             displayTab = createNewChatTab(message.getSender());
-		//get ListView from tab to add text
+
 		ListView<Message> lv = (ListView<Message>) displayTab.getContent();
+
+		displayTab.getStyleClass().add("tab-notification");
 		lv.getItems().add(message);
 	}
 

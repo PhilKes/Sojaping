@@ -408,3 +408,7 @@
     -fx-text-fill: black;
     -fx-font-size: 14px;
 }
+
+.tab-notification {
+    -fx-background-color: blue !important;
+}

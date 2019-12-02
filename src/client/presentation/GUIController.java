@@ -74,6 +74,11 @@ public class GUIController extends UIController {
 			if (e.getClickCount() == 2)
 				createNewChatTab(tabOnlineListView.getSelectionModel().getSelectedItem().getUserName());
 		});
+		tabOnlineListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2)
+				createNewChatTab(tabContactsListView.getSelectionModel().getSelectedItem().getUserName());
+		});
+		;
 		btnSend.setOnMouseClicked(ev -> onSendClicked());
 		textASendText.setOnKeyReleased(event -> {
 			if (event.getCode() == KeyCode.ENTER) onSendClicked();
@@ -111,12 +116,10 @@ public class GUIController extends UIController {
 		MenuItem addFriend = new MenuItem("Add");
 		MenuItem showProfile = new MenuItem("show Profile");
 		addFriend.setOnAction(e -> addFriend(tabOnlineListView.getSelectionModel().getSelectedItem()));
-		//addFriend.setOnAction();
 		contextMenuOnlineUsers.getItems().add(addFriend);
 		contextMenuOnlineUsers.getItems().add(showProfile);
 		tabOnlineListView.setContextMenu(contextMenuOnlineUsers);
 		/**Group List Context Menu**/
-
 		btnLogout.setOnMouseClicked(e -> onLogoutClicked());
 		VBox.setVgrow(tabPaneChat, Priority.ALWAYS);
 		loadAccount(client.getAccount());

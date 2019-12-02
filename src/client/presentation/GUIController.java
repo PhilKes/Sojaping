@@ -8,6 +8,8 @@ import common.data.Group;
 import common.data.Message;
 import common.data.Profile;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -89,6 +91,18 @@ public class GUIController extends UIController {
 		listVInfo.setCellFactory(profilesListView -> new ContactListViewCell(listVInfo.prefWidthProperty()));
 
 		loadAccount(client.getAccount());
+		tabPaneChat.getSelectionModel().selectedItemProperty().addListener((observable, tabOld, tabNew) -> {
+			if(tabNew.getId().startsWith("#")){
+				Group g = groupsObservableList.stream().filter(group -> tabNew.getId().equals(group.getName())).findFirst().get();
+				participantsObservableList.clear();
+				for(Profile p : g.getParticipants()){
+					participantsObservableList.add(p);
+				}
+			}else{
+			    participantsObservableList.clear();
+            }
+		});
+		//TODO (Next Sprint) use ListView(of ContactList).getSelectionModel().selectedItemProperty().bind() to show correct chat
 
 	}
 
@@ -141,13 +155,17 @@ public class GUIController extends UIController {
 		ListView<Message> lv = (ListView<Message>) displayTab.getContent();
 		lv.getItems().add(message);
 	}
-
 	public void displayOnlineProfiles(ArrayList<Profile> profiles) {
         profilesObservableList.clear();
         for (Profile p : profiles) {
             profilesObservableList.add(p);
         }
     }
+    public void displayGroupChats(ArrayList<Group> groups){
+		groupsObservableList.clear();
+		for(Group g : groups)
+			groupsObservableList.add(g);
+	}
 
 	public void onMyProfileClicked(){
 		client.openWindow("UserProfile");

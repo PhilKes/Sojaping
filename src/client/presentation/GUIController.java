@@ -74,7 +74,7 @@ public class GUIController extends UIController {
 			if (e.getClickCount() == 2)
 				createNewChatTab(tabOnlineListView.getSelectionModel().getSelectedItem().getUserName());
 		});
-		tabOnlineListView.setOnMouseClicked(e -> {
+		tabContactsListView.setOnMouseClicked(e -> {
 			if (e.getClickCount() == 2)
 				createNewChatTab(tabContactsListView.getSelectionModel().getSelectedItem().getUserName());
 		});

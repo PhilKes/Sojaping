@@ -20,14 +20,10 @@ import static common.Constants.Contexts.*;
 import static common.JsonHelper.getPacketFromJson;
 
 public class Server {
-    private static final String SOJAPING="sojaping.db";
-
-    //    public static String SERVER_HOST="141.59.128.171";
-    public static String SERVER_HOST = "192.168.178.26";
-//    public static String SERVER_HOST="10.0.75.1";
-
-
-    public static int SERVER_PORT=9999;//443;
+    private static final String SOJAPING = "sojaping.db";
+    public static String SERVER_HOST = "141.59.130.79";
+    //public static String SERVER_HOST = "141.59.129.129";
+    public static int SERVER_PORT = 9999;//443;
 
     private int port;
     private ServerSocket server;
@@ -291,7 +287,7 @@ public class Server {
 
     public List<Profile> getOnlineUsers() {
         synchronized (connections) {
-            List<Profile> userList=new ArrayList<>();
+            List<Profile> userList = new ArrayList<>();
             userList.addAll(connections.values().stream()
                     .filter(c -> c.isLoggedIn())
                     .map(c -> c.getLoggedAccount().getProfile())
@@ -299,6 +295,15 @@ public class Server {
             return userList;
         }
     }
+
+    public void addFriend(Account currentAcc, Profile newFriend) {
+        dbService.insertContactOfAccount(currentAcc, newFriend);
+    }
+
+    public ArrayList<Profile> getFriendList(Account currentAcc) {
+        return dbService.getAllContactsOfAccount(currentAcc);
+    }
+
 
     public Connection getConnectionOfUser(String userName) {
         synchronized (connections) {

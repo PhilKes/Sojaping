@@ -46,6 +46,10 @@ public class Group {
                 '}';
     }
 
+    public ArrayList<Profile> getParticipants() {
+        return participants;
+    }
+
     public static void main(String[] args) {
         /*
         Profile a = new Profile("a", 0, "a", null);

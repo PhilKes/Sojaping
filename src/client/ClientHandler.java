@@ -1,10 +1,7 @@
 package client;
 
 import common.Util;
-import common.data.Account;
-import common.data.Message;
-import common.data.Packet;
-import common.data.Profile;
+import common.data.*;
 import javafx.application.Platform;
 
 import java.io.InputStream;
@@ -87,6 +84,13 @@ class ClientHandler implements Runnable {
                     String text= receivedPacket.getData();
                     System.out.println("SERVER is shutting down: "+text);
                     running=false;
+                case GROUPLIST:
+                    ArrayList<Group> groupList = receivedPacket.getData();
+                    System.out.println("Groups received:");
+                    groupList.forEach(g -> System.out.println(g));
+                    Platform.runLater(() -> {
+                        client.getGUIController().displayGroupChats(groupList);
+                    });
                     break;
                 default:
                     System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());

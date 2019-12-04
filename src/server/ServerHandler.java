@@ -53,7 +53,7 @@ public class ServerHandler implements Runnable {
                     /** Try to register account to DB, send Account from DB to user or send failed Exception */
                     Account account=receivedPacket.getData();
                     server.registerUser(account);
-                    server.sendToUser(connection, REGISTER_SUCCESS, "Hi new registered user " + connection.getNickname());
+                    server.sendToUser(connection, REGISTER_SUCCESS, "Welcome to Sojaping " + account.getUserName() + " !");
                     break;
                 /** Try to authenticate sent LoginUser*/
                 case LOGIN:
@@ -68,8 +68,8 @@ public class ServerHandler implements Runnable {
                     //TODO Check Account profilepicture
                     server.sendToUser(connection, LOGIN_SUCCESS, loginAccount);
                     server.setConnectionAccount(connection, loginAccount);
-                    server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
+                    server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     break;
                 case MESSAGE_SENT:
                     System.out.println("Send message");

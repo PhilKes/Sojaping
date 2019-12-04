@@ -75,7 +75,7 @@
             </Button>
         </children>
     </GridPane>
-    <Button fx:id="btnRegister" layoutX="254.0" layoutY="323.0" mnemonicParsing="false" text="Register">
+    <Button fx:id="btnRegister" layoutX="248.0" layoutY="323.0" mnemonicParsing="false" text="Register">
         <styleClass>
             <String fx:value="button"/>
             <String fx:value="orange"/>
@@ -84,4 +84,6 @@
             <FontIcon iconLiteral="fa-user-plus" iconSize="18"/>
         </graphic>
     </Button>
+    <Label id="labelError" fx:id="labelError" alignment="CENTER" contentDisplay="CENTER" disable="true" layoutX="213.0"
+           layoutY="300.0" prefHeight="17.0" prefWidth="194.0"/>
 </AnchorPane>

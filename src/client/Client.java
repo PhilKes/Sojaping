@@ -70,9 +70,9 @@ public class Client {
             }
             catch(IOException e) {
                 //e.printStackTrace();
-                System.err.println("Connection failed\n retrying in 3 Seconds...");
+                System.err.println("Connection failed\n retrying in 1.5 Seconds...");
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(1500);
                 }
                 catch(InterruptedException ex) {
                     ex.printStackTrace();
@@ -90,6 +90,7 @@ public class Client {
         sendToServer(CONNECT, connection.getNickname());
         if(handler.waitForConnectSuccess())
         /** Start Thread to handle packets from the server if CONNECT_SUCCESS received*/ {
+            //((UIControllerWithInfo) getController()).showInfo("Connected to server", UIControllerWithInfo.InfoType.INFO);
             new Thread(handler).start();
         }
     }
@@ -139,8 +140,9 @@ public class Client {
                 stage.setOnCloseRequest(ev -> closeCurrentWindow());
                 stage.setResizable(false);
                 stage.getIcons().add(Util.getDefaultIcon());
-                if(account!=null)
-                    stage.setTitle(window.toUpperCase()+" "+account.getUserName());
+                if (account != null) {
+                    stage.setTitle(window.toUpperCase() + " " + account.getUserName());
+                }
                 stage.show();
             }
             catch(IOException e) {
@@ -203,6 +205,10 @@ public class Client {
 
     public Account getAccount() {
         return account;
+    }
+
+    public boolean isConnected() {
+        return output != null;
     }
 }
 

@@ -10,8 +10,6 @@ import common.data.Profile;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -22,16 +20,12 @@ import javafx.stage.Stage;
 import server.Server;
 
 import java.sql.Timestamp;
-import java.text.BreakIterator;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 import static common.Constants.Contexts.*;
 
-public class GUIController extends UIController {
+public class GUIController extends UIControllerWithInfo {
 	@FXML
 	private Button btnSend, btnMyProfile, btnLogout;
 	@FXML
@@ -67,7 +61,6 @@ public class GUIController extends UIController {
 	private ObservableList<Group> groupsObservableList;
 	private ObservableList<Profile> participantsObservableList;
 
-
 	@FXML
 	private void initialize() {
 		/**Basic GUI initialize + Listener **/
@@ -84,6 +77,7 @@ public class GUIController extends UIController {
 		listVInfo.setCellFactory(profilesListView -> new ContactListViewCell(listVInfo.prefWidthProperty()));
 		/**Group List Context Menu**/
 		btnLogout.setOnMouseClicked(e -> onLogoutClicked());
+		labelAbout.setWrapText(true);
 		VBox.setVgrow(tabPaneChat, Priority.ALWAYS);
 		loadAccount(client.getAccount());
 		tabPaneChat.getSelectionModel().selectedItemProperty().addListener((observable, tabOld, tabNew) -> {
@@ -98,6 +92,7 @@ public class GUIController extends UIController {
             }
 		});
 		//TODO (Next Sprint) use ListView(of ContactList).getSelectionModel().selectedItemProperty().bind() to show correct chat
+
 	}
 
 	private void onLogoutClicked() {
@@ -110,7 +105,7 @@ public class GUIController extends UIController {
 	/**
 	 * Load Account into My Profile (Top left)
 	 */
-	private void loadAccount(Account acc) {
+	public void loadAccount(Account acc) {
 		labelUserName.setText(acc.getUserName());
 		labelAbout.setText(acc.getAboutMe());
 		//TODO Load Profilepicture (from DB?)
@@ -169,9 +164,23 @@ public class GUIController extends UIController {
 
 	public void displayOnlineProfiles(ArrayList<Profile> profiles) {
 		profilesObservableList.clear();
-		for (Profile p : profiles) {
-			profilesObservableList.add(p);
+		profilesObservableList.addAll(profiles);
+		/*contactsObservableList.stream()
+				.filter(contact-> profiles.stream().anyMatch(p->p.getUserName().equals(contact.getUserName())))
+				.forEach(contact-> contact.setStatus(1));*/
+		/** Update status of contacts*/
+		for (Profile contact : contactsObservableList) {
+			Optional<Profile> profile = profilesObservableList.stream().filter(p -> p.getUserName().equals(contact.getUserName())).findFirst();
+			if (profile.isPresent()) {
+				contact.setStatus(profile.get().getStatus());
+			} else {
+				contact.setStatus(0);
+			}
 		}
+		synchronized (contactsObservableList) {
+			contactsObservableList.notifyAll();
+		}
+
 	}
 
 	public void displayContactsProfiles(ArrayList<Profile> profiles) {

@@ -53,6 +53,7 @@ public class ChatListViewCell extends ListCell<Message> {
             }
             labelTime.setText(new SimpleDateFormat("HH:mm:ss \n dd-MM-yy").format(message.getTimestamp()));//message.getTimestamp()//.toString().split("\\.")[0]);
             labelText.setText(message.getText());
+            labelText.setWrapText(true);
             labelSender.setText(message.getSender());
             /** Fit Width to ListView width*/
             borderPane.prefWidthProperty().bind(listViewWidthProperty.subtract(2));

@@ -14,4 +14,5 @@ public abstract class UIController {
     public void setClient(Client client) {
         this.client=client;
     }
+
 }

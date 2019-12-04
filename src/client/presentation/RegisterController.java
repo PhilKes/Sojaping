@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import static common.Constants.Contexts.REGISTER;
 
 
-public class RegisterController extends UIController {
+public class RegisterController extends UIControllerWithInfo {
 
     @FXML
     private TextField txtUsername;
@@ -41,10 +41,14 @@ public class RegisterController extends UIController {
 
     private void onRegisterClicked() {
         /** Check if all Inputs are valid */
-        if(txtUsername.getText().isEmpty() || txtPassword.getText().isEmpty()
-                || !txtPassword.getText().equals(txtRepeat.getText())
-                || selectedLanguages.isEmpty()) {
-            System.err.println("Invalid Input");
+        if (txtUsername.getText().isEmpty() || txtPassword.getText().isEmpty() || selectedLanguages.isEmpty()) {
+            System.err.println("Please fill all fields!");
+            showInfo("Please fill all fields!", InfoType.ERROR);
+            return;
+        }
+        if (!txtPassword.getText().equals(txtRepeat.getText())) {
+            System.err.println("Passwords do not match!");
+            showInfo("Passwords do not match!", InfoType.ERROR);
             return;
         }
 
@@ -62,4 +66,6 @@ public class RegisterController extends UIController {
     public void close() {
         Platform.runLater(() -> ((Stage) btnRegister.getScene().getWindow()).close());
     }
+
+
 }

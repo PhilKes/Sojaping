@@ -22,6 +22,9 @@
     -fx-background-color: -fx-bgrnd;
 }
 
+.label {
+    -fx-text-fill: -fx-txt-light;
+}
 /** Wrapper for TitleBar + Window*/
 #window-wrapper {
     -fx-border-color: -fx-txt-dark;
@@ -73,6 +76,15 @@
     -fx-icon-color: -fx-txt-light;
 }
 
+.offline {
+    -fx-background-color: red;
+    -fx-background-radius: 100%;
+}
+
+.online {
+    -fx-background-color: green;
+    -fx-background-radius: 50%;
+}
 .anchor-pane {
     -fx-background-color: -fx-bgrnd;
 }
@@ -88,8 +100,13 @@
 
 /** Contacts,... TabPane and ListViews*/
 .tab {
-    -fx-background-color: linear-gradient(-fx-fgrnd, -fx-bgrnd-light);
-    -fx-text-fill: -fx-txt-light;
+    -fx-background-color: linear-gradient(-fx-bgrnd-light, -fx-bgrnd);
+    -fx-font-weight: bold;
+}
+
+.tab * {
+    -fx-icon-color: -fx-fgrnd;
+    -fx-text-fill: -fx-fgrnd;
 }
 
 .tab:selected {
@@ -99,22 +116,36 @@
     linear-gradient(#ffef84, #f2ba44),
     linear-gradient(#ffea6a, #efaa22),
     linear-gradient(#ffe657 0%, #f8c202 50%, #eea10b 100%);
-    -fx-font-weight: bold;
-    -fx-icon-color: #654b00;
 }
 
-.tab:selected > * {
+.tab:selected * {
     -fx-icon-color: #654b00;
+    -fx-text-fill: #654b00;
 }
+
+.tab:hover {
+    -fx-background-color: linear-gradient(#ffd65b, -fx-orange),
+    linear-gradient(#ffef84, #f2ba44),
+    linear-gradient(#ffea6a, #efaa22),
+    linear-gradient(#ffe657 0%, #f8c202 50%, #eea10b 100%);
+    -fx-opacity: 0.85;
+}
+
+.tab:hover * {
+    -fx-icon-color: #654b00;
+    -fx-text-fill: #654b00;
+}
+
 .list-view {
     -fx-background-color: -fx-bgrnd;
 }
 
 .list-cell {
-    -fx-background-color: -fx-bgrnd-light;
-    -fx-border-width: 0 0 1px 0;
-    -fx-border-color: -fx-txt-dark;
-    -fx-text-fill: -fx-txt-dark;
+    -fx-background-color: -fx-bgrnd-darker;
+    -fx-background-radius: 10px;
+    /* -fx-border-width: 0 0 1px 0;
+     -fx-border-color: -fx-txt-dark;*/
+    -fx-text-fill: -fx-txt-light;
     -fx-pref-width: 100%;
 }
 
@@ -124,11 +155,29 @@
 }
 .list-cell:selected {
     /*-fx-background-color: -fx-green;*/
-    -fx-background-color: linear-gradient(#e68400, #ffd65b);
+    -fx-background-color: linear-gradient(rgba(52, 118, 0, 0.93), rgba(70, 168, 0, 0.93));
     -fx-font-weight: bold;
-    -fx-text-fill: -fx-txt-dark;
 }
 
+.list-cell:selected .label {
+    -fx-text-fill: -fx-txt-light;
+}
+
+/** Contacts ListView*/
+#tabOnlineListView .list-cell,
+#tabContactsListView .list-cell {
+    -fx-background-radius: 0px;
+}
+
+#tabOnlineListView .list-cell:selected,
+#tabContactsListView .list-cell:selected {
+    -fx-background-radius: 0px;
+}
+
+#tabOnlineListView .list-cell:hover,
+#tabContactsListView .list-cell:hover {
+    -fx-background-radius: 0px;
+}
 /** GUI bottom (TextField,...)*/
 #bottomHbox {
     -fx-background-color: -fx-bgrnd;
@@ -207,6 +256,17 @@
     -fx-focused-mark-color: transparent;
 }
 
+#labelError {
+    -fx-text-fill: #f81700;
+}
+
+#labelSuccess {
+    -fx-text-fill: -fx-green;
+}
+
+#labelInfo {
+    -fx-text-fill: -fx-txt-light;
+}
 
 .invalid {
 / / -fx-border-color: linear-gradient(to bottom, rgba(255, 4, 0, 0), #cd0006);
@@ -219,7 +279,19 @@
     -fx-border-color: red;
     -fx-border-width: 4px;
 }*/
+#profileContextMenu {
+    -fx-background-color: -fx-bgrnd-darker;
+    -fx-text-fill: -fx-txt-light;
+}
 
+.menu-item:focused {
+    -fx-background-color: linear-gradient(#e68400, #ffd65b);
+
+}
+
+.menu-item:focused .label {
+    -fx-text-fill: #654b00;
+}
 .avatar {
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.77), 10, 0, 0, 1);
 }
@@ -247,6 +319,40 @@
 
 .text-area.scroll-pane {
     -fx-background-radius: 0;
+}
+
+/** Scroll bar of TextArea*/
+.scroll-bar:vertical .track {
+    -fx-background-color: -fx-bgrnd-dark;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0.0em;
+    -fx-border-radius: 2.0em;
+}
+
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0.0em;
+    -fx-padding: 0.0 10.0 0.0 0.0;
+
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-shape: " ";
+    -fx-padding: 0.15em 0.0;
+}
+
+.scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow {
+    -fx-shape: " ";
+    -fx-padding: 0.0 0.15em;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: -fx-bgrnd-darker;
+    -fx-background-insets: 2.0, 0.0, 0.0;
+    -fx-background-radius: 2.0em;
 }
 
 .button {

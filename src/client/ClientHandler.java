@@ -1,5 +1,6 @@
 package client;
 
+import client.presentation.UIControllerWithInfo;
 import common.Util;
 import common.data.*;
 import javafx.application.Platform;
@@ -50,56 +51,57 @@ class ClientHandler implements Runnable {
         if(context.contains(FAIL) && !context.equals(FAIL)) {
             System.err.println(context.split(FAIL)[0].toUpperCase() + " failed");
         }
-        else {
-            switch(context) {
-                case LOGIN_SUCCESS:
-                    Account account=receivedPacket.getData();
-                    client.setAccount(account);
-                    System.out.println("Logged into " + account);
-                    client.closeCurrentWindowNoexit();
-                    client.openWindow("gui");
-                    break;
-                case (LOGIN+FAIL):
-                    String error= receivedPacket.getData();
-
-                    break;
-                case REGISTER_SUCCESS:
-                    System.out.println("Successfully registered !");
-                    break;
-                case MESSAGE_RECEIVED:
-                    Message msg=receivedPacket.getData();
-                    Platform.runLater(() -> {
-                        client.getGUIController().displayNewMessage(msg);
-                    });
-                    break;
-                case USERLIST:
-                    ArrayList<Profile> userList=receivedPacket.getData();
-                    System.out.println("Profiles received:");
-                    userList.forEach(u -> System.out.println(u));
-                    Platform.runLater(() -> {
-                        client.getGUIController().displayOnlineProfiles(userList);
-                    });
-                    break;
-                case SHUTDOWN:
-                    String text= receivedPacket.getData();
-                    System.out.println("SERVER is shutting down: " + text);
-                    running = false;
-                case GROUPLIST:
-                    ArrayList<Group> groupList = receivedPacket.getData();
-                    System.out.println("Groups received:");
-                    groupList.forEach(g -> System.out.println(g));
-                    Platform.runLater(() -> {
-                        client.getGUIController().displayGroupChats(groupList);
-                    });
-                    break;
-                case FRIEND_LIST:
-                    Platform.runLater(() -> client.getGUIController().displayContactsProfiles(receivedPacket.getData()));
-                    break;
-
-                default:
-                    System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());
-                    throw new Exception("Unknown Packet context('" + receivedPacket.getContext() + "') sent!");
-            }
+        switch (context) {
+            case LOGIN_SUCCESS:
+                Account account = receivedPacket.getData();
+                client.setAccount(account);
+                System.out.println("Logged into " + account);
+                client.closeCurrentWindowNoexit();
+                client.openWindow("gui");
+                break;
+            case (LOGIN + FAIL):
+            case (REGISTER + FAIL):
+                Exception error1 = receivedPacket.getData();
+                ((UIControllerWithInfo) client.getController()).showInfo(error1.getMessage(), UIControllerWithInfo.InfoType.ERROR);
+                break;
+            case REGISTER_SUCCESS:
+                System.out.println("Successfully registered !");
+                String message = receivedPacket.getData();
+                ((UIControllerWithInfo) client.getController()).showInfo(message, UIControllerWithInfo.InfoType.SUCCESS);
+                break;
+            case MESSAGE_RECEIVED:
+                Message msg = receivedPacket.getData();
+                Platform.runLater(() -> {
+                    client.getGUIController().displayNewMessage(msg);
+                });
+                break;
+            case USERLIST:
+                ArrayList<Profile> userList = receivedPacket.getData();
+                System.out.println("Profiles received:");
+                userList.forEach(u -> System.out.println(u));
+                Platform.runLater(() -> {
+                    client.getGUIController().displayOnlineProfiles(userList);
+                });
+                break;
+            case SHUTDOWN:
+                String text = receivedPacket.getData();
+                System.out.println("SERVER is shutting down: " + text);
+                running = false;
+            case GROUPLIST:
+                ArrayList<Group> groupList = receivedPacket.getData();
+                System.out.println("Groups received:");
+                groupList.forEach(g -> System.out.println(g));
+                Platform.runLater(() -> {
+                    client.getGUIController().displayGroupChats(groupList);
+                });
+                break;
+            case FRIEND_LIST:
+                Platform.runLater(() -> client.getGUIController().displayContactsProfiles(receivedPacket.getData()));
+                break;
+            default:
+                System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());
+                //throw new Exception("Unknown Packet context('" + receivedPacket.getContext() + "') sent!");
+                break;
         }
     }
 

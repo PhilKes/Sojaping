@@ -51,6 +51,7 @@ public class UserProfileController extends UIController {
 		try {
 			this.handlePasswordGuardedProfileChanges();
 			this.client.sendToServer(PROFILE_UPDATE, this.loggedInAccount);
+            client.getGUIController().loadAccount(loggedInAccount);
 			client.closeCurrentWindowNoexit();
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -84,4 +85,5 @@ public class UserProfileController extends UIController {
     public void close() {
         Platform.runLater(() -> ((Stage) btnSave.getScene().getWindow()).close());
     }
+
 }

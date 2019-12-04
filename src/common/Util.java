@@ -1,10 +1,15 @@
 package common;
 
 import client.presentation.GUIController;
+import client.presentation.UIControllerWithInfo;
 import common.data.Packet;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.image.Image;
+import javafx.util.Duration;
 import org.apache.commons.lang3.mutable.MutableInt;
 import server.Connection;
 import server.TranslationService;
@@ -119,5 +124,24 @@ public class Util {
             }
         }
 
+    }
+
+    /**
+     * Show error message with Label for 2 Seconds
+     */
+    public static void showError(Label labelError, String message, UIControllerWithInfo.InfoType type) {
+        Platform.runLater(() -> {
+            if (message == null) {
+                labelError.setText("");
+                labelError.setDisable(true);
+            } else {
+                labelError.setText(message);
+                labelError.setDisable(false);
+                labelError.setId(type.get());
+                PauseTransition delay = new PauseTransition(Duration.seconds(2));
+                delay.setOnFinished(event -> showError(labelError, null, type));
+                delay.play();
+            }
+        });
     }
 }

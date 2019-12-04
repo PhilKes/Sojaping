@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -12,7 +13,7 @@ import javafx.stage.Stage;
 import static common.Constants.Contexts.LOGIN;
 
 
-public class LoginController extends UIController {
+public class LoginController extends UIControllerWithInfo {
 
     @FXML
     private Button btnRegister, btnLogin;
@@ -20,7 +21,8 @@ public class LoginController extends UIController {
     private TextField txtUsername;
     @FXML
     private PasswordField txtPassword;
-
+    @FXML
+    private Label labelError;
 
     @FXML
     private void initialize() {
@@ -29,8 +31,16 @@ public class LoginController extends UIController {
     }
 
     private void onLoginClicked() {
+        //TODO Show popup errors
         if(txtUsername.getText().isEmpty() || txtPassword.getText().isEmpty()) {
             System.err.println("Invalid Login Input");
+            //client.openPopup("Invalid Login Input",btnLogin);
+            showInfo("Invalid Login Credentials!", InfoType.ERROR);
+            return;
+        }
+        if (!client.isConnected()) {
+            //client.openPopup("Not connected to the server!",btnLogin);
+            showInfo("Not connected to the server!", InfoType.ERROR);
             return;
         }
         LoginUser loginUser=new LoginUser(txtUsername.getText(), txtPassword.getText());
@@ -38,7 +48,11 @@ public class LoginController extends UIController {
     }
 
     private void onRegisterClicked() {
-        client.openWindow("register");
+        if (client.isConnected()) {
+            client.openWindow("register");
+        } else {
+            showInfo("Not connected to the server!", InfoType.ERROR);
+        }
     }
 
     @FXML

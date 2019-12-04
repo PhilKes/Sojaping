@@ -21,8 +21,8 @@ import static common.JsonHelper.getPacketFromJson;
 
 public class Server {
     private static final String SOJAPING = "sojaping.db";
-    public static String SERVER_HOST = "141.59.130.79";
-    //public static String SERVER_HOST = "141.59.129.129";
+    //public static String SERVER_HOST = "141.59.130.79";
+    public static String SERVER_HOST = "141.59.135.39";
     public static int SERVER_PORT = 9999;//443;
 
     private int port;
@@ -200,6 +200,7 @@ public class Server {
     }
 
     public void registerUser(Account account) throws Exception {
+        //TODO check if userName already exists -> return false
         this.dbService.insertAccount(account);
     }
 

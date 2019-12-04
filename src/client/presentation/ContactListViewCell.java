@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class ContactListViewCell extends ListCell<Profile> {
     @FXML
-    private Label labelUsername;
+    private Label labelUsername, labelStatus;
     @FXML
     private HBox hBox;
 
@@ -43,6 +43,13 @@ public class ContactListViewCell extends ListCell<Profile> {
                 }
             }
             labelUsername.setText(profile.getUserName());
+            if (profile.getStatus() == 1) {
+                labelStatus.getStyleClass().clear();
+                labelStatus.getStyleClass().add("online");
+            } else {
+                labelStatus.getStyleClass().clear();
+                labelStatus.getStyleClass().add("offline");
+            }
             hBox.prefWidthProperty().bind(listViewWidthProperty);
             setGraphic(hBox);
         }

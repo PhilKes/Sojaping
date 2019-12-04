@@ -67,58 +67,21 @@ public class GUIController extends UIController {
 	private ObservableList<Group> groupsObservableList;
 	private ObservableList<Profile> participantsObservableList;
 
+
 	@FXML
 	private void initialize() {
 		/**Basic GUI initialize + Listener **/
-		tabOnlineListView.setOnMouseClicked(e -> {
-			if (e.getClickCount() == 2)
-				createNewChatTab(tabOnlineListView.getSelectionModel().getSelectedItem().getUserName());
-		});
-		tabContactsListView.setOnMouseClicked(e -> {
-			if (e.getClickCount() == 2)
-				createNewChatTab(tabContactsListView.getSelectionModel().getSelectedItem().getUserName());
-		});
-		;
-		btnSend.setOnMouseClicked(ev -> onSendClicked());
-		textASendText.setOnKeyReleased(event -> {
-			if (event.getCode() == KeyCode.ENTER) onSendClicked();
-		});
-		/**get Instance of CLient **/
+		addListener();
+		/**get Instance of Client **/
 		client = Client.getInstance(Server.SERVER_HOST, Server.SERVER_PORT);
 		/** Message Window initialize **/
-		broadcastObservableList = FXCollections.observableArrayList();
-		listViewBroadcast.setItems(broadcastObservableList);
-		listViewBroadcast.setCellFactory(messagesListView -> new ChatListViewCell(listViewBroadcast.prefWidthProperty()));
-		tabPaneChat.getTabs().get(0).setId(BROADCAST);
-		/**display online Profiles initialize **/
-		profilesObservableList = FXCollections.observableArrayList();
-		tabOnlineListView.setItems(profilesObservableList);
-		tabOnlineListView.setCellFactory(profilesListView -> new ContactListViewCell(tabOnlineListView.prefWidthProperty()));
-		/**display contacts Profiles initialize**/
-		contactsObservableList = FXCollections.observableArrayList();
-		tabContactsListView.setItems(contactsObservableList);
-		tabContactsListView.setCellFactory(profileListView -> new ContactListViewCell(tabContactsListView.prefWidthProperty()));
-		/**groupchats **/
-		tabGroupChatListView.setOnMouseClicked(e -> {
-			if (e.getClickCount() == 2)
-				createNewChatTab(tabGroupChatListView.getSelectionModel().getSelectedItem().getName());
-		});
-		groupsObservableList = FXCollections.observableArrayList();
-		tabGroupChatListView.setItems(groupsObservableList);
-		tabGroupChatListView.setCellFactory(groupsListView -> new GroupChatListViewCell());
-		//groupsObservableList.add(new Group("test", new Profile("a",0,null,null)));
+		initializeChatWindow();
+		/** User Tab Pane(Left) initialize **/
+		initializeTabPaneUsers();
 		/**list participants of the selected group**/
 		participantsObservableList = FXCollections.observableArrayList();
 		listVInfo.setItems(participantsObservableList);
 		listVInfo.setCellFactory(profilesListView -> new ContactListViewCell(listVInfo.prefWidthProperty()));
-		/**Online List Context Menu**/
-		ContextMenu contextMenuOnlineUsers = new ContextMenu();
-		MenuItem addFriend = new MenuItem("Add");
-		MenuItem showProfile = new MenuItem("show Profile");
-		addFriend.setOnAction(e -> addFriend(tabOnlineListView.getSelectionModel().getSelectedItem()));
-		contextMenuOnlineUsers.getItems().add(addFriend);
-		contextMenuOnlineUsers.getItems().add(showProfile);
-		tabOnlineListView.setContextMenu(contextMenuOnlineUsers);
 		/**Group List Context Menu**/
 		btnLogout.setOnMouseClicked(e -> onLogoutClicked());
 		VBox.setVgrow(tabPaneChat, Priority.ALWAYS);
@@ -135,7 +98,6 @@ public class GUIController extends UIController {
             }
 		});
 		//TODO (Next Sprint) use ListView(of ContactList).getSelectionModel().selectedItemProperty().bind() to show correct chat
-
 	}
 
 	private void onLogoutClicked() {
@@ -168,6 +130,9 @@ public class GUIController extends UIController {
 		client.sendToServer(ADD_FRIEND, selectedUser);
 	}
 
+	/**
+	 * send text in text area to server as a message and displays the text in the currently active chat window
+	 **/
 	private void onSendClicked() {
 		if (!textASendText.getText().isEmpty()) {
 			Profile selectedUser = tabOnlineListView.getSelectionModel().getSelectedItem();
@@ -178,14 +143,18 @@ public class GUIController extends UIController {
 			//Display new message in chat
 			ListView<Message> lv = (ListView<Message>) tabPaneChat.getSelectionModel().getSelectedItem().getContent();
 			lv.getItems().add(newMessage);
+			lv.scrollTo(lv.getItems().size() - 1);
 			textASendText.clear();
 			client.sendToServer(MESSAGE_SENT, newMessage);
-			//client.sendObject(newMessage);
+
 		} else {
 
 		}
 	}
 
+	/**
+	 * for displaying received messages, one messages are displayed via onSendClicked method
+	 **/
 	public void displayNewMessage(Message message) {
 		Tab displayTab = null;
 		if (message.getReceiver().equals(BROADCAST) || message.getReceiver().startsWith("#"))
@@ -195,6 +164,7 @@ public class GUIController extends UIController {
 		//get ListView from tab to add text
 		ListView<Message> lv = (ListView<Message>) displayTab.getContent();
 		lv.getItems().add(message);
+		lv.scrollTo(lv.getItems().size() - 1);
 	}
 
 	public void displayOnlineProfiles(ArrayList<Profile> profiles) {
@@ -241,6 +211,63 @@ public class GUIController extends UIController {
 		tabPaneChat.getTabs().add(newTab);
 		return newTab;
 	}
+
+	/**
+	 * adds listener to gui
+	 **/
+	private void addListener() {
+		btnSend.setOnMouseClicked(ev -> onSendClicked());
+		textASendText.setOnKeyReleased(event -> {
+			if (event.getCode() == KeyCode.ENTER) onSendClicked();
+		});
+	}
+
+	/**
+	 * initializes Chat ListView with 1 tab for broadcast
+	 **/
+	private void initializeChatWindow() {
+		broadcastObservableList = FXCollections.observableArrayList();
+		listViewBroadcast.setItems(broadcastObservableList);
+		listViewBroadcast.setCellFactory(messagesListView -> new ChatListViewCell(listViewBroadcast.prefWidthProperty()));
+		tabPaneChat.getTabs().get(0).setId(BROADCAST);
+	}
+
+	private void initializeTabPaneUsers() {
+		/**display online Profiles initialize **/
+		profilesObservableList = FXCollections.observableArrayList();
+		tabOnlineListView.setItems(profilesObservableList);
+		tabOnlineListView.setCellFactory(profilesListView -> new ContactListViewCell(tabOnlineListView.prefWidthProperty()));
+		/**display contacts Profiles initialize**/
+		contactsObservableList = FXCollections.observableArrayList();
+		tabContactsListView.setItems(contactsObservableList);
+		tabContactsListView.setCellFactory(profileListView -> new ContactListViewCell(tabContactsListView.prefWidthProperty()));
+		/**display groups initialize**/
+		groupsObservableList = FXCollections.observableArrayList();
+		tabGroupChatListView.setItems(groupsObservableList);
+		tabGroupChatListView.setCellFactory(groupsListView -> new GroupChatListViewCell());
+		/** add double click listener to tabs**/
+		tabOnlineListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2)
+				createNewChatTab(tabOnlineListView.getSelectionModel().getSelectedItem().getUserName());
+		});
+		tabContactsListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2)
+				createNewChatTab(tabContactsListView.getSelectionModel().getSelectedItem().getUserName());
+		});
+		tabGroupChatListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2)
+				createNewChatTab(tabGroupChatListView.getSelectionModel().getSelectedItem().getName());
+		});
+		/**Online List Context Menu**/
+		ContextMenu contextMenuOnlineUsers = new ContextMenu();
+		MenuItem addFriend = new MenuItem("Add");
+		MenuItem showProfile = new MenuItem("show Profile");
+		addFriend.setOnAction(e -> addFriend(tabOnlineListView.getSelectionModel().getSelectedItem()));
+		contextMenuOnlineUsers.getItems().add(addFriend);
+		contextMenuOnlineUsers.getItems().add(showProfile);
+		tabOnlineListView.setContextMenu(contextMenuOnlineUsers);
+	}
+
 
 	@Override
 	public void close() {

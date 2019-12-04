@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="20.0" prefWidth="200.0" stylesheets="@../resources/main.css"
+            xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+    <left>
+        <Label fx:id="labelUsername" text="Name" BorderPane.alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+            <padding>
+                <Insets left="4.0"/>
+            </padding>
+        </Label>
+    </left>
+    <right>
+        <Circle fx:id="circleStatus" fill="DODGERBLUE" radius="7.0" stroke="BLACK" strokeType="INSIDE"
+                styleClass="offline" BorderPane.alignment="CENTER_RIGHT">
+            <BorderPane.margin>
+                <Insets right="10.0"/>
+            </BorderPane.margin>
+        </Circle>
+    </right>
+</BorderPane>

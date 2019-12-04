@@ -1,8 +1,9 @@
 package client;
 
-import client.presentation.GUIController;
 import client.presentation.TitleBarController;
 import client.presentation.UIController;
+import client.presentation.UIControllerWithInfo;
+import client.presentation.windows.GUIController;
 import common.Util;
 import common.data.Account;
 import common.data.Packet;
@@ -90,7 +91,10 @@ public class Client {
         sendToServer(CONNECT, connection.getNickname());
         if(handler.waitForConnectSuccess())
         /** Start Thread to handle packets from the server if CONNECT_SUCCESS received*/ {
-            //((UIControllerWithInfo) getController()).showInfo("Connected to server", UIControllerWithInfo.InfoType.INFO);
+            Platform.runLater(() -> {
+                ((UIControllerWithInfo) getController())
+                        .showInfo("Connected to server", UIControllerWithInfo.InfoType.INFO);
+            });
             new Thread(handler).start();
         }
     }
@@ -112,7 +116,7 @@ public class Client {
     public void openWindow(String window) {
         Platform.runLater(() -> {
             try {
-                FXMLLoader windowLoader = new FXMLLoader(getClass().getResource("presentation/" + window + ".fxml"));
+                FXMLLoader windowLoader=new FXMLLoader(getClass().getResource("presentation/windows/" + window + ".fxml"));
                 Pane root1 = windowLoader.load();
                 UIController controller = (UIController) windowLoader.getController();
                 controller.setClient(this);

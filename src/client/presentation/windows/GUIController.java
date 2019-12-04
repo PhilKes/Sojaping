@@ -1,7 +1,11 @@
-package client.presentation;
+package client.presentation.windows;
 
 
 import client.Client;
+import client.presentation.listcells.ChatListViewCell;
+import client.presentation.listcells.ContactListViewCell;
+import client.presentation.listcells.GroupChatListViewCell;
+import client.presentation.UIControllerWithInfo;
 import common.Util;
 import common.data.Account;
 import common.data.Group;
@@ -165,22 +169,17 @@ public class GUIController extends UIControllerWithInfo {
 	public void displayOnlineProfiles(ArrayList<Profile> profiles) {
 		profilesObservableList.clear();
 		profilesObservableList.addAll(profiles);
-		/*contactsObservableList.stream()
-				.filter(contact-> profiles.stream().anyMatch(p->p.getUserName().equals(contact.getUserName())))
-				.forEach(contact-> contact.setStatus(1));*/
 		/** Update status of contacts*/
-		for (Profile contact : contactsObservableList) {
-			Optional<Profile> profile = profilesObservableList.stream().filter(p -> p.getUserName().equals(contact.getUserName())).findFirst();
+		for(int i=0; i<contactsObservableList.size(); i++) {
+			Profile contact=contactsObservableList.get(i);
+			Optional<Profile> profile=profiles.stream().filter(p -> p.getUserName().equals(contact.getUserName())).findFirst();
 			if (profile.isPresent()) {
 				contact.setStatus(profile.get().getStatus());
 			} else {
 				contact.setStatus(0);
 			}
+			contactsObservableList.set(i, contact);
 		}
-		synchronized (contactsObservableList) {
-			contactsObservableList.notifyAll();
-		}
-
 	}
 
 	public void displayContactsProfiles(ArrayList<Profile> profiles) {
@@ -269,9 +268,11 @@ public class GUIController extends UIControllerWithInfo {
 		});
 		/**Online List Context Menu**/
 		ContextMenu contextMenuOnlineUsers = new ContextMenu();
+		contextMenuOnlineUsers.setId("profileContextMenu");
 		MenuItem addFriend = new MenuItem("Add");
 		MenuItem showProfile = new MenuItem("show Profile");
-		addFriend.setOnAction(e -> addFriend(tabOnlineListView.getSelectionModel().getSelectedItem()));
+		addFriend.setOnAction(e ->
+				addFriend(tabOnlineListView.getSelectionModel().getSelectedItem()));
 		contextMenuOnlineUsers.getItems().add(addFriend);
 		contextMenuOnlineUsers.getItems().add(showProfile);
 		tabOnlineListView.setContextMenu(contextMenuOnlineUsers);

@@ -1,4 +1,4 @@
-package client.presentation;
+package client.presentation.listcells;
 
 import common.data.Message;
 import javafx.beans.property.DoubleProperty;

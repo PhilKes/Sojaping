@@ -1,4 +1,4 @@
-package client.presentation;
+package client.presentation.listcells;
 
 import common.data.Profile;
 import javafx.beans.property.DoubleProperty;
@@ -6,16 +6,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.shape.Circle;
 
 import java.io.IOException;
 
 
 public class ContactListViewCell extends ListCell<Profile> {
     @FXML
-    private Label labelUsername, labelStatus;
+    private Label labelUsername;
     @FXML
-    private HBox hBox;
+    private Circle circleStatus;
+    @FXML
+    private BorderPane borderPane;
 
     private FXMLLoader fxmlLoader;
 
@@ -44,14 +47,14 @@ public class ContactListViewCell extends ListCell<Profile> {
             }
             labelUsername.setText(profile.getUserName());
             if (profile.getStatus() == 1) {
-                labelStatus.getStyleClass().clear();
-                labelStatus.getStyleClass().add("online");
+                circleStatus.getStyleClass().clear();
+                circleStatus.getStyleClass().add("online");
             } else {
-                labelStatus.getStyleClass().clear();
-                labelStatus.getStyleClass().add("offline");
+                circleStatus.getStyleClass().clear();
+                circleStatus.getStyleClass().add("offline");
             }
-            hBox.prefWidthProperty().bind(listViewWidthProperty);
-            setGraphic(hBox);
+            borderPane.prefWidthProperty().bind(listViewWidthProperty);
+            setGraphic(borderPane);
         }
 
 

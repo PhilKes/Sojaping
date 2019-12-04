@@ -1,5 +1,6 @@
-package client.presentation;
+package client.presentation.windows;
 
+import client.presentation.UIControllerWithInfo;
 import common.data.LoginUser;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;

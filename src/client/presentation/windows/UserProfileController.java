@@ -1,6 +1,7 @@
-package client.presentation;
+package client.presentation.windows;
 
 import client.Client;
+import client.presentation.UIController;
 import common.data.Account;
 import javafx.application.Platform;
 import javafx.fxml.FXML;

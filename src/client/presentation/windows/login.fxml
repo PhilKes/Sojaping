@@ -15,13 +15,13 @@
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-            prefWidth="600.0" styleClass="anchor-pane" stylesheets="@resources/main.css"
+            prefWidth="600.0" styleClass="anchor-pane" stylesheets="@../resources/main.css"
             xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="client.presentation.LoginController">
+            fx:controller="client.presentation.windows.LoginController">
     <ImageView fx:id="imgLogo" fitHeight="150.0" fitWidth="200.0" layoutX="241.0" layoutY="6.0" pickOnBounds="true"
                preserveRatio="true">
         <image>
-            <Image url="@resources/SojaPing_border_color.png"/>
+            <Image url="@../resources/SojaPing_border_color.png"/>
         </image>
     </ImageView>
     <GridPane layoutX="227.0" layoutY="169.0">

@@ -1,5 +1,6 @@
-package client.presentation;
+package client.presentation.windows;
 
+import client.presentation.UIController;
 import common.Util;
 import common.data.Profile;
 import javafx.application.Platform;

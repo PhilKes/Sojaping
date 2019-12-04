@@ -77,13 +77,11 @@
 }
 
 .offline {
-    -fx-background-color: red;
-    -fx-background-radius: 100%;
+    -fx-fill: red;
 }
 
 .online {
-    -fx-background-color: green;
-    -fx-background-radius: 50%;
+    -fx-fill: green;
 }
 .anchor-pane {
     -fx-background-color: -fx-bgrnd;

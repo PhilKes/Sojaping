@@ -1,5 +1,6 @@
-package client.presentation;
+package client.presentation.windows;
 
+import client.presentation.UIControllerWithInfo;
 import common.Util;
 import common.data.Account;
 import common.data.AccountBuilder;

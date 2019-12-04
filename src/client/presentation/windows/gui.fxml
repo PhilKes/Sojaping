@@ -17,9 +17,9 @@
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <BorderPane id="rootPane" fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-            minWidth="-Infinity" prefHeight="690.0" prefWidth="911.0" stylesheets="@resources/main.css"
+            minWidth="-Infinity" prefHeight="690.0" prefWidth="911.0" stylesheets="@../resources/main.css"
             xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="client.presentation.GUIController">
+            fx:controller="client.presentation.windows.GUIController">
     <left>
         <VBox fx:id="vBoxContacts" alignment="TOP_CENTER" prefHeight="595.0" BorderPane.alignment="CENTER_LEFT">
             <children>
@@ -28,7 +28,7 @@
                         <ImageView fx:id="imgAvatar" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true"
                                    preserveRatio="true">
                             <image>
-                                <Image url="@resources/default_avatar_min.png"/>
+                                <Image url="@../resources/default_avatar_min.png"/>
                             </image>
                             <HBox.margin>
                                 <Insets left="10.0" right="10.0"/>
@@ -54,7 +54,7 @@
                     <tabs>
                         <Tab fx:id="tabContacts" text="Contacts">
                             <content>
-                                <ListView fx:id="tabContactsListView"/>
+                                <ListView fx:id="tabContactsListView" prefHeight="404.0" prefWidth="240.0"/>
                             </content>
                             <graphic>
                                 <FontIcon iconLiteral="fa-user-circle" iconSize="16"/>
@@ -62,11 +62,11 @@
                         </Tab>
                         <Tab fx:id="tabOnline" text="Online">
                             <content>
-                                <ListView fx:id="tabOnlineListView"/>
+                                <ListView fx:id="tabOnlineListView" prefWidth="240.0"/>
                             </content></Tab>
                   <Tab text="Groups">
                      <content>
-                         <ListView fx:id="tabGroupChatListView" prefHeight="391.0" prefWidth="248.0"/>
+                         <ListView fx:id="tabGroupChatListView" prefHeight="391.0" prefWidth="240.0"/>
                      </content>
                       <graphic>
                           <FontIcon iconLiteral="fa-users" iconSize="16"/>
@@ -103,7 +103,7 @@
             <children>
                 <ImageView fx:id="imageLogo" pickOnBounds="true" preserveRatio="true">
                     <image>
-                        <Image url="@resources/SojaPing_border_color.png"/>
+                        <Image url="@../resources/SojaPing_border_color.png"/>
                     </image></ImageView>
                 <ListView fx:id="listVInfo"/>
             </children>

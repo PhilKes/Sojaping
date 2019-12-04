@@ -66,8 +66,8 @@ public class ServerHandler implements Runnable {
                         throw new Exception("User is already logged in!");
                     }
                     //TODO Check Account profilepicture
-                    server.sendToUser(connection, LOGIN_SUCCESS, loginAccount);
                     server.setConnectionAccount(connection, loginAccount);
+                    server.sendToUser(connection, LOGIN_SUCCESS, loginAccount);
                     server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     break;
@@ -89,7 +89,6 @@ public class ServerHandler implements Runnable {
                 case USERLIST:
                     System.out.println("Send online User list");
                     /** Send updated online Userlist to clients*/
-                    //TODO Exclude the receiving client/User?
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     break;
                 case SHUTDOWN:
@@ -104,6 +103,7 @@ public class ServerHandler implements Runnable {
                 case ADD_FRIEND:
                     server.addFriend(connection.getLoggedAccount(), receivedPacket.getData());
                     server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
+                    server.sendToUser(connection, USERLIST, server.getOnlineUsers());
                     break;
                 case PROFILE_UPDATE:
                     Account updatedAccount = receivedPacket.getData();

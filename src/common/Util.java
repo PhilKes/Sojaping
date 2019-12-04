@@ -1,6 +1,6 @@
 package common;
 
-import client.presentation.GUIController;
+import client.presentation.UIController;
 import client.presentation.UIControllerWithInfo;
 import common.data.Packet;
 import javafx.animation.PauseTransition;
@@ -26,8 +26,8 @@ import static common.Constants.Contexts.FAIL;
  */
 public class Util {
 
-    private static final Image DEFAULT_AVATAR=new Image(GUIController.class.getResourceAsStream("resources/default_avatar_min.png"));
-    private static final Image DEFAULT_ICON = new Image(GUIController.class.getResourceAsStream("resources/icon.png"));
+    private static final Image DEFAULT_AVATAR=new Image(UIController.class.getResourceAsStream("resources/default_avatar_min.png"));
+    private static final Image DEFAULT_ICON=new Image(UIController.class.getResourceAsStream("resources/icon.png"));
     /**
      * Log sent/received Packet in Console
      * from: true(received packet), from: false(sent packet)

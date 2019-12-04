@@ -16,9 +16,9 @@
 <?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane prefHeight="400.0" prefWidth="400.0" styleClass="anchor-pane" stylesheets="@resources/main.css"
+<AnchorPane prefHeight="400.0" prefWidth="400.0" styleClass="anchor-pane" stylesheets="@../resources/main.css"
             xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="client.presentation.RegisterController">
+            fx:controller="client.presentation.windows.RegisterController">
     <GridPane layoutX="111.0" layoutY="114.0">
       <children>
           <Label layoutX="1.0" layoutY="35.0" text="Username">
@@ -82,7 +82,7 @@
     </Label>
     <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="45.0" layoutY="46.0" pickOnBounds="true" styleClass="avatar">
         <image>
-            <Image url="@resources/default_avatar_min.png"/>
+            <Image url="@../resources/default_avatar_min.png"/>
         </image>
     </ImageView>
     <Label fx:id="labelError" alignment="CENTER" contentDisplay="CENTER" disable="true" layoutX="114.0" layoutY="255.0"

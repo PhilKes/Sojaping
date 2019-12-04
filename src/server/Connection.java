@@ -57,7 +57,8 @@ public class Connection {
             } else {
                 this.loggedAccount.setStatus(1);
             }
-        } else {
+        }
+        else if(loggedAccount!=null) {
             loggedAccount.setStatus(1);
         }
         this.loggedAccount = loggedAccount;

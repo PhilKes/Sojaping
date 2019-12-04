@@ -71,32 +71,28 @@ class ClientHandler implements Runnable {
                 break;
             case MESSAGE_RECEIVED:
                 Message msg = receivedPacket.getData();
-                Platform.runLater(() -> {
-                    client.getGUIController().displayNewMessage(msg);
-                });
+                Platform.runLater(() -> client.getGUIController().displayNewMessage(msg));
                 break;
             case USERLIST:
                 ArrayList<Profile> userList = receivedPacket.getData();
                 System.out.println("Profiles received:");
                 userList.forEach(u -> System.out.println(u));
-                Platform.runLater(() -> {
-                    client.getGUIController().displayOnlineProfiles(userList);
-                });
+                Platform.runLater(() -> client.getGUIController().displayOnlineProfiles(userList));
                 break;
             case SHUTDOWN:
                 String text = receivedPacket.getData();
                 System.out.println("SERVER is shutting down: " + text);
                 running = false;
+                break;
             case GROUPLIST:
                 ArrayList<Group> groupList = receivedPacket.getData();
                 System.out.println("Groups received:");
                 groupList.forEach(g -> System.out.println(g));
-                Platform.runLater(() -> {
-                    client.getGUIController().displayGroupChats(groupList);
-                });
+                Platform.runLater(() -> client.getGUIController().displayGroupChats(groupList));
                 break;
             case FRIEND_LIST:
-                Platform.runLater(() -> client.getGUIController().displayContactsProfiles(receivedPacket.getData()));
+                ArrayList<Profile> contacts=receivedPacket.getData();
+                Platform.runLater(() -> client.getGUIController().displayContactsProfiles(contacts));
                 break;
             default:
                 System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());

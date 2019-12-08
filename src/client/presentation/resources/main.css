@@ -23,7 +23,7 @@
 }
 
 .tab-pane {
-    -fx-background-color: -fx-brgnd;
+    -fx-background-color: -fx-bgrnd;
 }
 
 /* Background of TabPane next to Tabs*/
@@ -410,5 +410,8 @@
 }
 
 .tab-notification {
-    -fx-background-color: blue !important;
+    /*-fx-background-color: blue !important;*/
+    -fx-background-color: linear-gradient(#13d02e, #3c8a35) !important;
+    -fx-text-fill: #654b00;
 }
+

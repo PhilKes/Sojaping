@@ -7,6 +7,8 @@ import common.data.Group;
 import common.data.Message;
 import common.data.Profile;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -91,11 +93,25 @@ public class GUIController extends UIController {
 
 		loadAccount(client.getAccount());
 
+		tabPaneChat.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
+				Tab selectedTab = tabPaneChat.getTabs().get(newValue.intValue());
+				if (selectedTab != null && selectedTab.getStyleClass().contains("tab-notification")) {
+					selectedTab.getStyleClass().remove("tab-notification");
+				}
+			}
+		});
 	}
 	private void removeNotification() {
-		String selectedUserName = this.tabOnlineListView.getSelectionModel().getSelectedItem().getUserName();
-		Optional<Tab> selectedTabPane = this.tabPaneChat.getTabs().stream().filter(tab -> tab.getText().equals(selectedUserName)).findFirst();
-		selectedTabPane.ifPresent(tab -> tab.getStyleClass().remove("tab-notification"));
+		String selectedUserName = this.tabPaneChat.getSelectionModel().getSelectedItem().getId();
+		Optional<Tab> selectedTabPane = this.tabPaneChat.getTabs().stream().filter(tab -> tab.getText().toLowerCase().equals(selectedUserName.toLowerCase())).findFirst();
+
+		selectedTabPane.ifPresent(tab -> {
+			if (tab.getStyleClass().contains("tab-notification")) {
+				tab.getStyleClass().remove("tab-notification");
+			}
+		});
 	}
 
 	/**

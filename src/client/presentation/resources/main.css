@@ -695,3 +695,10 @@
     -fx-text-fill: black;
     -fx-font-size: 14px;
 }
+
+.tab-notification {
+    /*-fx-background-color: blue !important;*/
+    -fx-background-color: linear-gradient(#13d02e, #3c8a35) !important;
+    -fx-text-fill: #654b00;
+}
+

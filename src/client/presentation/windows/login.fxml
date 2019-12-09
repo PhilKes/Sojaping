@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.*?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
-
+<?import java.lang.String?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
             prefWidth="600.0" styleClass="anchor-pane" stylesheets="@../resources/main.css"
             xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1"
@@ -40,7 +33,7 @@
                     <FontIcon iconLiteral="fa-user" iconSize="18"/>
                 </graphic>
             </Label>
-            <TextField fx:id="txtUsername" prefHeight="32.0" text="phil" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <TextField fx:id="txtUsername" onAction="#onEnter" prefHeight="32.0" text="phil" GridPane.columnIndex="1" GridPane.rowIndex="0">
             </TextField>
             <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="32.0" prefWidth="30.0" styleClass="icon-left"
                    GridPane.columnIndex="0" GridPane.rowIndex="1">
@@ -51,7 +44,7 @@
                     <Insets top="4.0"/>
                 </GridPane.margin>
             </Label>
-            <PasswordField fx:id="txtPassword" prefHeight="32.0" text="phil" GridPane.columnIndex="1"
+            <PasswordField fx:id="txtPassword" onAction="#onEnter" prefHeight="32.0" text="phil" GridPane.columnIndex="1"
                            GridPane.rowIndex="1">
                 <opaqueInsets>
                     <Insets/>

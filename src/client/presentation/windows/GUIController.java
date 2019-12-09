@@ -1,17 +1,18 @@
 package client.presentation.windows;
 
-
 import client.Client;
+import client.presentation.UIControllerWithInfo;
 import client.presentation.listcells.ChatListViewCell;
 import client.presentation.listcells.ContactListViewCell;
 import client.presentation.listcells.GroupChatListViewCell;
-import client.presentation.UIControllerWithInfo;
 import common.Util;
 import common.data.Account;
 import common.data.Group;
 import common.data.Message;
 import common.data.Profile;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -23,8 +24,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import server.Server;
 
-import javax.swing.plaf.MenuItemUI;
-import java.lang.management.MemoryUsage;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -97,8 +96,40 @@ public class GUIController extends UIControllerWithInfo {
 			    participantsObservableList.clear();
             }
 		});
+		/** Visual Notification**/
+		this.initializeNotificationHandling();
 		//TODO (Next Sprint) use ListView(of ContactList).getSelectionModel().selectedItemProperty().bind() to show correct chat
 
+	}
+
+	private void initializeNotificationHandling(){
+		this.tabOnlineListView.setOnMouseClicked(e -> {
+			if (e.getClickCount() == 2)
+				createNewChatTab(this.tabOnlineListView.getSelectionModel().getSelectedItem().getUserName());
+		});
+
+		this.textASendText.setOnMouseClicked(ev -> this.removeNotification());
+
+		this.tabPaneChat.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
+				Tab selectedTab = tabPaneChat.getTabs().get(newValue.intValue());
+				if (selectedTab != null && selectedTab.getStyleClass().contains("tab-notification")) {
+					selectedTab.getStyleClass().remove("tab-notification");
+				}
+			}
+		});
+	}
+
+	private void removeNotification() {
+		String selectedUserName = this.tabPaneChat.getSelectionModel().getSelectedItem().getId();
+		Optional<Tab> selectedTabPane = this.tabPaneChat.getTabs().stream().filter(tab -> tab.getText().toLowerCase().equals(selectedUserName.toLowerCase())).findFirst();
+
+		selectedTabPane.ifPresent(tab -> {
+			if (tab.getStyleClass().contains("tab-notification")) {
+				tab.getStyleClass().remove("tab-notification");
+			}
+		});
 	}
 
 	private void onLogoutClicked() {
@@ -165,6 +196,7 @@ public class GUIController extends UIControllerWithInfo {
 		//get ListView from tab to add text
 		ListView<Message> lv = (ListView<Message>) displayTab.getContent();
 		lv.getItems().add(message);
+		displayTab.getStyleClass().add("tab-notification");
 		lv.scrollTo(lv.getItems().size() - 1);
 	}
 

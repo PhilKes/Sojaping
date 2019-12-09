@@ -117,12 +117,12 @@ public class Util {
             });
         }
         /** Select English as default language*/
-        for (CheckMenuItem item : items) {
-            if (item.getText().equals(TranslationService.ENGLISH_KEY)) {
-                item.setSelected(true);
-                break;
-            }
-        }
+//        for (CheckMenuItem item : items) {
+//            if (item.getText().equals(TranslationService.ENGLISH_KEY)) {
+//                item.setSelected(true);
+//                break;
+//            }
+//        }
 
     }
 

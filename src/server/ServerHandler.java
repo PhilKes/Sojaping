@@ -1,10 +1,9 @@
 package server;
 
 import common.Util;
-import common.data.Account;
-import common.data.LoginUser;
-import common.data.Message;
-import common.data.Packet;
+import common.data.*;
+
+import java.util.ArrayList;
 
 import static common.Constants.Contexts.*;
 import static common.JsonHelper.getPacketFromJson;
@@ -79,12 +78,15 @@ public class ServerHandler implements Runnable {
                     String receiver=message.getReceiver();
                     if (receiver.equals(BROADCAST)) {
                         server.broadcastMessages(message);
-                    }
-                    else {
+                    } else if (receiver.startsWith("#")) {
+                        server.sendMessageToGroup(server.getUsersForGroup(receiver), message);
+                    } else {
                         /** Private message */
-                        if(!server.sendMessage(message)) {
+                        if (!server.sendMessage(message)) {
                             throw new Exception("Receiver not found!");
                         }
+
+
                     }
                     break;
                 case USERLIST:

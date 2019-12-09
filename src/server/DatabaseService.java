@@ -432,7 +432,7 @@ public class DatabaseService {
 
     public ArrayList<Profile> getParticipants(String groupName){
         ArrayList<Profile> participants = new ArrayList<>();
-        String sql = "SELECT " + TableGroup.GID + "FROM groupChats WHERE " + TableGroup.GROUPNAME + " = ?";
+        String sql = "SELECT " + TableGroup.GID + " FROM groupChats WHERE " + TableGroup.GROUPNAME + " = ?";
         int gid = -1;
         try(Connection conn=this.connect();
             PreparedStatement pstmt=conn.prepareStatement(sql)) {

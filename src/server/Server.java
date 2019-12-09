@@ -40,33 +40,33 @@ public class Server {
     private final ServerDispatcher dispatcher;
 
     public Server(int port, DatabaseService dbService) {
-        this.port=port;
-        this.connections=new HashMap<>();
-        this.dbService=dbService;
-        this.translateService=new TranslationService();
-        dispatcher=new ServerDispatcher(this, connections);
-        running=new AtomicBoolean(true);
+        this.port = port;
+        this.connections = new HashMap<>();
+        this.dbService = dbService;
+        this.translateService = new TranslationService();
+        dispatcher = new ServerDispatcher(this, connections);
+        running = new AtomicBoolean(true);
     }
 
     public static void main(String[] args) throws IOException {
-        if(args.length>0) {
-            SERVER_PORT=Integer.parseInt(args[0]);
+        if (args.length > 0) {
+            SERVER_PORT = Integer.parseInt(args[0]);
         }
         new Server(SERVER_PORT, new DatabaseService(SOJAPING)).run();
     }
 
     private void run() throws IOException {
         InetAddress localHost = InetAddress.getLocalHost();
-        String inetAddress=localHost.getHostAddress();
-        server=new ServerSocket(port, 50, InetAddress.getByName(inetAddress)) {
+        String inetAddress = localHost.getHostAddress();
+        server = new ServerSocket(port, 50, InetAddress.getByName(inetAddress)) {
             protected void finalize() throws IOException {
                 this.close();
             }
         };
-        InterfaceAddress network=NetworkInterface.getByInetAddress(localHost)
+        InterfaceAddress network = NetworkInterface.getByInetAddress(localHost)
                 .getInterfaceAddresses().get(0);
         System.out.println("Server started on Host: " + inetAddress + " Port: " + port);
-        System.out.println("Network: "+network.getAddress()+"\tMask: /"+network.getNetworkPrefixLength());
+        System.out.println("Network: " + network.getAddress() + "\tMask: /" + network.getNetworkPrefixLength());
 
         /** Start Command Handler Thread */
         new Thread(this::handleCommands).start();
@@ -74,35 +74,34 @@ public class Server {
         new Thread(dispatcher).start();
 
         /** Continouesly accept new Socket connections, add connection to list if CONNECT received*/
-        while(running.get()) {
-            Socket clientSocket=null;
+        while (running.get()) {
+            Socket clientSocket = null;
             try {
-                 clientSocket=server.accept();
-            }catch(SocketException e){
+                clientSocket = server.accept();
+            } catch (SocketException e) {
                 System.out.println("Interrupted Accept Connection");
                 continue;
             }
             /** Do not accept connections from outside the network of the Server */
-            if(!Util.sameNetwork(localHost,clientSocket.getInetAddress(),network.getNetworkPrefixLength())){
-                System.err.println("Refused external connection from: "+clientSocket.getInetAddress().getHostAddress());
+            if (!Util.sameNetwork(localHost, clientSocket.getInetAddress(), network.getNetworkPrefixLength())) {
+                System.err.println("Refused external connection from: " + clientSocket.getInetAddress().getHostAddress());
                 continue;
             }
             /** Receive connectPacket with Clients IP as data, add to connection list*/
-            Packet connectPacket=getPacketFromJson(new Scanner(clientSocket.getInputStream(), "UTF-8").nextLine());
-            if(connectPacket==null) {
+            Packet connectPacket = getPacketFromJson(new Scanner(clientSocket.getInputStream(), "UTF-8").nextLine());
+            if (connectPacket == null) {
                 clientSocket.close();
                 continue;
             }
-            if(connectPacket.getContext().equals(CONNECT)) {
-                String clientIP=connectPacket.getData();
+            if (connectPacket.getContext().equals(CONNECT)) {
+                String clientIP = connectPacket.getData();
                 System.out.println("New Client: " + clientIP);
                 try {
-                    Connection newConnection=new Connection(clientSocket, clientSocket.getInetAddress().getHostAddress());
+                    Connection newConnection = new Connection(clientSocket, clientSocket.getInetAddress().getHostAddress());
                     /** Temporarily put clientIP as userName until client loggs into an Account */
                     putIPConnection(newConnection);
                     sendToUser(newConnection, CONNECT_SUCCESS, "Hello " + clientIP);
-                }
-                catch(IOException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                     continue;
                 }
@@ -112,7 +111,7 @@ public class Server {
             }
         }
         System.out.println("Shutting down server...");
-        broadcastPacket(SHUTDOWN,"Shutdown");
+        broadcastPacket(SHUTDOWN, "Shutdown");
         dispatcher.setRunning(false);
     }
 
@@ -122,18 +121,19 @@ public class Server {
         }
     }
 
-    /** Runnable for reading commands in Console */
+    /**
+     * Runnable for reading commands in Console
+     */
     private void handleCommands() {
         Scanner in = new Scanner(System.in);
-        while(in.hasNextLine()) {
-            String command=in.nextLine();
-            switch(command.toLowerCase()) {
+        while (in.hasNextLine()) {
+            String command = in.nextLine();
+            switch (command.toLowerCase()) {
                 case "stop":
                     setRunning(false);
                     try {
                         server.close();
-                    }
-                    catch(IOException e) {
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                     in.close();
@@ -141,11 +141,11 @@ public class Server {
                 case "clients":
                     System.out.println("Connected clients:");
                     synchronized (connections) {
-                        if(connections.isEmpty()) {
+                        if (connections.isEmpty()) {
                             System.out.println("No connections...");
-                        }else {
+                        } else {
                             connections.forEach((k, v) -> {
-                                System.out.println(k+" ("+v.getNickname()+")\t" + (v.isLoggedIn() ? v.getLoggedAccount() : "Not logged in"));
+                                System.out.println(k + " (" + v.getNickname() + ")\t" + (v.isLoggedIn() ? v.getLoggedAccount() : "Not logged in"));
                             });
                         }
                     }
@@ -163,11 +163,10 @@ public class Server {
      */
     public Account loginUser(LoginUser loginUser) throws Exception {
         //LoginUser loginUser = JsonHelper.convertJsonToObject(accountOrLoginAsJson);
-        Account account=this.dbService.getAccountByLoginUser(loginUser);
-        if(account!=null) {
+        Account account = this.dbService.getAccountByLoginUser(loginUser);
+        if (account != null) {
             return account;
-        }
-        else {
+        } else {
             throw new Exception("Invalid credentials");
         }
     }
@@ -204,21 +203,21 @@ public class Server {
         this.dbService.insertAccount(account);
     }
 
-	public void updateUser(Account account) {
+    public void updateUser(Account account) {
         this.dbService.updateAccount(account);
-	}
+    }
 
-	public void deleteUser(Account account) {
-		this.dbService.deleteAccount(account);
-	}
+    public void deleteUser(Account account) {
+        this.dbService.deleteAccount(account);
+    }
 
     /**
      * Send object as JSON through user OutputStream
      */
     public void sendToUser(Connection connection, String context, Object object) {
-        Packet packet=new Packet(context, object);
+        Packet packet = new Packet(context, object);
         /** Use PrintWriter with UTF-8 Charset*/
-        PrintWriter out=new PrintWriter(
+        PrintWriter out = new PrintWriter(
                 new BufferedWriter(new OutputStreamWriter(
                         connection.getOutStream(), StandardCharsets.UTF_8)), true);
         out.println(packet.getJson());
@@ -230,7 +229,7 @@ public class Server {
      * Try to send message to receiver if present, return if message was sent
      */
     public boolean sendMessage(Message message) {
-        String receiver=message.getReceiver();
+        String receiver = message.getReceiver();
         synchronized (connections) {
             if (!connections.containsKey(receiver)) {
                 return false;
@@ -322,5 +321,19 @@ public class Server {
 
     public ArrayList<Group> getGroups(Account loggedAccount) {
         return dbService.getMyGroups(loggedAccount);
+    }
+
+    public ArrayList<Profile> getUsersForGroup(String groupName) {
+        return dbService.getParticipants(groupName);
+    }
+
+    public void sendMessageToGroup(ArrayList<Profile> receivers, Message message) {
+        Connection receiverCon = null;
+        for (Profile p : receivers) {
+            if (connections.containsKey(p.getUserName()) && !message.getSender().equals(p.getUserName())) {
+                receiverCon = connections.get(p.getUserName());
+                sendToUser(receiverCon, MESSAGE_RECEIVED, message);
+            }
+        }
     }
 }

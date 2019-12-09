@@ -4,12 +4,14 @@ import java.util.ArrayList;
 
 public class Group {
     String name;
+    String groupPicture;
+    int groupID = -1;
     ArrayList<Profile> participants = new ArrayList<>();
 
     public Group(String name, Profile profile) {
         this.name = name;
-
-        participants.add(profile);
+        //participants.add(profile);
+        groupPicture = "";
     }
 
     public void addParticipant(Profile profile){
@@ -32,6 +34,18 @@ public class Group {
 
     public String getName() {
         return name;
+    }
+
+    public String getGroupPicture() {
+        return groupPicture;
+    }
+
+    public int getGroupID() {
+        return groupID;
+    }
+
+    public void setGroupID(int groupID) {
+        this.groupID = groupID;
     }
 
     public void changeName(String newName){

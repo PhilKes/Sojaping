@@ -153,11 +153,8 @@ public class GUIController extends UIControllerWithInfo {
 	}
 
 	private void displayGroupInfo() {
-		//TODO: how to get the info, that this is a group?
-		//tabPaneChat.getSelectionModel().getSelectedItem().getText();
-		// gibt Name von Tab zurück
-	}
 
+	}
 	private void addFriend(Profile selectedUser) {
 		client.sendToServer(ADD_FRIEND, selectedUser);
 	}
@@ -227,6 +224,17 @@ public class GUIController extends UIControllerWithInfo {
 		groupsObservableList.clear();
 		for (Group g : groups)
 			groupsObservableList.add(g);
+		tabPaneChat.getSelectionModel().selectedItemProperty().addListener((observable, tabOld, tabNew) -> {
+			if(tabNew.getId().startsWith("#")){
+				Group g = groupsObservableList.stream().filter(group -> tabNew.getId().equals(group.getName())).findFirst().get();
+				participantsObservableList.clear();
+				for(Profile p : g.getParticipants()){
+					participantsObservableList.add(p);
+				}
+			}else{
+				participantsObservableList.clear();
+			}
+		});
 	}
 
 	public void onMyProfileClicked() {

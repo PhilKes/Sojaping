@@ -70,6 +70,7 @@ public class ServerHandler implements Runnable {
                     server.sendToUser(connection, LOGIN_SUCCESS, loginAccount);
                     server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
+                    server.sendToUser(connection, GROUPLIST, server.getGroups(connection.getLoggedAccount()));
                     break;
                 case MESSAGE_SENT:
                     System.out.println("Send message");

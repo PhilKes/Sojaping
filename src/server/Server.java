@@ -319,4 +319,8 @@ public class Server {
     public void setRunning(boolean running) {
         this.running.set(running);
     }
+
+    public ArrayList<Group> getGroups(Account loggedAccount) {
+        return dbService.getMyGroups(loggedAccount);
+    }
 }

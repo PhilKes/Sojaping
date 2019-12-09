@@ -8,6 +8,7 @@ public class Group {
     int groupID = -1;
     ArrayList<Profile> participants = new ArrayList<>();
 
+    public Group(){}
     public Group(String name, Profile profile) {
         this.name = name;
         //participants.add(profile);

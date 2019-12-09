@@ -23,6 +23,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import server.Server;
 
+import javax.swing.plaf.MenuItemUI;
+import java.lang.management.MemoryUsage;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -267,15 +269,31 @@ public class GUIController extends UIControllerWithInfo {
 				createNewChatTab(tabGroupChatListView.getSelectionModel().getSelectedItem().getName());
 		});
 		/**Online List Context Menu**/
+		//TODO Add to Group Chat, Show Profile, RemoveFriend
 		ContextMenu contextMenuOnlineUsers = new ContextMenu();
-		contextMenuOnlineUsers.setId("profileContextMenu");
-		MenuItem addFriend = new MenuItem("Add");
-		MenuItem showProfile = new MenuItem("show Profile");
+		contextMenuOnlineUsers.setId("OnlineUsersContextMenu");
+		MenuItem addFriend = new MenuItem("Add as Friend");
+		MenuItem createChat = new MenuItem("Create Chat");
+		Menu addToGroupChat = new Menu("Add to Group Chat");
+		MenuItem showProfile = new MenuItem("Show Profile");
 		addFriend.setOnAction(e ->
 				addFriend(tabOnlineListView.getSelectionModel().getSelectedItem()));
-		contextMenuOnlineUsers.getItems().add(addFriend);
-		contextMenuOnlineUsers.getItems().add(showProfile);
+		createChat.setOnAction(e ->
+				createNewChatTab(tabOnlineListView.getSelectionModel().getSelectedItem().getUserName()));
+		addToGroupChat.getItems().addAll();
+		contextMenuOnlineUsers.getItems().addAll(addFriend, createChat, addToGroupChat, showProfile);
 		tabOnlineListView.setContextMenu(contextMenuOnlineUsers);
+		/**Contact List Context Menu**/
+		ContextMenu contextMenuContacts = new ContextMenu();
+		contextMenuContacts.setId("ContactsContextMenu");
+		MenuItem createChat1 = new MenuItem("Create Chat");
+		MenuItem addToGroupChat1 = new MenuItem("Add to Group Chat");
+		MenuItem showProfile1 = new MenuItem("Show Profile");
+		MenuItem removeFriend = new MenuItem("Remove Friend");
+		createChat1.setOnAction(e ->
+				createNewChatTab(tabContactsListView.getSelectionModel().getSelectedItem().getUserName()));
+		contextMenuContacts.getItems().addAll(createChat1, addToGroupChat1, showProfile1, removeFriend);
+		tabContactsListView.setContextMenu(contextMenuContacts);
 	}
 
 

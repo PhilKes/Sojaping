@@ -430,6 +430,40 @@ public class DatabaseService {
         return participants;
     }
 
+    public ArrayList<Profile> getParticipants(String groupName){
+        ArrayList<Profile> participants = new ArrayList<>();
+        String sql = "SELECT " + TableGroup.GID + "FROM groupChats WHERE " + TableGroup.GROUPNAME + " = ?";
+        int gid = -1;
+        try(Connection conn=this.connect();
+            PreparedStatement pstmt=conn.prepareStatement(sql)) {
+            pstmt.setString(1, groupName);
+            ResultSet rs=pstmt.executeQuery();
+            while(rs.next()) {
+                gid = rs.getInt(TableGroup.GID);
+            }
+        }
+        catch(SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        String sql2="SELECT " + TableParticipants.IDACCOUNT + " FROM participants WHERE " + TableParticipants.IDGROUP + " = ?";
+        try(Connection conn2=this.connect();
+            PreparedStatement pstmt2=conn2.prepareStatement(sql2)) {
+            pstmt2.setInt(1, gid);
+            ResultSet rs2=pstmt2.executeQuery();
+            while(rs2.next()) {
+                participants.add(getProfileByAccountId(rs2.getInt(TableParticipants.IDACCOUNT)));
+            }
+        }
+        catch(SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return participants;
+    }
+
+
+
     public ArrayList<Group> getMyGroups(Account acc){
         ArrayList<Group> groups = new ArrayList<>();
         String sql = "SELECT " + TableParticipants.IDGROUP + " FROM participants WHERE " +
@@ -565,7 +599,7 @@ public class DatabaseService {
         db.insertAccount(acc2);
         db.insertAccount(acc3);
         db.insertAccount(acc4);
-        Group group = new Group("test", acc4.getProfile());
+        Group group = new Group("#test", acc4.getProfile());
         db.insertGroup(group, acc4);
         db.insertParticipant(group, acc.getProfile());
         db.insertParticipant(group, acc2.getProfile());

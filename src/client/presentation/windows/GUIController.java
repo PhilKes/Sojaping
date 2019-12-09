@@ -316,6 +316,7 @@ public class GUIController extends UIControllerWithInfo {
 		MenuItem createChat = new MenuItem("Create Chat");
 		Menu addToGroupChat = new Menu("Add to Group Chat");
 		MenuItem showProfile = new MenuItem("Show Profile");
+		openPublicProfile(showProfile, tabOnlineListView.getSelectionModel());
 		addFriend.setOnAction(e ->
 				addFriend(tabOnlineListView.getSelectionModel().getSelectedItem()));
 		createChat.setOnAction(e ->
@@ -329,13 +330,23 @@ public class GUIController extends UIControllerWithInfo {
 		MenuItem createChat1 = new MenuItem("Create Chat");
 		MenuItem addToGroupChat1 = new MenuItem("Add to Group Chat");
 		MenuItem showProfile1 = new MenuItem("Show Profile");
+		openPublicProfile(showProfile1, tabContactsListView.getSelectionModel());
 		MenuItem removeFriend = new MenuItem("Remove Friend");
 		createChat1.setOnAction(e ->
 				createNewChatTab(tabContactsListView.getSelectionModel().getSelectedItem().getUserName()));
 		contextMenuContacts.getItems().addAll(createChat1, addToGroupChat1, showProfile1, removeFriend);
 		tabContactsListView.setContextMenu(contextMenuContacts);
 	}
-
+	private void openPublicProfile(final MenuItem showProfile1, final MultipleSelectionModel<Profile> selectionModel) {
+		showProfile1.setOnAction(e ->
+				{client.openWindow("PublicProfile");
+					Platform.runLater(() -> {
+						PublicProfileController publicProfileController = (PublicProfileController) client.getController();
+						publicProfileController.setProfile(selectionModel.getSelectedItem());
+					});
+				}
+		);
+	}
 
 	@Override
 	public void close() {

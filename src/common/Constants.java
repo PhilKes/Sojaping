@@ -34,6 +34,7 @@ public class Constants {
                 PROFILE_UPDATE = "profileUpdate",
                 DELETE_ACCOUNT = "deleteAccount",
                 ADD_FRIEND = "addFriend",
-                FRIEND_LIST = "friendList";
+                FRIEND_LIST = "friendList",
+                GROUP_UPDATE = "groupUpdate";
     }
 }

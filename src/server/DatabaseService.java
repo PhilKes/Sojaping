@@ -352,8 +352,7 @@ public class DatabaseService {
             if(rs.next()) {
                 System.out.println("Inserted into ContactList DB of Account " + account + ":\t" + contact);
             }
-        }
-        catch(SQLException e) {
+        } catch (SQLException e) {
 //            if(e.getMessage().contains("[SQLITE_CONSTRAINT]  Abort due to constraint violation (UNIQUE constraint failed: account.userName)")){
 //                throw new Exception("User is already in the ContactList!");
 //            }
@@ -362,45 +361,64 @@ public class DatabaseService {
         //TODO: Beim Aufruf prüfen, dass man sich nicht selbst oder jemanden, der schon enthalten ist, einfügt.
     }
 
-    public void insertGroup(Group group, Account founder) throws Exception {
-        String sql="INSERT INTO groupChats (" + TableGroup.GID+ ", " + TableGroup.GROUPNAME + ", "
-               + TableGroup.GROUPPICTURE +  ") VALUES(NULL,?,?)";
-        try(Connection conn=this.connect();
-            PreparedStatement pstmt=conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, group.getName());
-            pstmt.setString(2, group.getGroupPicture());
-            pstmt.executeUpdate();
-            ResultSet rs=pstmt.getGeneratedKeys();
-            if(rs.next()) {
-                group.setGroupID(rs.getInt(1));
-                System.out.println("Inserted into DB:\t" + group + founder.getProfile());
-            }
-        }
-        catch(SQLException e) {
-            if(e.getMessage().contains("[SQLITE_CONSTRAINT]  Abort due to constraint violation (UNIQUE constraint failed: groupChats.groupName)")) {
-                throw new Exception("GroupName is already in use!");
-            }
-            e.printStackTrace();
-        }
-        sql = "INSERT INTO participants (" + TableParticipants.PID+", " + TableParticipants.IDGROUP + ", "
-                + TableParticipants.IDACCOUNT + ") VALUES(NULL,?,?)";
-        try(Connection conn=this.connect();
-            PreparedStatement pstmt=conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setInt(1, group.getGroupID());
-            pstmt.setInt(2,founder.getAid());
-            pstmt.executeUpdate();
-        }
-        catch(SQLException e) {
-            e.printStackTrace();
-        }
+    public static void main(String[] args) throws Exception {
+        //createNewDatabase("sojaping.db");
+        DatabaseService db = new DatabaseService(SOJAPING);
+        db.dropTableContactList();
+        db.dropTableAccount();
+        db.dropTableParticipants();
+        db.dropTableGroup();
+
+        createNewTableAccount();
+        createNewTableContactList();
+        createNewTableGroup();
+        createNewTableParticipants();
+
+        System.out.println("Insert");
+        Account acc = new AccountBuilder().setUserName("phil").setPassword("phil")
+                .setAboutMe("Hi, I'm using SOJAPING.")
+                .setLanguages(Arrays.asList("de", "en"))
+                .createAccount();
+        Account acc2 = new AccountBuilder().setUserName("jan").setPassword("jan")
+                .setLanguages(Arrays.asList("de", "en", "es", "hi"))
+                .setAboutMe("Hi, I'm using SOJAPING.").createAccount();
+        Account acc3 = new AccountBuilder().setUserName("irina").setPassword("irina")
+                .setLanguages(Arrays.asList("de", "en", "ru"))
+                .setAboutMe("Hi, I'm using SOJAPING.").createAccount();
+        Account acc4 = new AccountBuilder().setUserName("sophie").setPassword("sophie")
+                .setLanguages(Arrays.asList("de", "en", "fr"))
+                .setAboutMe("Hi, I'm using SOJAPING.").createAccount();
+        db.insertAccount(acc);
+        db.insertAccount(acc2);
+        db.insertAccount(acc3);
+        db.insertAccount(acc4);
+        Group group = new Group("#test", acc4.getProfile());
+        group.addParticipant(acc4.getProfile());
+        db.insertGroup(group);
+        db.insertParticipant(group, acc.getProfile());
+        db.insertParticipant(group, acc2.getProfile());
+        db.insertParticipant(group, acc3.getProfile());
+        System.out.println("in main: Group after insert: " + group);
+        ArrayList<Group> myGroups = db.getMyGroups(acc4);
+        System.out.println(myGroups);
+        //db.selectAllAccounts();
+        /*
+        db.insertContactOfAccount(acc, acc2.getProfile());
+        db.insertContactOfAccount(acc, acc3.getProfile());
+
+        Account accTest=db.getAccountByLoginUser(new LoginUser("phil", "phil"));
+        System.out.println("Contacts of " + accTest.getUserName());
+        db.getAllContactsOfAccount(accTest).forEach(System.out::println);
+        */
+        //ArrayList<Profile> onlineUser = db.getOnlineAccounts();
     }
 
-    public void insertParticipant(Group group, Profile participant){
+    public void insertParticipant(Group group, Profile participant) {
         int particpantID = this.getAccountByUsername(participant.getUserName()).getAid();
-        String sql = "INSERT INTO participants (" + TableParticipants.PID+", " + TableParticipants.IDGROUP + ", "
+        String sql = "INSERT INTO participants (" + TableParticipants.PID + ", " + TableParticipants.IDGROUP + ", "
                 + TableParticipants.IDACCOUNT + ") VALUES(NULL,?,?)";
-        try(Connection conn=this.connect();
-            PreparedStatement pstmt=conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setInt(1, group.getGroupID());
             pstmt.setInt(2, particpantID);
             pstmt.executeUpdate();
@@ -558,65 +576,48 @@ public class DatabaseService {
     }
 
     public void dropTableParticipants(){
-        String sql="DROP TABLE participants";
-        try(Connection conn=this.connect();
-            PreparedStatement pstmt=conn.prepareStatement(sql)) {
+        String sql = "DROP TABLE participants";
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.executeUpdate();
-        }
-        catch(SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        //createNewDatabase("sojaping.db");
-        DatabaseService db=new DatabaseService(SOJAPING);
-        db.dropTableContactList();
-        db.dropTableAccount();
-        db.dropTableParticipants();
-        db.dropTableGroup();
-
-        createNewTableAccount();
-        createNewTableContactList();
-        createNewTableGroup();
-        createNewTableParticipants();
-
-        System.out.println("Insert");
-        Account acc=new AccountBuilder().setUserName("phil").setPassword("phil")
-                .setAboutMe("Hi, I'm using SOJAPING.")
-                .setLanguages(Arrays.asList("de", "en"))
-                .createAccount();
-        Account acc2=new AccountBuilder().setUserName("jan").setPassword("jan")
-                .setLanguages(Arrays.asList("de", "en", "es", "hi"))
-                .setAboutMe("Hi, I'm using SOJAPING.").createAccount();
-        Account acc3=new AccountBuilder().setUserName("irina").setPassword("irina")
-                .setLanguages(Arrays.asList("de", "en", "ru"))
-                .setAboutMe("Hi, I'm using SOJAPING.").createAccount();
-        Account acc4=new AccountBuilder().setUserName("sophie").setPassword("sophie")
-                .setLanguages(Arrays.asList("de", "en", "fr"))
-                .setAboutMe("Hi, I'm using SOJAPING.").createAccount();
-        db.insertAccount(acc);
-        db.insertAccount(acc2);
-        db.insertAccount(acc3);
-        db.insertAccount(acc4);
-        Group group = new Group("#test", acc4.getProfile());
-        db.insertGroup(group, acc4);
-        db.insertParticipant(group, acc.getProfile());
-        db.insertParticipant(group, acc2.getProfile());
-        db.insertParticipant(group, acc3.getProfile());
-        System.out.println("in main: Group after insert: " + group);
-        ArrayList<Group> myGroups = db.getMyGroups(acc4);
-        System.out.println(myGroups);
-        //db.selectAllAccounts();
-        /*
-        db.insertContactOfAccount(acc, acc2.getProfile());
-        db.insertContactOfAccount(acc, acc3.getProfile());
-
-        Account accTest=db.getAccountByLoginUser(new LoginUser("phil", "phil"));
-        System.out.println("Contacts of " + accTest.getUserName());
-        db.getAllContactsOfAccount(accTest).forEach(System.out::println);
-        */
-        //ArrayList<Profile> onlineUser = db.getOnlineAccounts();
+    public void insertGroup(Group group) throws Exception {
+        String sql = "INSERT IF NOT EXISTS INTO groupChats (" + TableGroup.GID + ", " + TableGroup.GROUPNAME + ", "
+                + TableGroup.GROUPPICTURE + ") VALUES(NULL,?,?)";
+        Account founder = getAccountByUsername(group.getParticipants().get(0).getUserName());
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, group.getName());
+            pstmt.setString(2, group.getGroupPicture());
+            pstmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                group.setGroupID(rs.getInt(1));
+                System.out.println("Inserted into DB:\t" + group + founder.getProfile());
+            }
+        } catch (SQLException e) {
+            if (e.getMessage().contains("[SQLITE_CONSTRAINT]  Abort due to constraint violation (UNIQUE constraint failed: groupChats.groupName)")) {
+                throw new Exception("GroupName is already in use!");
+            }
+            e.printStackTrace();
+        }
+        sql = "INSERT IF NOT EXISTS INTO participants (" + TableParticipants.PID + ", " + TableParticipants.IDGROUP + ", "
+                + TableParticipants.IDACCOUNT + ") VALUES(NULL,?,?)";
+        for (Profile member : group.getParticipants()) {
+            Account memberAcc = getAccountByUsername(member.getUserName());
+            try (Connection conn = this.connect();
+                 PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                pstmt.setInt(1, group.getGroupID());
+                pstmt.setInt(2, memberAcc.getAid());
+                pstmt.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

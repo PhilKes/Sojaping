@@ -3,8 +3,6 @@ package server;
 import common.Util;
 import common.data.*;
 
-import java.util.ArrayList;
-
 import static common.Constants.Contexts.*;
 import static common.JsonHelper.getPacketFromJson;
 
@@ -115,6 +113,14 @@ public class ServerHandler implements Runnable {
                 case DELETE_ACCOUNT:
                     Account accountForDeletion = receivedPacket.getData();
                     server.deleteUser(accountForDeletion);
+                    break;
+                case GROUP_UPDATE:
+                    Group group = receivedPacket.getData();
+                    server.updateGroup(group);
+                    for (Profile member : group.getParticipants()) {
+                        Connection memberCon = server.getConnectionOfUser(member.getUserName());
+                        server.sendToUser(memberCon, GROUPLIST, server.getGroups(memberCon.getLoggedAccount()));
+                    }
                     break;
                 default:
                     System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());

@@ -16,17 +16,22 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import server.Server;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static common.Constants.Contexts.*;
 
@@ -282,6 +287,48 @@ public class GUIController extends UIControllerWithInfo {
 		tabPaneChat.getTabs().get(0).setId(BROADCAST);
 	}
 
+	private String createGUI() {
+		Stage window = new Stage();
+		window.initModality(Modality.APPLICATION_MODAL);
+		window.setMinWidth(250);
+
+		TextField textField = new TextField();
+
+		Button yButton = new Button("Create");
+		Button nbButton = new Button("Cancel");
+		AtomicReference<String> exitCode = new AtomicReference<>();
+		yButton.setOnAction(e -> {
+			exitCode.set(textField.getText());
+			window.close();
+		});
+
+		nbButton.setOnAction(e -> {
+			exitCode.set(null);
+			window.close();
+		});
+
+
+		VBox layout = new VBox(5);
+		HBox buttons = new HBox(200);
+		buttons.getChildren().addAll(yButton, nbButton);
+		layout.getStylesheets().add(getClass().getResource("../resources/main.css").toExternalForm());
+		layout.getChildren().addAll(textField, buttons);
+		layout.setAlignment(Pos.CENTER);
+
+		Scene scene = new Scene(layout);
+		window.setScene(scene);
+		window.showAndWait();
+		return exitCode.get();
+	}
+
+	private void createNewGroup(String groupName, Profile firstMember) {
+		System.out.println(groupName);
+		groupName = "#" + groupName;
+		Group newGroup = new Group(groupName, client.getAccount().getProfile());
+		newGroup.addParticipant(firstMember);
+		client.sendToServer(GROUP_UPDATE, newGroup);
+	}
+
 	private void initializeTabPaneUsers() {
 		/**display online Profiles initialize **/
 		profilesObservableList = FXCollections.observableArrayList();
@@ -314,27 +361,30 @@ public class GUIController extends UIControllerWithInfo {
 		contextMenuOnlineUsers.setId("OnlineUsersContextMenu");
 		MenuItem addFriend = new MenuItem("Add as Friend");
 		MenuItem createChat = new MenuItem("Create Chat");
-		Menu addToGroupChat = new Menu("Add to Group Chat");
 		MenuItem showProfile = new MenuItem("Show Profile");
 		openPublicProfile(showProfile, tabOnlineListView.getSelectionModel());
 		addFriend.setOnAction(e ->
 				addFriend(tabOnlineListView.getSelectionModel().getSelectedItem()));
 		createChat.setOnAction(e ->
 				createNewChatTab(tabOnlineListView.getSelectionModel().getSelectedItem().getUserName()));
-		addToGroupChat.getItems().addAll();
-		contextMenuOnlineUsers.getItems().addAll(addFriend, createChat, addToGroupChat, showProfile);
+		contextMenuOnlineUsers.getItems().addAll(addFriend, createChat, showProfile);
 		tabOnlineListView.setContextMenu(contextMenuOnlineUsers);
 		/**Contact List Context Menu**/
 		ContextMenu contextMenuContacts = new ContextMenu();
 		contextMenuContacts.setId("ContactsContextMenu");
 		MenuItem createChat1 = new MenuItem("Create Chat");
-		MenuItem addToGroupChat1 = new MenuItem("Add to Group Chat");
+		Menu addToGroupChat = new Menu("Add to Group Chat");
 		MenuItem showProfile1 = new MenuItem("Show Profile");
+		MenuItem createNewGroup = new MenuItem("Create New Group");
 		openPublicProfile(showProfile1, tabContactsListView.getSelectionModel());
 		MenuItem removeFriend = new MenuItem("Remove Friend");
+		addToGroupChat.getItems().add(createNewGroup);
 		createChat1.setOnAction(e ->
 				createNewChatTab(tabContactsListView.getSelectionModel().getSelectedItem().getUserName()));
-		contextMenuContacts.getItems().addAll(createChat1, addToGroupChat1, showProfile1, removeFriend);
+		createNewGroup.setOnAction(e ->
+				createNewGroup(createGUI(), tabContactsListView.getSelectionModel().getSelectedItem()));
+
+		contextMenuContacts.getItems().addAll(createChat1, addToGroupChat, showProfile1, removeFriend);
 		tabContactsListView.setContextMenu(contextMenuContacts);
 	}
 	private void openPublicProfile(final MenuItem showProfile1, final MultipleSelectionModel<Profile> selectionModel) {

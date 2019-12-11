@@ -121,6 +121,15 @@ public class Server {
         }
     }
 
+    public void updateGroup(Group group) {
+        try {
+            dbService.insertGroup(group);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("GROUP UPDATE FAILED");
+        }
+    }
+
     /**
      * Runnable for reading commands in Console
      */

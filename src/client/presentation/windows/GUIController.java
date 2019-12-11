@@ -258,7 +258,7 @@ public class GUIController extends UIControllerWithInfo {
 				System.out.println("On profile " + tabContactsListView.getSelectionModel().getSelectedItem());
 				Group myGroup = groups.stream().filter(gr -> gr.getName().equals(group.getText())).findFirst().get();
 				myGroup.addParticipant(tabContactsListView.getSelectionModel().getSelectedItem());
-				//client.sendToServer(GROUP_UPDATE, myGroup);
+				client.sendToServer(GROUP_UPDATE, myGroup);
 			});
 			//addToGroupChat.getItems().add(group);
 			addToGroupChatContacts.getItems().add(group);
@@ -347,7 +347,8 @@ public class GUIController extends UIControllerWithInfo {
 	private void createNewGroup(String groupName, Profile firstMember) {
 		System.out.println(groupName);
 		groupName = "#" + groupName;
-		Group newGroup = new Group(groupName, client.getAccount().getProfile());
+		Group newGroup = new Group(groupName);
+		newGroup.addParticipant(client.getAccount().getProfile());
 		newGroup.addParticipant(firstMember);
 		client.sendToServer(GROUP_UPDATE, newGroup);
 	}

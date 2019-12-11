@@ -101,6 +101,7 @@ public class DatabaseService {
                 + TableContact.CID + " integer PRIMARY KEY,\n"
                 + TableContact.AIDO + " integer NOT NULL,\n" //aid of the "owner" of this list
                 + TableContact.AIDC + " integer NOT NULL,\n"
+                + "UNIQUE(" + TableContact.AIDO + "," + TableContact.AIDC + ")\n"
                 + "FOREIGN KEY (" + TableContact.AIDO + ")\n"
                 + "REFERENCES account(" + TableAccount.AID + ")\n"
                 + "FOREIGN KEY (" + TableContact.AIDC + ")\n"
@@ -138,6 +139,7 @@ public class DatabaseService {
                 + TableParticipants.PID + " integer PRIMARY KEY,\n"
                 + TableParticipants.IDGROUP + " integer NOT NULL,\n"
                 + TableParticipants.IDACCOUNT + " integer NOT NULL,\n"
+                + "UNIQUE(" + TableParticipants.IDGROUP + "," + TableParticipants.IDACCOUNT + ")\n"
                 + "FOREIGN KEY (" + TableParticipants.IDGROUP + ")\n"
                 + "REFERENCES groupChats(" + TableGroup.GID + ")\n"
                 + "FOREIGN KEY (" + TableParticipants.IDACCOUNT + ")\n"
@@ -392,13 +394,13 @@ public class DatabaseService {
         db.insertAccount(acc2);
         db.insertAccount(acc3);
         db.insertAccount(acc4);
-        Group group = new Group("#test", acc4.getProfile());
+       /* Group group = new Group("#test", acc4.getProfile());
         group.addParticipant(acc4.getProfile());
         db.insertGroup(group);
         db.insertParticipant(group, acc.getProfile());
         db.insertParticipant(group, acc2.getProfile());
         db.insertParticipant(group, acc3.getProfile());
-        System.out.println("in main: Group after insert: " + group);
+        System.out.println("in main: Group after insert: " + group);*/
         ArrayList<Group> myGroups = db.getMyGroups(acc4);
         System.out.println(myGroups);
         //db.selectAllAccounts();
@@ -480,8 +482,6 @@ public class DatabaseService {
         return participants;
     }
 
-
-
     public ArrayList<Group> getMyGroups(Account acc){
         ArrayList<Group> groups = new ArrayList<>();
         String sql = "SELECT " + TableParticipants.IDGROUP + " FROM participants WHERE " +
@@ -508,7 +508,7 @@ public class DatabaseService {
                 pstmt2.setInt(1, i);
                 ResultSet rs2 = pstmt2.executeQuery();
                 while (rs2.next()) {
-                    Group group = new Group(rs2.getString(TableGroup.GROUPNAME), acc.getProfile());
+                    Group group = new Group(rs2.getString(TableGroup.GROUPNAME));
                     group.setGroupID(i);
                     //group.getParticipants().addAll(this.getParticipants(group));
                     groups.add(group);
@@ -524,7 +524,6 @@ public class DatabaseService {
 
         return groups;
     }
-
 
     //This method is for debugging.
     private void resetTable() {
@@ -596,7 +595,9 @@ public class DatabaseService {
             pstmt.executeUpdate();
             ResultSet rs = pstmt.getGeneratedKeys();
             if (rs.next()) {
-                group.setGroupID(rs.getInt(1));
+                if (rs.getInt(1) > 0) {
+                    group.setGroupID(rs.getInt(1));
+                }
                 System.out.println("Inserted into DB:\t" + group + founder.getProfile());
             }
         } catch (SQLException e) {

@@ -5,6 +5,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
 
 <BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefHeight="20.0" prefWidth="200.0" stylesheets="@../resources/main.css"
@@ -14,6 +15,9 @@
             <padding>
                 <Insets left="4.0"/>
             </padding>
+            <font>
+                <Font size="15.0"/>
+            </font>
         </Label>
     </left>
     <right>

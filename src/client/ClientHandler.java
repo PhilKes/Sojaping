@@ -1,6 +1,8 @@
 package client;
 
+import client.presentation.UIController;
 import client.presentation.UIControllerWithInfo;
+import common.Constants;
 import common.Util;
 import common.data.*;
 import javafx.application.Platform;
@@ -13,7 +15,6 @@ import static common.Constants.Contexts.*;
 import static common.JsonHelper.getPacketFromJson;
 
 class ClientHandler implements Runnable {
-
     private Client client;
     private boolean running;
     private Scanner scanner;
@@ -50,42 +51,47 @@ class ClientHandler implements Runnable {
         String context=receivedPacket.getContext();
         if(context.contains(FAIL) && !context.equals(FAIL)) {
             System.err.println(context.split(FAIL)[0].toUpperCase() + " failed");
+            UIController controller=client.peekController();
+            if(controller instanceof UIControllerWithInfo) {
+                Exception e=receivedPacket.getData();
+                ((UIControllerWithInfo) controller).showInfo(e.getMessage(), UIControllerWithInfo.InfoType.ERROR);
+            }
         }
-        switch (context) {
+        switch(context) {
             case LOGIN_SUCCESS:
-                Account account = receivedPacket.getData();
+                Account account=receivedPacket.getData();
                 client.setAccount(account);
                 System.out.println("Logged into " + account);
-                client.closeCurrentWindowNoexit();
-                client.openWindow("gui");
+                client.closeCurrentWindowNoExit();
+                client.openWindow(Constants.Windows.GUI);
                 break;
             case (LOGIN + FAIL):
             case (REGISTER + FAIL):
-                Exception error1 = receivedPacket.getData();
-                ((UIControllerWithInfo) client.getController()).showInfo(error1.getMessage(), UIControllerWithInfo.InfoType.ERROR);
+                Exception error1=receivedPacket.getData();
+                ((UIControllerWithInfo) client.peekController()).showInfo(error1.getMessage(), UIControllerWithInfo.InfoType.ERROR);
                 break;
             case REGISTER_SUCCESS:
                 System.out.println("Successfully registered !");
-                String message = receivedPacket.getData();
-                ((UIControllerWithInfo) client.getController()).showInfo(message, UIControllerWithInfo.InfoType.SUCCESS);
+                String message=receivedPacket.getData();
+                ((UIControllerWithInfo) client.peekController()).showInfo(message, UIControllerWithInfo.InfoType.SUCCESS);
                 break;
             case MESSAGE_RECEIVED:
-                Message msg = receivedPacket.getData();
+                Message msg=receivedPacket.getData();
                 Platform.runLater(() -> client.getGUIController().displayNewMessage(msg));
                 break;
             case USERLIST:
-                ArrayList<Profile> userList = receivedPacket.getData();
+                ArrayList<Profile> userList=receivedPacket.getData();
                 System.out.println("Profiles received:");
                 userList.forEach(u -> System.out.println(u));
                 Platform.runLater(() -> client.getGUIController().displayOnlineProfiles(userList));
                 break;
             case SHUTDOWN:
-                String text = receivedPacket.getData();
+                String text=receivedPacket.getData();
                 System.out.println("SERVER is shutting down: " + text);
-                running = false;
+                running=false;
                 break;
             case GROUPLIST:
-                ArrayList<Group> groupList = receivedPacket.getData();
+                ArrayList<Group> groupList=receivedPacket.getData();
                 System.out.println("Groups received:");
                 groupList.forEach(g -> System.out.println(g));
                 Platform.runLater(() -> client.getGUIController().displayGroupChats(groupList));
@@ -96,8 +102,10 @@ class ClientHandler implements Runnable {
                 Platform.runLater(() -> client.getGUIController().displayContactsProfiles(contacts));
                 break;
             default:
-                System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());
-                //throw new Exception("Unknown Packet context('" + receivedPacket.getContext() + "') sent!");
+                if(!receivedPacket.getContext().contains(FAIL)) {
+                    System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());
+                    //throw new Exception("Unknown Packet context('" + receivedPacket.getContext() + "') sent!");
+                }
                 break;
         }
     }

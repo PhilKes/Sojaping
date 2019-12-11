@@ -31,6 +31,12 @@ public abstract class UIControllerWithInfo extends UIController {
     private Label labelError;
 
     public void showInfo(String message, InfoType type) {
-        Util.showError(labelError, message, type);
+        Util.showInfo(labelError, message, type);
+        if(type.equals(InfoType.ERROR)) {
+            System.err.println(message);
+        }
+        else {
+            System.out.println(message);
+        }
     }
 }

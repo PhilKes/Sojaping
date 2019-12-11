@@ -258,7 +258,12 @@ public class DatabaseServiceTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        db.insertContactOfAccount(acc, friend.getProfile());
+        try {
+            db.insertContactOfAccount(acc, friend.getProfile());
+        }
+        catch(Exception e) {
+            fail(e.getMessage());
+        }
         List<Profile> contacts=db.getAllContactsOfAccount(acc);
         assertTrue(contacts.size()==1);
         assertTrue(friend.getProfile().equals(contacts.get(0)));
@@ -282,7 +287,12 @@ public class DatabaseServiceTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        db.insertContactOfAccount(acc, friend.getProfile());
+        try {
+            db.insertContactOfAccount(acc, friend.getProfile());
+        }
+        catch(Exception e) {
+            fail(e.getMessage());
+        }
         ArrayList<Profile> contacts = db.getAllContactsOfAccount(acc);
         boolean result = false;
         Profile contact = contacts.get(0);

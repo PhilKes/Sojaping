@@ -26,7 +26,8 @@ import static common.Constants.Contexts.FAIL;
  */
 public class Util {
 
-    private static final Image DEFAULT_AVATAR=new Image(UIController.class.getResourceAsStream("resources/default_avatar_min.png"));
+    private static final Image DEFAULT_AVATAR_MIN=new Image(UIController.class.getResourceAsStream("resources/default_avatar_min.png"));
+    private static final Image DEFAULT_AVATAR=new Image(UIController.class.getResourceAsStream("resources/default_avatar.png"));
     private static final Image DEFAULT_ICON=new Image(UIController.class.getResourceAsStream("resources/icon.png"));
     /**
      * Log sent/received Packet in Console
@@ -61,17 +62,18 @@ public class Util {
         final int bytes = mask >>> 3;
         for(int i=0;i<bytes;i++)  if(x[i] != y[i]) return false;
         final int shift = 8 - bits;
-        if(bits != 0 && x[bytes]>>>shift != y[bytes]>>>shift) return false;
-        return true;
+        return bits==0 || x[bytes] >>> shift==y[bytes] >>> shift;
     }
     public static boolean sameNetwork(final InetAddress a, final InetAddress b, final int mask) {
         return sameNetwork(a.getAddress(), b.getAddress(), mask);
     }
 
+    public static Image getDefaultAvatarMin() {
+        return DEFAULT_AVATAR_MIN;
+    }
     public static Image getDefaultAvatar() {
         return DEFAULT_AVATAR;
     }
-
     public static Image getDefaultIcon() {
         return DEFAULT_ICON;
     }
@@ -89,7 +91,7 @@ public class Util {
                     selectedLanguages.add(item.getText());
                     languageCounter.increment();
                     item.setText(languageCounter.getValue() + "." + item.getText());
-                    menuLanguages.setStyle(""); //TODO Styling via .css
+                    menuLanguages.setStyle("");
                 } else {
                     /** Remove language*/
                     String t = item.getText();
@@ -109,7 +111,6 @@ public class Util {
                         }
                     }
                     if (selectedLanguages.isEmpty()) {
-                        //TODO Styling via .css
                         menuLanguages.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
                     }
                 }
@@ -129,17 +130,19 @@ public class Util {
     /**
      * Show error message with Label for 2 Seconds
      */
-    public static void showError(Label labelError, String message, UIControllerWithInfo.InfoType type) {
+    public static void showInfo(Label labelInfo, String message, UIControllerWithInfo.InfoType type) {
         Platform.runLater(() -> {
-            if (message == null) {
-                labelError.setText("");
-                labelError.setDisable(true);
-            } else {
-                labelError.setText(message);
-                labelError.setDisable(false);
-                labelError.setId(type.get());
-                PauseTransition delay = new PauseTransition(Duration.seconds(2));
-                delay.setOnFinished(event -> showError(labelError, null, type));
+            if(message==null) {
+                labelInfo.setText("");
+                labelInfo.setDisable(true);
+            }
+            else {
+                labelInfo.setText(message);
+                labelInfo.setDisable(false);
+                /** See main.css for ID styling */
+                labelInfo.setId(type.get());
+                PauseTransition delay=new PauseTransition(Duration.seconds(2));
+                delay.setOnFinished(event -> showInfo(labelInfo, null, type));
                 delay.play();
             }
         });

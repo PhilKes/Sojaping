@@ -25,7 +25,7 @@ public class ServerHandler implements Runnable {
     public void run() {
         Packet receivedPacket=getPacketFromJson(receivedJson);
         if(receivedPacket==null) {
-            server.sendToUser(connection, FAIL, "Invalid JSON received!");
+            server.sendToUser(connection, FAIL, new Exception("Invalid JSON received!"));
             return;
         }
         Util.logPacket(true, connection, receivedPacket);
@@ -59,7 +59,7 @@ public class ServerHandler implements Runnable {
                     /** Check login credentials, send Account from DB to user or throw failed Exception */
                     Account loginAccount=server.loginUser(loginUser);
                     /** Check if user is already logged in somewhere else*/
-                    if (server.getConnectionOfUser(loginAccount.getUserName()) != null) {
+                    if(server.getConnectionOfUser(loginAccount.getUserName())!=null) {
                         throw new Exception("User is already logged in!");
                     }
                     //TODO Check Account profilepicture
@@ -74,17 +74,17 @@ public class ServerHandler implements Runnable {
                     Message message=receivedPacket.getData();
                     /** Check login credentials, send Account from DB to user or send failed Exception */
                     String receiver=message.getReceiver();
-                    if (receiver.equals(BROADCAST)) {
+                    if(receiver.equals(BROADCAST)) {
                         server.broadcastMessages(message);
-                    } else if (receiver.startsWith("#")) {
-                        server.sendMessageToGroup(server.getUsersForGroup(receiver), message);
-                    } else {
+                    }
+                    else if(receiver.startsWith("#")) {
+                        server.sendMessageToGroup(receiver, message);
+                    }
+                    else {
                         /** Private message */
-                        if (!server.sendMessage(message)) {
+                        if(!server.sendMessage(message)) {
                             throw new Exception("Receiver not found!");
                         }
-
-
                     }
                     break;
                 case USERLIST:
@@ -113,11 +113,12 @@ public class ServerHandler implements Runnable {
                     server.sendToUser(connection, USERLIST, server.getOnlineUsers());
                     break;
                 case PROFILE_UPDATE:
-                    Account updatedAccount = receivedPacket.getData();
-                    server.updateUser(updatedAccount);
+                    Account updatedAccount=receivedPacket.getData();
+                    server.updateUser(connection, updatedAccount);
+                    server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     break;
                 case DELETE_ACCOUNT:
-                    Account accountForDeletion = receivedPacket.getData();
+                    Account accountForDeletion=receivedPacket.getData();
                     server.deleteUser(accountForDeletion);
                     break;
                 case GROUP_UPDATE:

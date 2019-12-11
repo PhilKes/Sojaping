@@ -91,10 +91,8 @@ public class Client {
         sendToServer(CONNECT, connection.getNickname());
         if(handler.waitForConnectSuccess())
         /** Start Thread to handle packets from the server if CONNECT_SUCCESS received*/ {
-            Platform.runLater(() -> {
-                ((UIControllerWithInfo) getController())
-                        .showInfo("Connected to server", UIControllerWithInfo.InfoType.INFO);
-            });
+            Platform.runLater(() -> ((UIControllerWithInfo) peekController())
+                    .showInfo("Connected to server", UIControllerWithInfo.InfoType.INFO));
             new Thread(handler).start();
         }
     }
@@ -102,7 +100,6 @@ public class Client {
     /**
      * Send object as Packet with context to Server
      */
-    //TODO (Next Sprint) MAKE ALL SENDTOSERVER TASKS (NOT ON UI THREAD)
     public void sendToServer(String context, Object object) {
         Packet packet=new Packet(context, object);
         output.println(packet.getJson());
@@ -120,11 +117,12 @@ public class Client {
                 Pane root1 = windowLoader.load();
                 UIController controller = (UIController) windowLoader.getController();
                 controller.setClient(this);
-                setController(controller);
+
                 Stage stage=new Stage();
                 stage.initModality(Modality.APPLICATION_MODAL);
                 stage.initStyle(StageStyle.UNDECORATED);
-                stage.setTitle(window.toUpperCase());
+                stage.setTitle(window.substring(0, 1).toUpperCase() + window.substring(1));
+                controller.setStage(stage);
 
                 /** Wrap Window in custom VBox with TitleBar*/
                 VBox wrapBox = new VBox();
@@ -145,9 +143,16 @@ public class Client {
                 stage.setResizable(false);
                 stage.getIcons().add(Util.getDefaultIcon());
                 if (account != null) {
-                    stage.setTitle(window.toUpperCase() + " " + account.getUserName());
+                    stage.setTitle(stage.getTitle() + " " + account.getUserName());
                 }
                 stage.show();
+                /** Center new window in current window*/
+                if(!controllerStack.isEmpty()) {
+                    Stage currStage=peekController().getStage();
+                    stage.setX(currStage.getX() + currStage.getWidth() / 2 - stage.getWidth() / 2);
+                    stage.setY(currStage.getY() + currStage.getHeight() / 2 - stage.getHeight() / 2);
+                }
+                pushController(controller);
             }
             catch(IOException e) {
                 e.printStackTrace();
@@ -156,13 +161,13 @@ public class Client {
     }
 
     public void closeCurrentWindow() {
-        closeCurrentWindowNoexit();
+        closeCurrentWindowNoExit();
         if(controllerStack.isEmpty()) {
             this.stop();
         }
     }
 
-    public void closeCurrentWindowNoexit() {
+    public void closeCurrentWindowNoExit() {
         controllerStack.pop().close();
     }
 
@@ -182,7 +187,6 @@ public class Client {
             catch(IOException | InterruptedException e) {
                 e.printStackTrace();
             }
-            //TODO Stop ClientHandler Thread
         }
     }
 
@@ -195,11 +199,11 @@ public class Client {
         return null;
     }
 
-    public UIController getController() {
+    public UIController peekController() {
         return controllerStack.peek();
     }
 
-    public void setController(UIController controller) {
+    public void pushController(UIController controller) {
         controllerStack.push(controller);
     }
 

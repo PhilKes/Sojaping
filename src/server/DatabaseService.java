@@ -342,7 +342,7 @@ public class DatabaseService {
         return profiles;
     }
 
-    public void insertContactOfAccount(Account account, Profile contact) {
+    public void insertContactOfAccount(Account account, Profile contact) throws Exception {
         String sql="INSERT INTO " + TableContact.NAME + "(" + TableContact.CID + ", " + TableContact.AIDO + ", "
                 + TableContact.AIDC + ") VALUES(NULL,?,?)";
         try(Connection conn=this.connect();
@@ -354,13 +354,13 @@ public class DatabaseService {
             if(rs.next()) {
                 System.out.println("Inserted into ContactList DB of Account " + account + ":\t" + contact);
             }
-        } catch (SQLException e) {
-//            if(e.getMessage().contains("[SQLITE_CONSTRAINT]  Abort due to constraint violation (UNIQUE constraint failed: account.userName)")){
-//                throw new Exception("User is already in the ContactList!");
-//            }
-            e.printStackTrace();
         }
-        //TODO: Beim Aufruf prüfen, dass man sich nicht selbst oder jemanden, der schon enthalten ist, einfügt.
+        catch(SQLException e) {
+            if(e.getMessage().contains("[SQLITE_CONSTRAINT]  Abort due to constraint violation (UNIQUE constraint failed: contact.aido, contact.aidc)")) {
+                throw new Exception(contact.getUserName() + " is already in your contacts!");
+            }
+            //e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) throws Exception {

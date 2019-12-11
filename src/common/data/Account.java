@@ -13,14 +13,14 @@ public class Account extends Profile {
     /*Status = 0 : offline
     * Status = 1 : online
     */
-    public Account(int aid, String userName, String password, int status, String aboutMe, String profilePicture, List<String> langauges) {
+    public Account(int aid, String userName, String password, int status, String aboutMe, String profilePicture, List<String> languages) {
         this.aid = aid;
         this.userName = userName;
         this.password = password;
         this.status = status;
         this.aboutMe = aboutMe;
         this.profilePicture = profilePicture;
-        this.languages=langauges;
+        this.languages=languages;
     }
 
     public int getAid() {
@@ -56,12 +56,9 @@ public class Account extends Profile {
     }
 
     public boolean equals(Account acc) {
-        if(this.aid == acc.getAid() && this.userName.equals(acc.getUserName())
-        && this.password.equals(acc.getPassword()) && this.status == acc.getStatus()
-        && this.aboutMe.equals(acc.getAboutMe())
-                && ((this.profilePicture == null && acc.getProfilePicture() == null) || this.profilePicture.equals(acc.getProfilePicture())))
-            return true;
-        else
-            return false;
+        return this.aid==acc.getAid() && this.userName.equals(acc.getUserName())
+                && this.password.equals(acc.getPassword()) && this.status==acc.getStatus()
+                && this.aboutMe.equals(acc.getAboutMe())
+                && ((this.profilePicture==null && acc.getProfilePicture()==null) || this.profilePicture.equals(acc.getProfilePicture()));
     }
 }

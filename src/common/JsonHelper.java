@@ -82,7 +82,6 @@ public class JsonHelper {
     /**
      * Returns Packet object from JSON String
      */
-    //TODO Return Optional<Packet> ?
     public static Packet getPacketFromJson(String json) {
         JsonNode node=null;
         try {

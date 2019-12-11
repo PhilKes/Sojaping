@@ -75,6 +75,12 @@ public class Profile {
     }
 
     @Override
+    public Profile clone() {
+        List<String> langs=new ArrayList<>(languages);
+        return new Profile(userName, status, aboutMe, profilePicture, langs);
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(userName, status, aboutMe, profilePicture, languages);
     }

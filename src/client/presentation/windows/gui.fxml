@@ -34,15 +34,15 @@
                                 <Insets left="10.0" right="10.0"/>
                             </HBox.margin>
                         </ImageView>
-                        <VBox fx:id="vBoxMyProfile" maxWidth="1.7976931348623157E308">
+                        <VBox fx:id="vBoxMyProfile">
                             <children>
                                 <Label fx:id="labelUserName" text="UserName">
                                     <font>
                                         <Font name="System Bold" size="16.0"/>
                                     </font>
                                 </Label>
-                                <Label fx:id="labelAbout" layoutX="10.0" layoutY="10.0" maxWidth="120.0"
-                                       text="AboutMe"/>
+                                <Label fx:id="labelAbout" layoutX="10.0" layoutY="10.0" maxWidth="182.0"
+                                       prefHeight="41.0" prefWidth="182.0" text="AboutMe" wrapText="true"/>
                             </children>
                         </VBox>
                     </children>
@@ -105,6 +105,12 @@
                     <image>
                         <Image url="@../resources/SojaPing_border_color.png"/>
                     </image></ImageView>
+                <Label alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" text="Group Members"
+                       textAlignment="CENTER">
+                    <VBox.margin>
+                        <Insets bottom="8.0"/>
+                    </VBox.margin>
+                </Label>
                 <ListView fx:id="listVInfo"/>
             </children>
             <BorderPane.margin>
@@ -145,8 +151,7 @@
                     <children>
                         <HBox alignment="CENTER_LEFT">
                             <children>
-                                <CheckBox fx:id="checkTranslate" mnemonicParsing="false" selected="true"
-                                          text="Translate">
+                                <CheckBox fx:id="checkTranslate" mnemonicParsing="false" text="Translate">
                                     <padding>
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                                     </padding>

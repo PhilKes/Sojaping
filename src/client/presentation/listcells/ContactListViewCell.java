@@ -49,16 +49,19 @@ public class ContactListViewCell extends ListCell<Profile> {
             if (profile.getStatus() == 1) {
                 circleStatus.getStyleClass().clear();
                 circleStatus.getStyleClass().add("online");
-            } else {
+            }
+            else if(profile.getStatus()==0) {
                 circleStatus.getStyleClass().clear();
                 circleStatus.getStyleClass().add("offline");
+            }
+            else if(profile.getStatus()==-1) {
+                circleStatus.getStyleClass().clear();
+                circleStatus.setVisible(false);
+                circleStatus.setDisable(true);
             }
             borderPane.prefWidthProperty().bind(listViewWidthProperty);
             setGraphic(borderPane);
         }
-
-
-
     }
 
 }

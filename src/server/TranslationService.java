@@ -163,7 +163,7 @@ public class TranslationService {
                 .build();
         IdentifiedLanguages languages=languageTranslator.identify(identifyOptions)
                 .execute().getResult();
-        /** Check if identifiedlanguages is not empty and has at least 50% confidence */
+        /** Check if identifiedlanguages is not empty and has at least 19% confidence */
         if(languages.getLanguages().size()>0 && languages.getLanguages().get(0).getConfidence()>0.19) {
             return languages.getLanguages().get(0).getLanguage();
         }

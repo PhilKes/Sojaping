@@ -1,5 +1,6 @@
 package client;
 
+import common.Constants;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import server.Server;
@@ -10,7 +11,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         Client client=Client.getInstance(Server.SERVER_HOST, Server.SERVER_PORT);
-        client.openWindow("login");
+        client.openWindow(Constants.Windows.LOGIN);
         new Thread(() -> client.run()).start();
     }
 

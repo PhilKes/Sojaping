@@ -3,12 +3,12 @@ package client.presentation.windows;
 import client.presentation.UIController;
 import common.Util;
 import common.data.Profile;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
+
+import static common.Constants.Contexts.ADD_FRIEND;
 
 public class PublicProfileController extends UIController {
     @FXML
@@ -26,7 +26,7 @@ public class PublicProfileController extends UIController {
     }
 
     private void onAddFriendClicked() {
-        //TODO SAVE TO CONTACTS client.sendToServer(CONTACT_ADD,profile);
+        client.sendToServer(ADD_FRIEND, profile);
     }
 
     public Profile getProfile() {
@@ -45,10 +45,5 @@ public class PublicProfileController extends UIController {
         if(profile.getProfilePicture()==null) {
             imgAvatar.setImage(Util.getDefaultAvatar());
         }
-    }
-
-    @Override
-    public void close() {
-        Platform.runLater(() -> ((Stage) labelUserName.getScene().getWindow()).close());
     }
 }

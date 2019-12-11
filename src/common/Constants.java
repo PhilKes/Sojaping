@@ -38,4 +38,13 @@ public class Constants {
                 FRIEND_LIST = "friendList",
                 GROUP_UPDATE = "groupUpdate";
     }
+
+    public static class Windows {
+        public static final String
+                LOGIN="login",
+                REGISTER="register",
+                USER_PROFILE="UserProfile",
+                PUBLIC_PROFILE="PublicProfile",
+                GUI="gui";
+    }
 }

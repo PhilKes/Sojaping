@@ -1,14 +1,13 @@
 package client.presentation.windows;
 
 import client.Client;
-import client.presentation.UIController;
+import client.presentation.UIControllerWithInfo;
 import common.Util;
 import common.data.Account;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import org.apache.commons.lang3.mutable.MutableInt;
 import server.Server;
 import server.TranslationService;
@@ -22,7 +21,7 @@ import java.util.stream.Collectors;
 import static common.Constants.Contexts.DELETE_ACCOUNT;
 import static common.Constants.Contexts.PROFILE_UPDATE;
 
-public class UserProfileController extends UIController {
+public class UserProfileController extends UIControllerWithInfo {
 
 	@FXML
 	private Button btnSave, btnCancel, btnDeleteAccount;
@@ -31,10 +30,9 @@ public class UserProfileController extends UIController {
 	private TextField txtAboutMe, txtNewPassword, txtNewPasswordConfirm, txtCurrentPassword;
 
 	@FXML
-	private Label lblUserName, lblError;
+    private Label lblUserName;
 
 	private Account loggedInAccount;
-
 
 	@FXML
 	private MenuButton menuLanguages;
@@ -65,6 +63,7 @@ public class UserProfileController extends UIController {
 
 		Util.fillLanguageMenu(menuLanguages, selectedLanguages, languageCounter);
 		List<String> languages = this.loggedInAccount.getLanguages();
+        /** Select languages of profile*/
 		for (String language: languages){
 			language = languageAbbrToFull.get(language);
 			ObservableList<MenuItem> items = this.menuLanguages.getItems();
@@ -81,7 +80,7 @@ public class UserProfileController extends UIController {
 			this.client.sendToServer(DELETE_ACCOUNT, this.loggedInAccount);
 			Platform.exit();
 		} else {
-			lblError.setText("Current password is invalid");
+            showInfo("Current password is invalid", InfoType.ERROR);
 		}
 	}
 
@@ -94,10 +93,9 @@ public class UserProfileController extends UIController {
 			this.handlePasswordGuardedProfileChanges();
 			this.client.sendToServer(PROFILE_UPDATE, this.loggedInAccount);
             client.getGUIController().loadAccount(loggedInAccount);
-			client.closeCurrentWindowNoexit();
+            client.closeCurrentWindowNoExit();
 		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			lblError.setText(e.getMessage());
+            showInfo(e.getMessage(), InfoType.ERROR);
 		}
 	}
 
@@ -120,12 +118,6 @@ public class UserProfileController extends UIController {
 
 	private void onCancelClick() {
         //Platform.runLater(() -> ((Stage) btnCancel.getScene().getWindow()).close());
-        client.closeCurrentWindowNoexit();
+        client.closeCurrentWindowNoExit();
     }
-
-    @Override
-    public void close() {
-        Platform.runLater(() -> ((Stage) btnSave.getScene().getWindow()).close());
-    }
-
 }

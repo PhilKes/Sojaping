@@ -50,8 +50,11 @@ public class Connection {
         return loggedAccount;
     }
 
+    /**
+     * Set account if logged in, updated status to online/offline
+     */
     public void setLoggedAccount(Account loggedAccount) {
-        if (this.loggedAccount != null) {
+        if(isLoggedIn()) {
             if (loggedAccount == null) {
                 this.loggedAccount.setStatus(0);
             } else {

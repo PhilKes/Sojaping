@@ -10,9 +10,6 @@ public class Message {
     private Timestamp timestamp;
     private String sender;
     private String receiver;
-
-    //TODO Extra class "TranslatedMessage"?
-    // INHERIT:
     private String originalText;
     private String originalLang;
     private HashMap<String,String> translations;

@@ -4,10 +4,8 @@ import client.presentation.UIControllerWithInfo;
 import common.Util;
 import common.data.Account;
 import common.data.AccountBuilder;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import org.apache.commons.lang3.mutable.MutableInt;
 import server.TranslationService;
 
@@ -34,21 +32,20 @@ public class RegisterController extends UIControllerWithInfo {
 
     @FXML
     private void initialize() {
-        languageCounter = new MutableInt(0);
+        languageCounter=new MutableInt(0);
         selectedLanguages=new ArrayList<>();
         Util.fillLanguageMenu(menuLanguages, selectedLanguages, languageCounter);
+        ((CheckMenuItem) menuLanguages.getItems().get(1)).setSelected(true);
         btnRegister.setOnMouseClicked(ev -> onRegisterClicked());
     }
 
     private void onRegisterClicked() {
         /** Check if all Inputs are valid */
-        if (txtUsername.getText().isEmpty() || txtPassword.getText().isEmpty() || selectedLanguages.isEmpty()) {
-            System.err.println("Please fill all fields!");
+        if(txtUsername.getText().isEmpty() || txtPassword.getText().isEmpty() || selectedLanguages.isEmpty()) {
             showInfo("Please fill all fields!", InfoType.ERROR);
             return;
         }
-        if (!txtPassword.getText().equals(txtRepeat.getText())) {
-            System.err.println("Passwords do not match!");
+        if(!txtPassword.getText().equals(txtRepeat.getText())) {
             showInfo("Passwords do not match!", InfoType.ERROR);
             return;
         }
@@ -62,11 +59,4 @@ public class RegisterController extends UIControllerWithInfo {
                 .createAccount();
         client.sendToServer(REGISTER, acc);
     }
-
-    @Override
-    public void close() {
-        Platform.runLater(() -> ((Stage) btnRegister.getScene().getWindow()).close());
-    }
-
-
 }

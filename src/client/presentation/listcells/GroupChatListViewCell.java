@@ -37,8 +37,5 @@ public class GroupChatListViewCell extends ListCell<Group> {
             labelGroupname.setText(group.getName());
             setGraphic(hBox);
         }
-
-
-
     }
 }

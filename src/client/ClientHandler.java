@@ -89,6 +89,7 @@ class ClientHandler implements Runnable {
                 System.out.println("Groups received:");
                 groupList.forEach(g -> System.out.println(g));
                 Platform.runLater(() -> client.getGUIController().displayGroupChats(groupList));
+                Platform.runLater(() -> client.getGUIController().fillContextMenuAddToGroup(groupList));
                 break;
             case FRIEND_LIST:
                 ArrayList<Profile> contacts=receivedPacket.getData();

@@ -71,6 +71,8 @@ public class GUIController extends UIControllerWithInfo {
 	private ObservableList<Group> groupsObservableList;
 	private ObservableList<Profile> participantsObservableList;
 
+	private Menu addToGroupChat, addToGroupChat1;
+
 	@FXML
 	private void initialize() {
 		/**Basic GUI initialize + Listener **/
@@ -233,13 +235,30 @@ public class GUIController extends UIControllerWithInfo {
 			if(tabNew.getId().startsWith("#")){
 				Group g = groupsObservableList.stream().filter(group -> tabNew.getId().equals(group.getName())).findFirst().get();
 				participantsObservableList.clear();
-				for(Profile p : g.getParticipants()){
+				for (Profile p : g.getParticipants()) {
 					participantsObservableList.add(p);
 				}
-			}else{
+			} else {
 				participantsObservableList.clear();
 			}
 		});
+	}
+
+	public void fillContextMenuAddToGroup(ArrayList<Group> groups) {
+		//addToGroupChat.getItems().clear();
+		addToGroupChat1.getItems().clear();
+		for (Group g : groups) {
+			MenuItem group = new MenuItem(g.getName());
+			group.setOnAction(ev -> {
+				System.out.println("Clicked on " + g.getName());
+				System.out.println("On profile " + tabContactsListView.getSelectionModel().getSelectedItem());
+				Group myGroup = groups.stream().filter(gr -> gr.getName().equals(group.getText())).findFirst().get();
+				myGroup.addParticipant(tabContactsListView.getSelectionModel().getSelectedItem());
+				//client.sendToServer(GROUP_UPDATE, myGroup);
+			});
+			//addToGroupChat.getItems().add(group);
+			addToGroupChat1.getItems().add(group);
+		}
 	}
 
 	public void onMyProfileClicked() {
@@ -367,7 +386,7 @@ public class GUIController extends UIControllerWithInfo {
 				addFriend(tabOnlineListView.getSelectionModel().getSelectedItem()));
 		createChat.setOnAction(e ->
 				createNewChatTab(tabOnlineListView.getSelectionModel().getSelectedItem().getUserName()));
-		contextMenuOnlineUsers.getItems().addAll(addFriend, createChat, showProfile);
+		contextMenuOnlineUsers.getItems().addAll(addFriend, createChat, addToGroupChat, showProfile);
 		tabOnlineListView.setContextMenu(contextMenuOnlineUsers);
 		/**Contact List Context Menu**/
 		ContextMenu contextMenuContacts = new ContextMenu();

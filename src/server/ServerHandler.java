@@ -92,6 +92,12 @@ public class ServerHandler implements Runnable {
                     /** Send updated online Userlist to clients*/
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     break;
+                case GROUPLIST:
+                    server.sendToUser(connection, GROUPLIST, server.getGroups(connection.getLoggedAccount()));
+                    break;
+                case GROUP_ADD:
+
+                    break;
                 case SHUTDOWN:
                     server.removeConnectionAccount(connection, (Account) receivedPacket.getData());
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());

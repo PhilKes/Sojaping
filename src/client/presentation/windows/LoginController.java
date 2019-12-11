@@ -29,6 +29,9 @@ public class LoginController extends UIControllerWithInfo {
     private void initialize() {
         btnRegister.setOnMouseClicked(ev -> onRegisterClicked());
         btnLogin.setOnMouseClicked(ev -> onLoginClicked());
+        Platform.runLater(() -> {
+            txtUsername.requestFocus();
+        });
     }
 
     private void onLoginClicked() {

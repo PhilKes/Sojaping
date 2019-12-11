@@ -586,7 +586,7 @@ public class DatabaseService {
     }
 
     public void insertGroup(Group group) throws Exception {
-        String sql = "INSERT IF NOT EXISTS INTO groupChats (" + TableGroup.GID + ", " + TableGroup.GROUPNAME + ", "
+        String sql = "INSERT OR IGNORE INTO groupChats (" + TableGroup.GID + ", " + TableGroup.GROUPNAME + ", "
                 + TableGroup.GROUPPICTURE + ") VALUES(NULL,?,?)";
         Account founder = getAccountByUsername(group.getParticipants().get(0).getUserName());
         try (Connection conn = this.connect();
@@ -605,7 +605,7 @@ public class DatabaseService {
             }
             e.printStackTrace();
         }
-        sql = "INSERT IF NOT EXISTS INTO participants (" + TableParticipants.PID + ", " + TableParticipants.IDGROUP + ", "
+        sql = "INSERT OR IGNORE INTO participants (" + TableParticipants.PID + ", " + TableParticipants.IDGROUP + ", "
                 + TableParticipants.IDACCOUNT + ") VALUES(NULL,?,?)";
         for (Profile member : group.getParticipants()) {
             Account memberAcc = getAccountByUsername(member.getUserName());

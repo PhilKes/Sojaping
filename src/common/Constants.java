@@ -29,6 +29,7 @@ public class Constants {
                 BRDCAST_USERS = "broadcastUsers",
                 USERLIST = "userlist",
                 GROUPLIST = "grouplist",
+                GROUP_ADD = "groupAdd",
                 SHUTDOWN = "shutdown",
                 BROADCAST = "broadcast",
                 PROFILE_UPDATE = "profileUpdate",

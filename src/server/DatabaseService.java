@@ -602,7 +602,7 @@ public class DatabaseService {
         Group group = new Group("#test", acc4.getProfile());
         db.insertGroup(group, acc4);
         db.insertParticipant(group, acc.getProfile());
-        db.insertParticipant(group, acc2.getProfile());
+        //db.insertParticipant(group, acc2.getProfile());
         db.insertParticipant(group, acc3.getProfile());
         System.out.println("in main: Group after insert: " + group);
         ArrayList<Group> myGroups = db.getMyGroups(acc4);

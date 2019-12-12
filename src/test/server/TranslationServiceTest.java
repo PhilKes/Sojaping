@@ -1,5 +1,6 @@
 package test.server;
 
+import common.Constants;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import server.TranslationService;
@@ -20,7 +21,7 @@ public class TranslationServiceTest {
         System.out.println("testTranslation:");
         String originalTxt="Hallo wie geht es dir an diesem schönen Tag?";
         String translatedTxt=service.translate(originalTxt,
-                TranslationService.languages.get("German"),TranslationService.languages.get("English"));
+                Constants.Translation.languages.get("German"), Constants.Translation.languages.get("English"));
         System.out.println("de: "+originalTxt+"\n"+"en: "+translatedTxt);
         assertEquals(translatedTxt,"Hello, how are you doing on this beautiful day?");
     }
@@ -31,7 +32,7 @@ public class TranslationServiceTest {
         String text="Ik geniet echt van dit project";
         String language=service.identifyLanguage(text);
         System.out.println(text+"\nLanguage: "+language);
-        assertEquals(language,TranslationService.languages.get("Dutch"));
+        assertEquals(language, Constants.Translation.languages.get("Dutch"));
     }
 
     @Test

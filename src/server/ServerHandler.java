@@ -52,7 +52,7 @@ public class ServerHandler implements Runnable {
                     server.registerUser(account);
                     server.sendToUser(connection, REGISTER_SUCCESS, "Welcome to Sojaping " + account.getUserName() + " !");
                     break;
-                /** Try to authenticate sent LoginUser*/
+                /** Try to authenticate sent LToginUser*/
                 case LOGIN:
                     System.out.println("Login Account");
                     LoginUser loginUser=receivedPacket.getData();

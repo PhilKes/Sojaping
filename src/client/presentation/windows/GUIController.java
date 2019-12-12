@@ -1,17 +1,18 @@
 package client.presentation.windows;
 
 import client.Client;
+import client.presentation.FXUtil;
 import client.presentation.TitleBarController;
 import client.presentation.UIControllerWithInfo;
 import client.presentation.listcells.ChatListViewCell;
 import client.presentation.listcells.ContactListViewCell;
 import client.presentation.listcells.GroupChatListViewCell;
 import common.Constants;
-import common.Util;
 import common.data.Account;
 import common.data.Group;
 import common.data.Message;
 import common.data.Profile;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -31,8 +32,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.kordamp.ikonli.javafx.FontIcon;
-import server.Server;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -41,6 +40,8 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static common.Constants.Contexts.*;
+import static common.Constants.SERVER_HOST;
+import static common.Constants.SERVER_PORT;
 
 public class GUIController extends UIControllerWithInfo {
     @FXML
@@ -87,7 +88,7 @@ public class GUIController extends UIControllerWithInfo {
 		/**Basic GUI initialize + Listener **/
 		addListener();
 		/**get Instance of Client **/
-		client = Client.getInstance(Server.SERVER_HOST, Server.SERVER_PORT);
+        client=Client.getInstance(SERVER_HOST, SERVER_PORT);
 		/** Message Window initialize **/
 		initializeChatWindow();
 		/** User Tab Pane(Left) initialize **/
@@ -195,14 +196,11 @@ public class GUIController extends UIControllerWithInfo {
         ContextMenu contextMenuOnlineUsers=new ContextMenu();
         contextMenuOnlineUsers.setId("OnlineUsersContextMenu");
         MenuItem addFriend=new MenuItem("Add as Friend");
-        FontIcon addIcon=new FontIcon("fa-user-plus");
-        addFriend.setGraphic(addIcon);
+        addFriend.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.USER_PLUS));
         MenuItem createChat=new MenuItem("Create Chat");
-        FontIcon createIcon=new FontIcon("fa-align-justify");
-        createChat.setGraphic(createIcon);
+        createChat.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.ALIGN_JUSTIFY));
         MenuItem showProfile=new MenuItem("Show Profile");
-        FontIcon showIcon=new FontIcon("fa-user-secret");
-        showProfile.setGraphic(showIcon);
+        showProfile.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.USER_SECRET));
         setOnShowPublicProfile(showProfile, tabOnlineListView.getSelectionModel());
         addFriend.setOnAction(e ->
                 addFriend(tabOnlineListView.getSelectionModel().getSelectedItem()));
@@ -215,20 +213,16 @@ public class GUIController extends UIControllerWithInfo {
         ContextMenu contextMenuContacts=new ContextMenu();
         contextMenuContacts.setId("ContactsContextMenu");
         MenuItem createChat1=new MenuItem("Create Chat");
-        FontIcon createIcon1=new FontIcon("fa-align-justify");
-        createChat1.setGraphic(createIcon1);
+        createChat1.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.ALIGN_JUSTIFY));
         createChat1.setOnAction(e ->
                 createNewChatTab(tabContactsListView.getSelectionModel().getSelectedItem().getUserName()));
         addToGroupChatContacts=new Menu("Add to Group Chat");
-        FontIcon groupIcon=new FontIcon("fa-users");
-        addToGroupChatContacts.setGraphic(groupIcon);
+        addToGroupChatContacts.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.USERS));
         MenuItem showProfile1=new MenuItem("Show Profile");
-        FontIcon showIcon1=new FontIcon("fa-user-secret");
-        showProfile1.setGraphic(showIcon1);
+        showProfile1.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.USER_SECRET));
         setOnShowPublicProfile(showProfile1, tabContactsListView.getSelectionModel());
         MenuItem removeFriend=new MenuItem("Remove Friend");
-        FontIcon removeIcon=new FontIcon("fa-user-times");
-        removeFriend.setGraphic(removeIcon);
+        removeFriend.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.USER_TIMES));
 
         contextMenuContacts.getItems().addAll(createChat1, addToGroupChatContacts, showProfile1, removeFriend);
         tabContactsListView.setContextMenu(contextMenuContacts);
@@ -272,7 +266,7 @@ public class GUIController extends UIControllerWithInfo {
         //TODO Load Profilepicture (from DB?)
         /** Default Avatar */
         if(acc.getProfilePicture()==null) {
-            imgAvatar.setImage(Util.getDefaultAvatarMin());
+            imgAvatar.setImage(FXUtil.getDefaultAvatarMin());
         }
     }
 
@@ -420,6 +414,7 @@ public class GUIController extends UIControllerWithInfo {
 		window.setMinWidth(250);
         window.setTitle("Enter new Group name");
         window.initStyle(StageStyle.UNDECORATED);
+        window.getIcons().add(FXUtil.getDefaultIcon());
 
 		TextField textField = new TextField();
 		Button yButton = new Button("Create");

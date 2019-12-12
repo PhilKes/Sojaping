@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
-<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <HBox fx:id="titleBar" alignment="CENTER_RIGHT" prefWidth="600.0" stylesheets="@resources/main.css"
       xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
@@ -24,8 +24,8 @@
         </HBox>
         <Button fx:id="btnMinimize" contentDisplay="CENTER" mnemonicParsing="false" styleClass="orange">
             <graphic>
-                <FontIcon iconLiteral="fa-window-minimize" iconSize="18" strokeType="OUTSIDE" strokeWidth="0.0"
-                          textAlignment="CENTER"/>
+                <FontAwesomeIconView glyphName="WINDOW_MINIMIZE" size="22" strokeType="OUTSIDE" strokeWidth="0.0"
+                                     textAlignment="CENTER"/>
             </graphic>
             <HBox.margin>
                 <Insets/>
@@ -33,7 +33,7 @@
         </Button>
         <Button fx:id="btnClose" contentDisplay="CENTER" mnemonicParsing="false" styleClass="red">
             <graphic>
-                <FontIcon iconLiteral="fa-window-close" iconSize="18" strokeType="OUTSIDE" strokeWidth="0.0"/>
+                <FontAwesomeIconView glyphName="WINDOW_CLOSE" size="22" strokeType="OUTSIDE" strokeWidth="0.0"/>
             </graphic>
         </Button>
     </children>

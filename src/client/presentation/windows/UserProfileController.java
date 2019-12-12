@@ -1,16 +1,14 @@
 package client.presentation.windows;
 
 import client.Client;
+import client.presentation.FXUtil;
 import client.presentation.UIControllerWithInfo;
-import common.Util;
+import common.Constants;
 import common.data.Account;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import org.apache.commons.lang3.mutable.MutableInt;
-import server.Server;
-import server.TranslationService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +18,8 @@ import java.util.stream.Collectors;
 
 import static common.Constants.Contexts.DELETE_ACCOUNT;
 import static common.Constants.Contexts.PROFILE_UPDATE;
+import static common.Constants.SERVER_HOST;
+import static common.Constants.SERVER_PORT;
 
 public class UserProfileController extends UIControllerWithInfo {
 
@@ -39,14 +39,14 @@ public class UserProfileController extends UIControllerWithInfo {
 
 	private List<String> selectedLanguages;
 
-	private MutableInt languageCounter;
+    private int[] languageCounter;
 
 	@FXML
 	private void initialize() {
 		btnSave.setOnMouseClicked(ev -> onSaveClick());
 		btnCancel.setOnMouseClicked(ev -> onCancelClick());
 		btnDeleteAccount.setOnMouseClicked(ev -> onDeleteAccountClick());
-		this.loggedInAccount = Client.getInstance(Server.SERVER_HOST, Server.SERVER_PORT).getAccount();
+        this.loggedInAccount=Client.getInstance(SERVER_HOST, SERVER_PORT).getAccount();
 		if (this.loggedInAccount != null) {
 			lblUserName.setText("Hi, " + this.loggedInAccount.getUserName() + "!");
 			this.txtAboutMe.setText(this.loggedInAccount.getAboutMe() != null ? this.loggedInAccount.getAboutMe() : "");
@@ -56,12 +56,12 @@ public class UserProfileController extends UIControllerWithInfo {
 	}
 
 	private void initializeLanguageDropDown() {
-		languageCounter = new MutableInt(0);
+        languageCounter=new int[]{0};
 		selectedLanguages=new ArrayList<>();
 
-		Map<String, String> languageAbbrToFull = TranslationService.languages.entrySet().stream().collect(Collectors.toMap(Entry::getValue, Entry::getKey));
+        Map<String, String> languageAbbrToFull=Constants.Translation.languages.entrySet().stream().collect(Collectors.toMap(Entry::getValue, Entry::getKey));
 
-		Util.fillLanguageMenu(menuLanguages, selectedLanguages, languageCounter);
+        FXUtil.fillLanguageMenu(menuLanguages, selectedLanguages, languageCounter);
 		List<String> languages = this.loggedInAccount.getLanguages();
         /** Select languages of profile*/
 		for (String language: languages){
@@ -87,7 +87,7 @@ public class UserProfileController extends UIControllerWithInfo {
 	private void onSaveClick() {
 		this.loggedInAccount.setAboutMe(this.txtAboutMe.getText());
 		this.loggedInAccount.setLanguages(selectedLanguages.stream()
-				.map(TranslationService.languages::get)
+                .map(key -> Constants.Translation.languages.get(key))
 				.collect(Collectors.toList()));
 		try {
 			this.handlePasswordGuardedProfileChanges();

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
@@ -14,14 +15,14 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <BorderPane id="rootPane" fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
             minWidth="-Infinity" prefHeight="690.0" prefWidth="911.0" stylesheets="@../resources/main.css"
             xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.presentation.windows.GUIController">
     <left>
-        <VBox fx:id="vBoxContacts" alignment="TOP_CENTER" prefHeight="595.0" BorderPane.alignment="CENTER_LEFT">
+        <VBox fx:id="vBoxContacts" alignment="TOP_CENTER" prefHeight="588.0" prefWidth="250.0"
+              BorderPane.alignment="CENTER_LEFT">
             <children>
                 <HBox fx:id="hBoxMe" alignment="CENTER_LEFT" maxWidth="248.0">
                     <children>
@@ -57,19 +58,23 @@
                                 <ListView fx:id="tabContactsListView" prefHeight="404.0" prefWidth="240.0"/>
                             </content>
                             <graphic>
-                                <FontIcon iconLiteral="fa-user-circle" iconSize="16"/>
+                                <FontAwesomeIconView glyphName="CHILD" size="15"/>
                             </graphic>
                         </Tab>
                         <Tab fx:id="tabOnline" text="Online">
                             <content>
                                 <ListView fx:id="tabOnlineListView" prefWidth="240.0"/>
-                            </content></Tab>
+                            </content>
+                            <graphic>
+                                <FontAwesomeIconView glyphName="BEER" size="14"/>
+                            </graphic>
+                        </Tab>
                   <Tab text="Groups">
                      <content>
                          <ListView fx:id="tabGroupChatListView" prefHeight="391.0" prefWidth="240.0"/>
                      </content>
                       <graphic>
-                          <FontIcon iconLiteral="fa-users" iconSize="16"/>
+                          <FontAwesomeIconView glyphName="GROUP" size="13"/>
                       </graphic>
                   </Tab>
                     </tabs>
@@ -85,11 +90,15 @@
                                 <Insets right="6.0"/>
                             </HBox.margin>
                             <graphic>
-                                <FontIcon iconLiteral="fa-sign-out" iconSize="22"/>
+                                <FontAwesomeIconView glyphName="SIGN_OUT" size="22"/>
                             </graphic>
                         </Button>
                         <Button fx:id="btnMyProfile" mnemonicParsing="false" onMouseClicked="#onMyProfileClicked"
-                                prefHeight="34.0" prefWidth="123.0" styleClass="orange" text="MyProfile"/>
+                                prefHeight="46.0" prefWidth="136.0" styleClass="orange" text="MyProfile">
+                            <graphic>
+                                <FontAwesomeIconView glyphName="WRENCH" size="18"/>
+                            </graphic>
+                        </Button>
                     </children>
                     <padding>
                         <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
@@ -128,7 +137,7 @@
                          <ListView fx:id="listViewBroadcast"/>
                      </content>
                     <graphic>
-                        <FontIcon iconLiteral="fa-bullhorn"/>
+                        <FontAwesomeIconView glyphName="BULLHORN" size="14"/>
                     </graphic>
                 </Tab>
               </tabs>
@@ -156,8 +165,8 @@
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                                     </padding>
                                     <graphic>
-                                        <FontIcon iconLiteral="fa-language" iconSize="24" strokeType="OUTSIDE"
-                                                  strokeWidth="0.0"/>
+                                        <FontAwesomeIconView glyphName="BOOK" size="21" strokeType="OUTSIDE"
+                                                             strokeWidth="0.0"/>
                                     </graphic>
                                     <font>
                                         <Font name="System Bold" size="12.0"/>
@@ -168,7 +177,7 @@
                         <Button fx:id="btnSend" mnemonicParsing="false" prefHeight="125.0" prefWidth="153.0"
                                 styleClass="green" text="Send">
                             <graphic>
-                                <FontIcon iconLiteral="fa-commenting" iconSize="20"/>
+                                <FontAwesomeIconView glyphName="COMMENTING" size="22"/>
                             </graphic>
                             <VBox.margin>
                                 <Insets top="4.0"/>

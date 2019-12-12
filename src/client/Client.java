@@ -1,5 +1,6 @@
 package client;
 
+import client.presentation.FXUtil;
 import client.presentation.TitleBarController;
 import client.presentation.UIController;
 import client.presentation.UIControllerWithInfo;
@@ -141,7 +142,7 @@ public class Client {
                 stage.setScene(new Scene(wrapBox));
                 stage.setOnCloseRequest(ev -> closeCurrentWindow());
                 stage.setResizable(false);
-                stage.getIcons().add(Util.getDefaultIcon());
+                stage.getIcons().add(FXUtil.getDefaultIcon());
                 if (account != null) {
                     stage.setTitle(stage.getTitle() + " " + account.getUserName());
                 }

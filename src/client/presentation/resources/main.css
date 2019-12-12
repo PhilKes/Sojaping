@@ -46,7 +46,7 @@
 }
 
 #btnMinimize > * {
-    -fx-icon-color: -fx-txt-light;
+    -fx-fill: -fx-txt-light;
 }
 
 #btnMinimize:hover {
@@ -54,7 +54,7 @@
 }
 
 #btnMinimize:hover > * {
-    -fx-icon-color: -fx-txt-light;
+    -fx-fill: -fx-txt-light;
 }
 
 #btnClose {
@@ -65,7 +65,7 @@
 }
 
 #btnClose > * {
-    -fx-icon-color: -fx-txt-light;
+    -fx-fill: -fx-txt-light;
 }
 
 #btnClose:hover {
@@ -73,7 +73,7 @@
 }
 
 #btnClose:hover > * {
-    -fx-icon-color: -fx-txt-light;
+    -fx-fill: -fx-txt-light;
 }
 
 .offline {
@@ -114,6 +114,10 @@
     -fx-text-fill: -fx-fgrnd;
 }
 
+.tab .glyph-icon {
+    -fx-fill: -fx-fgrnd;
+}
+
 .tab:selected {
     /*-fx-background-color: -fx-green;
     -fx-text-fill: -fx-text-light;*/
@@ -124,8 +128,11 @@
 }
 
 .tab:selected * {
-    -fx-icon-color: #654b00;
     -fx-text-fill: #654b00;
+}
+
+.tab:selected .glyph-icon {
+    -fx-fill: #654b00;
 }
 
 .tab:hover {
@@ -137,8 +144,11 @@
 }
 
 .tab:hover * {
-    -fx-icon-color: #654b00;
     -fx-text-fill: #654b00;
+}
+
+.tab:hover .glyph-icon {
+    -fx-fill: #654b00;
 }
 
 .list-view {
@@ -217,7 +227,7 @@
 }
 * {
     -fx-focus-color: transparent;
-    -fx-icon-color: -fx-txt-light;
+    /*-fx-icon-color: -fx-txt-light;*/
 }
 
 .label {
@@ -255,12 +265,14 @@
     -fx-text-fill: -fx-txt-light;
 }
 
-#checkTranslate > * {
-    -fx-icon-color: -fx-fgrnd;
+#checkTranslate > .glyph-icon {
+    /* -fx-icon-color: -fx-fgrnd;*/
+    -fx-fill: -fx-fgrnd;
 }
 
-#checkTranslate:selected > * {
-    -fx-icon-color: -fx-green;
+#checkTranslate:selected > .glyph-icon {
+    /*-fx-icon-color: -fx-green;*/
+    -fx-fill: -fx-green;
 }
 
 #checkTranslate:selected {
@@ -311,11 +323,18 @@
 
 .menu-item:focused {
     -fx-background-color: linear-gradient(#e68400, #ffd65b);
+}
 
+.menu-item .glyph-icon {
+    -fx-fill: -fx-txt-light;
 }
 
 .menu-item:focused .label {
     -fx-text-fill: #654b00;
+}
+
+.menu-item:focused .glyph-icon {
+    -fx-fill: #654b00;
 }
 .avatar {
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.77), 10, 0, 0, 1);
@@ -408,11 +427,11 @@
     linear-gradient(#ffea6a, #efaa22),
     linear-gradient(#ffe657 0%, #f8c202 50%, #eea10b 100%);
     -fx-text-fill: #654b00;
-    -fx-icon-color: #654b00;
 }
 
-.orange > * {
-    -fx-icon-color: #654b00;
+/** Set color of Icons*/
+.orange > .glyph-icon {
+    -fx-fill: #654b00;
 }
 .orange:hover {
     -fx-background-color: linear-gradient(#e68400, #ffd65b),
@@ -427,11 +446,10 @@
     linear-gradient(#ff6464, #f80003),
     linear-gradient(#ff6464 0%, #f80003 50%, #ee1518 100%);
     -fx-text-fill: #4d0301;
-    -fx-icon-color: #4d0301;
 }
 
-.red > * {
-    -fx-icon-color: #4d0301;
+.red > .glyph-icon {
+    -fx-fill: #4d0301;
 }
 
 .red:hover {
@@ -446,16 +464,14 @@
     linear-gradient(#9aff7a, #7af241),
     linear-gradient(#94ff69, #72ef2e);
     -fx-text-fill: #2a6500;
-
 }
 
-.green > * {
-    -fx-icon-color: #2a6500;
+.green > .glyph-icon {
+    -fx-fill: #2a6500;
 }
 .green:hover {
     -fx-background-color: linear-gradient(#56e600, #84ff50),
     linear-gradient(#7af241, #9aff7a),
     linear-gradient(#72ef2e, #94ff69);
-    -fx-icon-color: #2a6500;
 }
 

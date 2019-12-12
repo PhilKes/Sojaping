@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -7,7 +8,6 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <VBox alignment="CENTER" stylesheets="@../resources/main.css" xmlns="http://javafx.com/javafx/8.0.141"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.presentation.windows.PublicProfileController">
@@ -26,7 +26,7 @@
                 <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
             </VBox.margin>
             <graphic>
-                <FontIcon iconLiteral="fa-user" strokeType="OUTSIDE" strokeWidth="0.0"/>
+                <FontAwesomeIconView fill="WHITE" glyphName="USER" size="20" strokeType="OUTSIDE" strokeWidth="0.0"/>
             </graphic>
         </Label>
         <Label fx:id="labelAbout" text="AboutMe">
@@ -34,7 +34,7 @@
                 <Insets bottom="4.0" left="4.0" right="4.0" top="4.0"/>
             </VBox.margin>
             <graphic>
-                <FontIcon iconLiteral="fa-comment" strokeType="OUTSIDE" strokeWidth="0.0"/>
+                <FontAwesomeIconView fill="WHITE" glyphName="COMMENT" size="13" strokeType="OUTSIDE" strokeWidth="0.0"/>
             </graphic>
         </Label>
         <Button fx:id="btnAddFriend" layoutX="28.0" layoutY="168.0" prefHeight="21.0" prefWidth="182.0"
@@ -43,7 +43,7 @@
                 <Font size="17.0"/>
             </font>
             <graphic>
-                <FontIcon iconLiteral="fa-user-plus" iconSize="20" strokeType="OUTSIDE" strokeWidth="0.0"/>
+                <FontAwesomeIconView glyphName="USER_PLUS" size="20" strokeType="OUTSIDE" strokeWidth="0.0"/>
             </graphic>
         </Button>
     </children>

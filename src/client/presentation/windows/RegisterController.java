@@ -1,20 +1,18 @@
 package client.presentation.windows;
 
+import client.presentation.FXUtil;
 import client.presentation.UIControllerWithInfo;
-import common.Util;
+import common.Constants;
 import common.data.Account;
 import common.data.AccountBuilder;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import org.apache.commons.lang3.mutable.MutableInt;
-import server.TranslationService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static common.Constants.Contexts.REGISTER;
-
 
 public class RegisterController extends UIControllerWithInfo {
 
@@ -28,13 +26,16 @@ public class RegisterController extends UIControllerWithInfo {
     @FXML
     private Button btnRegister;
 
-    private MutableInt languageCounter;
+    /**
+     * Array with length 1, wrapper needed, so filllanguageMenu does not call by value
+     */
+    private int[] languageCounter;
 
     @FXML
     private void initialize() {
-        languageCounter=new MutableInt(0);
+        languageCounter=new int[]{0};
         selectedLanguages=new ArrayList<>();
-        Util.fillLanguageMenu(menuLanguages, selectedLanguages, languageCounter);
+        FXUtil.fillLanguageMenu(menuLanguages, selectedLanguages, languageCounter);
         ((CheckMenuItem) menuLanguages.getItems().get(1)).setSelected(true);
         btnRegister.setOnMouseClicked(ev -> onRegisterClicked());
     }
@@ -54,7 +55,7 @@ public class RegisterController extends UIControllerWithInfo {
                 .setUserName(txtUsername.getText())
                 .setPassword(txtPassword.getText())
                 .setLanguages(selectedLanguages.stream()
-                        .map(TranslationService.languages::get)
+                        .map(Constants.Translation.languages::get)
                         .collect(Collectors.toList()))
                 .createAccount();
         client.sendToServer(REGISTER, acc);

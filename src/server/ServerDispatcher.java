@@ -43,7 +43,7 @@ public class ServerDispatcher implements Runnable {
                     }
                 }
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(10);
                 }
                 catch(InterruptedException e) {
                     e.printStackTrace();

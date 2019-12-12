@@ -1,7 +1,7 @@
 package client.presentation.windows;
 
+import client.presentation.FXUtil;
 import client.presentation.UIController;
-import common.Util;
 import common.data.Profile;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -43,7 +43,7 @@ public class PublicProfileController extends UIController {
         labelAbout.setText(profile.getAboutMe());
         //TODO LOAD AVATAR FROM DB
         if(profile.getProfilePicture()==null) {
-            imgAvatar.setImage(Util.getDefaultAvatar());
+            imgAvatar.setImage(FXUtil.getDefaultAvatar());
         }
     }
 }

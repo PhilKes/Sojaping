@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -13,7 +14,6 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
-<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="440.0"
             prefWidth="600.0" styleClass="anchor-pane" stylesheets="@../resources/main.css"
@@ -38,7 +38,7 @@
         <children>
             <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="32.0" prefWidth="30.0" styleClass="icon-left">
                 <graphic>
-                    <FontIcon iconLiteral="fa-user" iconSize="18"/>
+                    <FontAwesomeIconView fill="WHITE" glyphName="USER" size="17"/>
                 </graphic>
             </Label>
             <TextField fx:id="txtUsername" onAction="#onEnter" prefHeight="32.0" text="phil" GridPane.columnIndex="1"
@@ -47,7 +47,7 @@
             <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="32.0" prefWidth="30.0" styleClass="icon-left"
                    GridPane.columnIndex="0" GridPane.rowIndex="1">
                 <graphic>
-                    <FontIcon iconLiteral="fa-lock" iconSize="18"/>
+                    <FontAwesomeIconView fill="WHITE" glyphName="LOCK" size="17"/>
                 </graphic>
                 <GridPane.margin>
                     <Insets top="4.0"/>
@@ -69,7 +69,7 @@
                     <String fx:value="green"/>
                 </styleClass>
                 <graphic>
-                    <FontIcon iconLiteral="fa-sign-in" iconSize="18"/>
+                    <FontAwesomeIconView glyphName="SIGN_IN" size="20"/>
                 </graphic>
                 <GridPane.margin>
                     <Insets top="10.0"/>
@@ -83,7 +83,7 @@
             <String fx:value="orange"/>
         </styleClass>
         <graphic>
-            <FontIcon iconLiteral="fa-user-plus" iconSize="18"/>
+            <FontAwesomeIconView glyphName="USER_PLUS" size="20"/>
         </graphic>
     </Button>
     <Label id="labelError" fx:id="labelError" alignment="CENTER" contentDisplay="CENTER" disable="true" layoutX="126.0"

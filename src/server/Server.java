@@ -1,5 +1,6 @@
 package server;
 
+import common.Constants;
 import common.Util;
 import common.data.*;
 
@@ -21,10 +22,6 @@ import static common.JsonHelper.getPacketFromJson;
 
 public class Server {
     private static final String SOJAPING = "sojaping.db";
-    //public static String SERVER_HOST = "141.59.130.79";
-//    public static String SERVER_HOST = "10.0.75.1";
-    public static String SERVER_HOST="192.168.178.26";
-    public static int SERVER_PORT=9999;//443;
 
     private int port;
     private ServerSocket server;
@@ -51,9 +48,9 @@ public class Server {
 
     public static void main(String[] args) throws IOException {
         if (args.length > 0) {
-            SERVER_PORT = Integer.parseInt(args[0]);
+            Constants.SERVER_PORT=Integer.parseInt(args[0]);
         }
-        new Server(SERVER_PORT, new DatabaseService(SOJAPING)).run();
+        new Server(Constants.SERVER_PORT, new DatabaseService(SOJAPING)).run();
     }
 
     private void run() throws IOException {

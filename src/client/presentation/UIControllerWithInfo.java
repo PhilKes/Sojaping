@@ -1,6 +1,5 @@
 package client.presentation;
 
-import common.Util;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
@@ -31,7 +30,7 @@ public abstract class UIControllerWithInfo extends UIController {
     private Label labelError;
 
     public void showInfo(String message, InfoType type) {
-        Util.showInfo(labelError, message, type);
+        FXUtil.showInfo(labelError, message, type);
         if(type.equals(InfoType.ERROR)) {
             System.err.println(message);
         }

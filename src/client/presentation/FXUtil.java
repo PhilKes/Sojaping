@@ -13,6 +13,7 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
+import java.io.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -100,5 +101,31 @@ public class FXUtil {
             }
         });
     }
+
+    public static OutputStream getMessageStoreFileOutStream(String userName) {
+        File file=null;
+        try {
+            String resourceUrl=UIController.class.getResource("resources/").getPath();
+            resourceUrl+="messageStore_" + userName + ".xml";
+            System.out.println(resourceUrl);
+            file=new File(resourceUrl);
+            file.createNewFile();
+            OutputStream output=new FileOutputStream(file);
+            return output;
+        }
+        catch(FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static InputStream getMessageStoreFileStream(String userName) {
+        return UIController.class.getResourceAsStream("resources/messageStore_" + userName + ".xml");
+    }
+
 }
 

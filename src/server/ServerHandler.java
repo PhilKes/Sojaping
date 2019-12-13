@@ -1,5 +1,6 @@
 package server;
 
+import common.Connection;
 import common.Util;
 import common.data.*;
 
@@ -52,7 +53,7 @@ public class ServerHandler implements Runnable {
                     server.registerUser(account);
                     server.sendToUser(connection, REGISTER_SUCCESS, "Welcome to Sojaping " + account.getUserName() + " !");
                     break;
-                /** Try to authenticate sent LToginUser*/
+                /** Try to authenticate sent LoginUser*/
                 case LOGIN:
                     System.out.println("Login Account");
                     LoginUser loginUser=receivedPacket.getData();
@@ -68,6 +69,7 @@ public class ServerHandler implements Runnable {
                     server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     server.sendToUser(connection, GROUPLIST, server.getGroups(connection.getLoggedAccount()));
+                    //TODO Fetch not received Messages from DB -> sendMessage(message,connection);
                     break;
                 case MESSAGE_SENT:
                     System.out.println("Send message");
@@ -84,6 +86,9 @@ public class ServerHandler implements Runnable {
                         /** Private message */
                         if(!server.sendMessage(message)) {
                             throw new Exception("Receiver not found!");
+                        }
+                        else {
+                            //TODO Store not received message -> send to User on login
                         }
                     }
                     break;
@@ -122,11 +127,13 @@ public class ServerHandler implements Runnable {
                     server.deleteUser(accountForDeletion);
                     break;
                 case GROUP_UPDATE:
-                    Group group = receivedPacket.getData();
+                    Group group=receivedPacket.getData();
                     server.updateGroup(group);
-                    for (Profile member : group.getParticipants()) {
-                        Connection memberCon = server.getConnectionOfUser(member.getUserName());
-                        server.sendToUser(memberCon, GROUPLIST, server.getGroups(memberCon.getLoggedAccount()));
+                    for(Profile member : group.getParticipants()) {
+                        Connection memberCon=server.getConnectionOfUser(member.getUserName());
+                        if(memberCon!=null) {
+                            server.sendToUser(memberCon, GROUPLIST, server.getGroups(memberCon.getLoggedAccount()));
+                        }
                     }
                     break;
                 default:

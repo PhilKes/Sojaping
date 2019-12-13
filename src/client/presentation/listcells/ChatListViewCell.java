@@ -1,5 +1,6 @@
 package client.presentation.listcells;
 
+import common.Util;
 import common.data.Message;
 import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
@@ -9,7 +10,6 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 
 
 public class ChatListViewCell extends ListCell<Message> {
@@ -50,7 +50,7 @@ public class ChatListViewCell extends ListCell<Message> {
                     e.printStackTrace();
                 }
             }
-            labelTime.setText(new SimpleDateFormat("HH:mm:ss \n dd-MM-yy").format(message.getTimestamp()));//message.getTimestamp()//.toString().split("\\.")[0]);
+            labelTime.setText(Util.dateFormat.format(message.getTimestamp()).replace('\t', '\n'));//message.getTimestamp()//.toString().split("\\.")[0]);
             labelText.setText(message.getText());
             labelText.setWrapText(true);
             labelSender.setText(message.getSender());

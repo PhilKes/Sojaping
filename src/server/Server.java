@@ -1,5 +1,6 @@
 package server;
 
+import common.Connection;
 import common.Constants;
 import common.Util;
 import common.data.*;
@@ -21,7 +22,7 @@ import static common.Constants.Contexts.*;
 import static common.JsonHelper.getPacketFromJson;
 
 public class Server {
-    private static final String SOJAPING = "sojaping.db";
+    private static final String SOJAPING="sojaping.db";
 
     private int port;
     private ServerSocket server;
@@ -38,30 +39,30 @@ public class Server {
     private final ServerDispatcher dispatcher;
 
     public Server(int port, DatabaseService dbService) {
-        this.port = port;
-        this.connections = new HashMap<>();
-        this.dbService = dbService;
-        this.translateService = new TranslationService();
-        dispatcher = new ServerDispatcher(this, connections);
-        running = new AtomicBoolean(true);
+        this.port=port;
+        this.connections=new HashMap<>();
+        this.dbService=dbService;
+        this.translateService=new TranslationService();
+        dispatcher=new ServerDispatcher(this, connections);
+        running=new AtomicBoolean(true);
     }
 
     public static void main(String[] args) throws IOException {
-        if (args.length > 0) {
+        if(args.length>0) {
             Constants.SERVER_PORT=Integer.parseInt(args[0]);
         }
         new Server(Constants.SERVER_PORT, new DatabaseService(SOJAPING)).run();
     }
 
     private void run() throws IOException {
-        InetAddress localHost = InetAddress.getLocalHost();
-        String inetAddress = localHost.getHostAddress();
-        server = new ServerSocket(port, 50, InetAddress.getByName(inetAddress)) {
+        InetAddress localHost=InetAddress.getLocalHost();
+        String inetAddress=localHost.getHostAddress();
+        server=new ServerSocket(port, 50, InetAddress.getByName(inetAddress)) {
             protected void finalize() throws IOException {
                 this.close();
             }
         };
-        InterfaceAddress network = NetworkInterface.getByInetAddress(localHost)
+        InterfaceAddress network=NetworkInterface.getByInetAddress(localHost)
                 .getInterfaceAddresses().get(0);
         System.out.println("Server started on Host: " + inetAddress + " Port: " + port);
         System.out.println("Network: " + network.getAddress() + "\tMask: /" + network.getNetworkPrefixLength());
@@ -72,34 +73,36 @@ public class Server {
         new Thread(dispatcher).start();
 
         /** Continouesly accept new Socket connections, add connection to list if CONNECT received*/
-        while (running.get()) {
-            Socket clientSocket = null;
+        while(running.get()) {
+            Socket clientSocket=null;
             try {
-                clientSocket = server.accept();
-            } catch (SocketException e) {
+                clientSocket=server.accept();
+            }
+            catch(SocketException e) {
                 System.out.println("Interrupted Accept Connection");
                 continue;
             }
             /** Do not accept connections from outside the network of the Server */
-            if (!Util.sameNetwork(localHost, clientSocket.getInetAddress(), network.getNetworkPrefixLength())) {
+            if(!Util.sameNetwork(localHost, clientSocket.getInetAddress(), network.getNetworkPrefixLength())) {
                 System.err.println("Refused external connection from: " + clientSocket.getInetAddress().getHostAddress());
                 continue;
             }
             /** Receive connectPacket with Clients IP as data, add to connection list*/
-            Packet connectPacket = getPacketFromJson(new Scanner(clientSocket.getInputStream(), "UTF-8").nextLine());
-            if (connectPacket == null) {
+            Packet connectPacket=getPacketFromJson(new Scanner(clientSocket.getInputStream(), "UTF-8").nextLine());
+            if(connectPacket==null) {
                 clientSocket.close();
                 continue;
             }
-            if (connectPacket.getContext().equals(CONNECT)) {
-                String clientIP = connectPacket.getData();
+            if(connectPacket.getContext().equals(CONNECT)) {
+                String clientIP=connectPacket.getData();
                 System.out.println("New Client: " + clientIP);
                 try {
-                    Connection newConnection = new Connection(clientSocket, clientSocket.getInetAddress().getHostAddress());
+                    Connection newConnection=new Connection(clientSocket, clientSocket.getInetAddress().getHostAddress());
                     /** Temporarily put clientIP as userName until client loggs into an Account */
                     putIPConnection(newConnection);
                     sendToUser(newConnection, CONNECT_SUCCESS, "Hello " + clientIP);
-                } catch (IOException e) {
+                }
+                catch(IOException e) {
                     e.printStackTrace();
                     continue;
                 }
@@ -122,7 +125,8 @@ public class Server {
     public void updateGroup(Group group) {
         try {
             dbService.insertGroup(group);
-        } catch (Exception e) {
+        }
+        catch(Exception e) {
             e.printStackTrace();
             System.out.println("GROUP UPDATE FAILED");
         }
@@ -132,7 +136,7 @@ public class Server {
      * Runnable for reading commands in Console
      */
     private void handleCommands() {
-        Scanner in = new Scanner(System.in);
+        Scanner in=new Scanner(System.in);
         while(in.hasNextLine()) {
             String command=in.nextLine();
             switch(command.toLowerCase()) {
@@ -140,7 +144,8 @@ public class Server {
                     setRunning(false);
                     try {
                         server.close();
-                    } catch (IOException e) {
+                    }
+                    catch(IOException e) {
                         e.printStackTrace();
                     }
                     in.close();
@@ -148,7 +153,7 @@ public class Server {
                 case "clients":
                     System.out.println("Connected clients:");
                     synchronized (connections) {
-                        if (connections.isEmpty()) {
+                        if(connections.isEmpty()) {
                             System.out.println("No connections...");
                         }
                         else {
@@ -171,10 +176,11 @@ public class Server {
      */
     public Account loginUser(LoginUser loginUser) throws Exception {
         //LoginUser loginUser = JsonHelper.convertJsonToObject(accountOrLoginAsJson);
-        Account account = this.dbService.getAccountByLoginUser(loginUser);
-        if (account != null) {
+        Account account=this.dbService.getAccountByLoginUser(loginUser);
+        if(account!=null) {
             return account;
-        } else {
+        }
+        else {
             throw new Exception("Invalid credentials");
         }
     }
@@ -226,9 +232,9 @@ public class Server {
      * Send object as JSON through user OutputStream
      */
     public void sendToUser(Connection connection, String context, Object object) {
-        Packet packet = new Packet(context, object);
+        Packet packet=new Packet(context, object);
         /** Use PrintWriter with UTF-8 Charset*/
-        PrintWriter out = new PrintWriter(
+        PrintWriter out=new PrintWriter(
                 new BufferedWriter(new OutputStreamWriter(
                         connection.getOutStream(), StandardCharsets.UTF_8)), true);
         out.println(packet.getJson());
@@ -274,6 +280,22 @@ public class Server {
                 return false;
             }
             return sendMessage(message, connections.get(receiver));
+        }
+    }
+
+    public void sendMessageToGroup(String groupName, Message message) {
+        Connection receiverCon=null;
+        ArrayList<Profile> groupMembers=getUsersForGroup(groupName);
+        for(Profile p : groupMembers) {
+            if(connections.containsKey(p.getUserName()) && !message.getSender().equals(p.getUserName())) {
+                receiverCon=connections.get(p.getUserName());
+                if(receiverCon!=null) {
+                    sendMessage(message, receiverCon);
+                }
+                else {
+                    //TODO Store not received message -> send to User on login
+                }
+            }
         }
     }
 
@@ -335,14 +357,4 @@ public class Server {
         return dbService.getParticipants(groupName);
     }
 
-    public void sendMessageToGroup(String groupName, Message message) {
-        Connection receiverCon = null;
-        ArrayList<Profile> groupMembers=getUsersForGroup(groupName);
-        for(Profile p : groupMembers) {
-            if (connections.containsKey(p.getUserName()) && !message.getSender().equals(p.getUserName())) {
-                receiverCon = connections.get(p.getUserName());
-                sendToUser(receiverCon, MESSAGE_RECEIVED, message);
-            }
-        }
-    }
 }

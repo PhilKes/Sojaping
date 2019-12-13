@@ -51,7 +51,7 @@
                         <Insets bottom="20.0" top="20.0"/>
                     </VBox.margin>
                 </HBox>
-                <TabPane fx:id="tabPContacts" prefHeight="468.0" prefWidth="248.0" tabClosingPolicy="UNAVAILABLE">
+                <TabPane fx:id="tabPContacts" prefWidth="250.0" tabClosingPolicy="UNAVAILABLE" tabMinHeight="30.0">
                     <tabs>
                         <Tab fx:id="tabContacts" text="Contacts">
                             <content>
@@ -79,9 +79,9 @@
                   </Tab>
                     </tabs>
                 </TabPane>
-                <Label fx:id="labelError" alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="238.0"
+                <Label fx:id="labelError" alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="250.0"
                        textAlignment="CENTER"/>
-                <HBox alignment="CENTER">
+                <HBox fx:id="hBoxSettings" alignment="CENTER">
                     <children>
                         <Button fx:id="btnLogout" layoutX="51.0" layoutY="10.0" mnemonicParsing="false"
                                 onMouseClicked="#onMyProfileClicked" prefHeight="37.0" prefWidth="94.0"
@@ -108,14 +108,24 @@
         </VBox>
     </left>
     <right>
-        <VBox fx:id="vBoxInfo" prefHeight="550.0" prefWidth="154.0" BorderPane.alignment="CENTER">
+        <VBox fx:id="vBoxInfo" alignment="CENTER" prefHeight="589.0" prefWidth="160.0" BorderPane.alignment="CENTER">
             <children>
-                <ImageView fx:id="imageLogo" pickOnBounds="true" preserveRatio="true">
+                <HBox fx:id="hBoxGroupName" alignment="CENTER" prefHeight="40.0">
+                    <children>
+                        <Label fx:id="labelGroupName" alignment="CENTER" text="GroupName" textAlignment="CENTER"
+                               wrapText="true">
+                            <font>
+                                <Font name="System Bold" size="14.0"/>
+                            </font>
+                        </Label>
+                    </children>
+                </HBox>
+                <ImageView fx:id="imageLogo" fitHeight="125.0" fitWidth="130.0" pickOnBounds="true"
+                           preserveRatio="true">
                     <image>
                         <Image url="@../resources/SojaPing_border_color.png"/>
                     </image></ImageView>
-                <Label alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" text="Group Members"
-                       textAlignment="CENTER">
+                <Label alignment="CENTER" contentDisplay="CENTER" text="Members" textAlignment="CENTER">
                     <VBox.margin>
                         <Insets bottom="8.0"/>
                     </VBox.margin>
@@ -130,7 +140,7 @@
     <center>
         <VBox fx:id="vBoxChat" BorderPane.alignment="CENTER">
             <children>
-                <TabPane fx:id="tabPaneChat" prefWidth="400.0" tabClosingPolicy="ALL_TABS">
+                <TabPane fx:id="tabPaneChat" prefWidth="400.0" tabClosingPolicy="ALL_TABS" tabMinHeight="30.0">
               <tabs>
                 <Tab closable="false" text="Broadcast">
                      <content>

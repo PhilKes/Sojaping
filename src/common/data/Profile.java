@@ -11,7 +11,6 @@ public class Profile {
     protected String profilePicture;
     protected List<String> languages;
 
-
     public Profile() {
         languages=new ArrayList<>();
     }

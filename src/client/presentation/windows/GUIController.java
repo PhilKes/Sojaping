@@ -53,7 +53,7 @@ public class GUIController extends UIControllerWithInfo {
     @FXML
     private CheckBox checkTranslate;
     @FXML
-    private TabPane tabPaneChat;
+    private TabPane tabPaneChat, tabPContacts;
     @FXML
     private ListView<Message> listViewBroadcast;
     @FXML
@@ -67,7 +67,7 @@ public class GUIController extends UIControllerWithInfo {
     @FXML
     private ImageView imgAvatar;
     @FXML
-    private Label labelUserName, labelAbout;
+    private Label labelUserName, labelAbout, labelGroupName;
     @FXML
     private VBox centerVbox, vBoxInfo;
 
@@ -117,6 +117,9 @@ public class GUIController extends UIControllerWithInfo {
         });
         rootPane.setRight(null);
         this.initializeNotificationHandling();
+        tabPContacts.tabMinWidthProperty().bind(tabPContacts.prefWidthProperty().subtract(90).divide(tabPContacts.getTabs().size()));
+
+        client.fetchAndShowLocalMessageStore();
     }
 
     private void initializeNotificationHandling() {
@@ -290,7 +293,7 @@ public class GUIController extends UIControllerWithInfo {
             lv.scrollTo(lv.getItems().size() - 1);
             textASendText.clear();
             client.sendToServer(MESSAGE_SENT, newMessage);
-
+            client.storeMessageLocal(newMessage);
         }
         else {
 
@@ -306,7 +309,13 @@ public class GUIController extends UIControllerWithInfo {
             displayTab=createNewChatTab(message.getReceiver());
         }
         else {
-            displayTab=createNewChatTab(message.getSender());
+            /** If logged user is sender, show in receiver Tab*/
+            if(message.getSender().equals(client.getAccount().getUserName())) {
+                displayTab=createNewChatTab(message.getReceiver());
+            }
+            else {
+                displayTab=createNewChatTab(message.getSender());
+            }
         }
         //get ListView from tab to add text
         ListView<Message> lv=(ListView<Message>) displayTab.getContent();
@@ -352,6 +361,7 @@ public class GUIController extends UIControllerWithInfo {
                     participantsObservableList.add(c);
 				}
                 rootPane.setRight(vBoxInfo);
+                labelGroupName.setText(g.getName());
 			} else {
 				participantsObservableList.clear();
                 rootPane.setRight(null);

@@ -1,9 +1,9 @@
 package common;
 
 import common.data.Packet;
-import server.Connection;
 
 import java.net.InetAddress;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,6 +14,8 @@ import static common.Constants.Contexts.FAIL;
  */
 public class Util {
 
+    public static SimpleDateFormat dateFormat=
+            new SimpleDateFormat("HH:mm:ss\tdd-MM-yy");
     /**
      * Log sent/received Packet in Console
      * from: true(received packet), from: false(sent packet)
@@ -52,5 +54,6 @@ public class Util {
     public static boolean sameNetwork(final InetAddress a, final InetAddress b, final int mask) {
         return sameNetwork(a.getAddress(), b.getAddress(), mask);
     }
+
 
 }

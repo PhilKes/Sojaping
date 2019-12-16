@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Constants {
-    public static String SERVER_HOST="192.168.178.26";
+    public static String SERVER_HOST = "141.59.140.213";
     public static int SERVER_PORT=9999;//443;
 
     public static class Translation {
@@ -130,6 +130,7 @@ public class Constants {
                 INFO = "info",
                 MESSAGE_SENT = "messageSent",
                 MESSAGE_RECEIVED = "messageRec",
+                MESSAGE_FETCH = "messageFetch",
                 MESSAGE = "message",
                 BRDCAST_MSG = "broadcastMsg",
                 BRDCAST_USERS = "broadcastUsers",

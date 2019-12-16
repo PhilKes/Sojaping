@@ -6,9 +6,9 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -110,7 +110,7 @@
     <right>
         <VBox fx:id="vBoxInfo" alignment="CENTER" prefHeight="589.0" prefWidth="160.0" BorderPane.alignment="CENTER">
             <children>
-                <HBox fx:id="hBoxGroupName" alignment="CENTER" prefHeight="40.0">
+                <HBox fx:id="hBoxGroupName" alignment="CENTER" prefHeight="81.0">
                     <children>
                         <Label fx:id="labelGroupName" alignment="CENTER" text="GroupName" textAlignment="CENTER"
                                wrapText="true">
@@ -156,17 +156,45 @@
         </VBox>
     </center>
     <bottom>
-        <HBox fx:id="bottomHbox" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <HBox fx:id="bottomHbox" prefHeight="142.0" prefWidth="911.0" BorderPane.alignment="CENTER">
             <children>
-                <TextArea fx:id="textASendText" prefHeight="80.0" prefWidth="781.0" styleClass="text-area">
-                    <BorderPane.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0"/>
-                    </BorderPane.margin>
-                    <HBox.margin>
-                        <Insets right="10.0"/>
-                    </HBox.margin>
-                </TextArea>
-                <VBox prefHeight="100.0" BorderPane.alignment="CENTER">
+                <VBox>
+                    <children>
+                        <HBox alignment="CENTER_LEFT" prefWidth="724.0">
+                            <children>
+                                <CheckBox fx:id="checkSmileys" mnemonicParsing="false" prefHeight="26.0"
+                                          prefWidth="46.0">
+                                    <graphic>
+                                        <FontAwesomeIconView glyphName="SMILE_ALT" size="18" strokeType="OUTSIDE"
+                                                             strokeWidth="0.0"/>
+                                    </graphic>
+                                    <HBox.margin>
+                                        <Insets/>
+                                    </HBox.margin>
+                                </CheckBox>
+                                <HBox fx:id="hBoxSmileys" alignment="BOTTOM_LEFT">
+                                    <HBox.margin>
+                                        <Insets/>
+                                    </HBox.margin>
+                                    <children>
+                                        <ScrollPane fx:id="scrollSmileys" fitToHeight="true" fitToWidth="true"
+                                                    maxHeight="22.0" maxWidth="560.0" minHeight="22.0" minWidth="560.0"
+                                                    prefHeight="22.0" prefWidth="686.0" styleClass="text-area">
+                                            <content>
+
+                                            </content>
+                                        </ScrollPane>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </HBox>
+                        <HBox fx:id="hBoxTextArea" prefHeight="100.0" prefWidth="733.0"/>
+                    </children>
+                    <padding>
+                        <Insets top="8.0"/>
+                    </padding>
+                </VBox>
+                <VBox prefHeight="140.0" prefWidth="149.0" BorderPane.alignment="CENTER">
                     <children>
                         <HBox alignment="CENTER_LEFT">
                             <children>
@@ -184,7 +212,7 @@
                                 </CheckBox>
                             </children>
                         </HBox>
-                        <Button fx:id="btnSend" mnemonicParsing="false" prefHeight="125.0" prefWidth="153.0"
+                        <Button fx:id="btnSend" mnemonicParsing="false" prefHeight="94.0" prefWidth="149.0"
                                 styleClass="green" text="Send">
                             <graphic>
                                 <FontAwesomeIconView glyphName="COMMENTING" size="22"/>
@@ -194,13 +222,16 @@
                             </VBox.margin>
                         </Button>
                     </children>
+                    <HBox.margin>
+                        <Insets left="10.0"/>
+                    </HBox.margin>
                 </VBox>
             </children>
             <BorderPane.margin>
                 <Insets/>
             </BorderPane.margin>
             <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                <Insets bottom="10.0" left="10.0" right="10.0"/>
             </padding>
         </HBox>
     </bottom>

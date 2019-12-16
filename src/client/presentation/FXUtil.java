@@ -14,6 +14,7 @@ import javafx.scene.image.Image;
 import javafx.util.Duration;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,8 @@ public class FXUtil {
     private static final Image DEFAULT_AVATAR_MIN=new Image(UIController.class.getResourceAsStream("resources/default_avatar_min.png"));
     private static final Image DEFAULT_AVATAR=new Image(UIController.class.getResourceAsStream("resources/default_avatar.png"));
     private static final Image DEFAULT_ICON=new Image(UIController.class.getResourceAsStream("resources/icon.png"));
+    public static final double SMILEY_BAR_HEIGHT = 46.0, SMILEY_BAR_WIDTH = 687.0;
+    private static final File SMILEY_PATH = getSmileyDirFile();
 
     public static Image getDefaultAvatarMin() {
         return DEFAULT_AVATAR_MIN;
@@ -102,6 +105,9 @@ public class FXUtil {
         });
     }
 
+    /**
+     * Return OutputStream to MessageStore XML File of user
+     */
     public static OutputStream getMessageStoreFileOutStream(String userName) {
         File file=null;
         try {
@@ -112,11 +118,9 @@ public class FXUtil {
             file.createNewFile();
             OutputStream output=new FileOutputStream(file);
             return output;
-        }
-        catch(FileNotFoundException e) {
+        } catch(FileNotFoundException e) {
             e.printStackTrace();
-        }
-        catch(IOException e) {
+        } catch(IOException e) {
             e.printStackTrace();
         }
 
@@ -126,6 +130,41 @@ public class FXUtil {
     public static InputStream getMessageStoreFileStream(String userName) {
         return UIController.class.getResourceAsStream("resources/messageStore_" + userName + ".xml");
     }
+
+    public static File getMessageStoreFile(String userName) {
+        return new File(UIController.class.getResource("resources/").getPath() + "messageStore_" + userName + ".xml");
+    }
+
+    public static File getSmileyDirFile() {
+        return new File(UIController.class.getResource("resources/smileys/").getPath());
+    }
+
+    public static Image getSmileyImage(int i) {
+        File smileyDir = SMILEY_PATH;
+        File[] smileys = smileyDir.listFiles();
+        if (smileys.length < i) {
+            return null;
+        }
+        File smiley = smileys[i];
+        return new Image(smiley.toURI().toString());
+    }
+
+    public static String getSmileyImagePath(int i) {
+        File smileyDir = SMILEY_PATH;
+        File[] smileys = smileyDir.listFiles();
+        if (smileys.length < i) {
+            return null;
+        }
+        File smiley = smileys[i];
+        return smiley.getPath();
+    }
+
+    public static List<String> getSmileyImagePaths() {
+        File smileyDir = SMILEY_PATH;
+        File[] smileys = smileyDir.listFiles();
+        return Arrays.stream(smileys).map(f -> f.getPath()).collect(Collectors.toList());
+    }
+
 
 }
 

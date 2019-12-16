@@ -28,6 +28,10 @@
     -fx-background-color: -fx-bgrnd;
 }
 
+* {
+    -fx-focus-color: transparent;
+    /*-fx-icon-color: -fx-txt-light;*/
+}
 .label {
     -fx-text-fill: -fx-txt-light;
 }
@@ -182,13 +186,72 @@
     -fx-border-width: 1px 0 0 0;
     -fx-border-color: -fx-txt-dark;
 }
-/** GUI bottom (TextField,...)*/
+
+/** GUI bottom (Smileys,...)*/
 #bottomHbox {
     -fx-background-color: -fx-bgrnd;
     -fx-border-color: -fx-txt-dark;
     -fx-border-width: 1px 0 0 0;
 }
 
+#checkSmileys {
+    -fx-background-color: -fx-bgrnd-darker;
+    -fx-background-radius: 10px 10px 0 0;
+    -fx-padding: 4px;
+}
+
+#checkSmileys:hover {
+    -fx-cursor: hand;
+}
+
+#checkSmileys:selected {
+    -fx-background-color: -fx-bgrnd-darker;
+    -fx-background-radius: 10px 0 0 0;
+    -fx-padding: 4px;
+}
+
+#hBoxSmileys {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0 10px 0 0;
+}
+
+/** Smiley scroll pane scroll speed*/
+#scrollSmileys {
+    -fx-background-radius: 0 10px 0 0;
+    -fx-padding: 4px 0 0 0;
+}
+
+#scrollSmileys * {
+    -fx-background-radius: 0 10px 0 0;
+}
+
+#scrollSmileys .scroll-bar:vertical {
+    -fx-unit-increment: 20;
+    -fx-block-increment: 50;
+}
+
+#smiley {
+    -fx-background-color: red;
+}
+
+#smiley:hover {
+    -fx-cursor: hand;
+    -fx-border-color: -fx-txt-dark;
+    -fx-border-width: 2px;
+    -fx-border-radius: 20px;
+}
+
+/** Set rich text area caret color,...*/
+.styled-text-area .caret {
+    -fx-stroke: white;
+}
+
+.styled-text-area {
+    -fx-padding: 4px;
+    -fx-background-radius: 10px;
+}
+
+/** .styled-text-area, .paragraph-box, .paragraph-text {  } */
 /** GUI left (Contacts,...)*/
 #vBoxContacts {
     -fx-background-color: -fx-bgrnd;
@@ -216,10 +279,7 @@
 #rootPane {
     -fx-background-color: -fx-bgrnd;
 }
-* {
-    -fx-focus-color: transparent;
-    /*-fx-icon-color: -fx-txt-light;*/
-}
+
 
 .label {
     -fx-text-fill: -fx-txt-light;
@@ -252,30 +312,31 @@
 }
 
 /** CheckBox translate*/
-#checkTranslate {
+.check-box {
     -fx-text-fill: -fx-txt-light;
 }
 
-#checkTranslate > .glyph-icon {
+.check-box > .glyph-icon {
     /* -fx-icon-color: -fx-fgrnd;*/
     -fx-fill: -fx-fgrnd;
 }
 
-#checkTranslate:selected > .glyph-icon {
+.check-box:selected > .glyph-icon {
     /*-fx-icon-color: -fx-green;*/
     -fx-fill: -fx-green;
 }
 
-#checkTranslate:selected {
+.check-box:selected {
     -fx-text-fill: -fx-green;
 }
 
-#checkTranslate > .box {
+.check-box > .box {
     -fx-background-color: transparent;
     -fx-shape: none;
+    -fx-pref-width: 0;
 }
 
-#checkTranslate .mark {
+.check-box .mark {
     -fx-background-color: transparent;
     -fx-shape: none;
     -fx-mark-color: transparent; /* OK */
@@ -345,7 +406,16 @@
     -fx-text-fill: -fx-txt-light;
 }
 
+/** RichTextArea for send Text*/
 .text-area {
+    -fx-background-color: -fx-bgrnd-darker;
+    -fx-control-inner-background: -fx-bgrnd-darker;
+    -fx-text-fill: -fx-txt-light;
+    -fx-background-radius: 0 4px 4px 4px;
+    -fx-padding: 4px;
+}
+
+.text-area * {
     -fx-background-color: -fx-bgrnd-darker;
     -fx-control-inner-background: -fx-bgrnd-darker;
     -fx-text-fill: -fx-txt-light;
@@ -354,12 +424,31 @@
 .text-area .content {
     -fx-background-color: -fx-bgrnd-darker;
     -fx-background-radius: 0;
+    -fx-text-fill: -fx-txt-light;
+    -fx-font-size: 9pt;
 }
 
 .text-area.scroll-pane {
     -fx-background-radius: 0;
 }
 
+#textASendText {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+    -fx-text-fill: red;
+}
+
+#textASendText * {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+    /*-fx-text-fill: transparent;*/
+}
+
+
+.scroll-pane .scroll-bar:horizontal {
+    -fx-unit-increment: 15;
+    -fx-block-increment: 20;
+}
 /** Scroll bar of TextArea*/
 .scroll-bar:vertical .track {
     -fx-background-color: -fx-bgrnd-dark;
@@ -414,6 +503,7 @@
 .button:pressed {
     -fx-padding: 10 15 13 15;
     -fx-background-insets: 2 0 0 0, 2 0 3 0, 2 0 4 0, 2 0 5 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.7), 10, 0, 0, 5);
 }
 
 .button Text {
@@ -421,9 +511,6 @@
     -fx-effect: dropshadow(gaussian, #a30000, 0, 0, 0, 2);
 }
 
-.button:focused {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.7), 10, 0, 0, 5);
-}
 
 /** Colors */
 .green {

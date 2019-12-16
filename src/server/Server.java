@@ -139,7 +139,8 @@ public class Server {
         Scanner in=new Scanner(System.in);
         while(in.hasNextLine()) {
             String command=in.nextLine();
-            switch(command.toLowerCase()) {
+            String arr[] = command.split(" ");
+            switch (arr[0].toLowerCase()) {
                 case "stop":
                     setRunning(false);
                     try {
@@ -163,11 +164,27 @@ public class Server {
                         }
                     }
                     break;
+                case "kick":
+                    if (arr.length < 2) {
+                        break;
+                    }
+                    String user = arr[1];
+                    synchronized (connections) {
+                        if (user.toLowerCase().equals("all")) {
+                            connections.forEach((name, con) -> sendToUser(con, SHUTDOWN, "You have been kicked from the server"));
+                        } else {
+                            Connection userCon = getConnectionOfUser(user);
+                            sendToUser(userCon, SHUTDOWN, "You have been kicked from the server");
+                            removeConnectionAccount(userCon, userCon.getLoggedAccount());
+                        }
+                    }
+                    break;
                 default:
                     System.err.println("Invalid COMMAND entered: " + command);
                     break;
             }
         }
+
     }
 
     /**
@@ -287,14 +304,15 @@ public class Server {
         Connection receiverCon=null;
         ArrayList<Profile> groupMembers=getUsersForGroup(groupName);
         for(Profile p : groupMembers) {
-            if(connections.containsKey(p.getUserName()) && !message.getSender().equals(p.getUserName())) {
+            if (message.getSender().equals(p.getUserName())) {
+                continue;
+            }
+            if (connections.containsKey(p.getUserName())) {
                 receiverCon=connections.get(p.getUserName());
-                if(receiverCon!=null) {
-                    sendMessage(message, receiverCon);
-                }
-                else {
-                    //TODO Store not received message -> send to User on login
-                }
+                sendMessage(message, receiverCon);
+            } else {
+                System.out.println("User not online, storing message in DB");
+                storeMessage(message, p.getUserName());
             }
         }
     }
@@ -303,7 +321,7 @@ public class Server {
         this.connections.values().stream()
                 .filter(Connection::isLoggedIn)
                 .forEach(client -> {
-                    if(!message.getSender().equals(client.getLoggedAccount().getUserName())) {
+                    if (!message.getSender().equals(client.getLoggedAccount().getUserName())) {
                         sendMessage(message, client);
                             }
                         }
@@ -357,4 +375,13 @@ public class Server {
         return dbService.getParticipants(groupName);
     }
 
+    public void storeMessage(Message message, String receiver) {
+        dbService.insertMessage(message, receiver);
+    }
+
+    public List<Message> getStoredMessages(Account loggedAccount) {
+        List<Message> messages = dbService.getStoredMessagesOfAccount(loggedAccount);
+        dbService.removeStoredMessagesOfAcoount(loggedAccount);
+        return messages;
+    }
 }

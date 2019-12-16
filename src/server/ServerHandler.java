@@ -69,7 +69,6 @@ public class ServerHandler implements Runnable {
                     server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     server.sendToUser(connection, GROUPLIST, server.getGroups(connection.getLoggedAccount()));
-                    //TODO Fetch not received Messages from DB -> sendMessage(message,connection);
                     break;
                 case MESSAGE_SENT:
                     System.out.println("Send message");
@@ -85,11 +84,15 @@ public class ServerHandler implements Runnable {
                     else {
                         /** Private message */
                         if(!server.sendMessage(message)) {
-                            throw new Exception("Receiver not found!");
+                            System.out.println("User not online, storing message in DB");
+                            server.storeMessage(message, message.getReceiver());
                         }
-                        else {
-                            //TODO Store not received message -> send to User on login
-                        }
+                    }
+                    break;
+                case MESSAGE_FETCH:
+                    /** Get stored messages from DB of user */
+                    for (Message msg : server.getStoredMessages(connection.getLoggedAccount())) {
+                        server.sendToUser(connection, MESSAGE_RECEIVED, msg);
                     }
                     break;
                 case USERLIST:
@@ -99,9 +102,6 @@ public class ServerHandler implements Runnable {
                     break;
                 case GROUPLIST:
                     server.sendToUser(connection, GROUPLIST, server.getGroups(connection.getLoggedAccount()));
-                    break;
-                case GROUP_ADD:
-
                     break;
                 case SHUTDOWN:
                     server.removeConnectionAccount(connection, (Account) receivedPacket.getData());

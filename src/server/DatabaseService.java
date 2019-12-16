@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class DatabaseService {
+
     public static class TableAccount {
         public static final String NAME="account";
         public static final String AID="aid";
@@ -31,17 +32,28 @@ public class DatabaseService {
     }
 
     public static class TableGroup {
+        public static final String NAME = "groupChats";
         public static final String GID = "gid";
         public static final String GROUPNAME = "groupName";
         public static final String GROUPPICTURE = "groupPicture";
     }
 
     public static class TableParticipants {
+        public static final String NAME = "participants";
         public static final String PID = "pid";
         public static final String IDGROUP = "idGroup";
         public static final String IDACCOUNT = "idAccount";
     }
 
+    public static class TableMessages {
+        public static final String NAME = "messages";
+        public static final String SMID = "smid";
+        public static final String AID = "aid";
+        public static final String SENDER = "sender";
+        public static final String RECEIVER = "receiver";
+        public static final String TIMESTAMP = "timestamp";
+        public static final String TEXT = "text";
+    }
     private static final String SOJAPING="sojaping.db";
     public static String URL="";
     static int lastRow;
@@ -77,7 +89,7 @@ public class DatabaseService {
 
     public static void createNewTableAccount() {
         // SQL statement for creating a new table
-        String sql="CREATE TABLE IF NOT EXISTS account (\n"
+        String sql = "CREATE TABLE IF NOT EXISTS " + TableAccount.NAME + " (\n"
                 + TableAccount.AID + " integer PRIMARY KEY autoincrement,\n"
                 + TableAccount.USERNAME + " text NOT NULL UNIQUE,\n"
                 + TableAccount.PASSWORD + " text NOT NULL,\n"
@@ -97,7 +109,7 @@ public class DatabaseService {
     }
 
     public static void createNewTableContactList() {
-        String sql="CREATE TABLE IF NOT EXISTS contact (\n"
+        String sql = "CREATE TABLE IF NOT EXISTS " + TableContact.NAME + " (\n"
                 + TableContact.CID + " integer PRIMARY KEY,\n"
                 + TableContact.AIDO + " integer NOT NULL,\n" //aid of the "owner" of this list
                 + TableContact.AIDC + " integer NOT NULL,\n"
@@ -119,7 +131,7 @@ public class DatabaseService {
     }
 
     public static void createNewTableGroup(){
-        String sql = "CREATE TABLE IF NOT EXISTS groupChats (\n"
+        String sql = "CREATE TABLE IF NOT EXISTS " + TableGroup.NAME + " (\n"
                 + TableGroup.GID + " integer PRIMARY KEY,\n"
                 + TableGroup.GROUPNAME + " text NOT NULL UNIQUE,\n"
                 + TableGroup.GROUPPICTURE + " text);";
@@ -135,13 +147,13 @@ public class DatabaseService {
     }
 
     public static void createNewTableParticipants(){
-        String sql = "CREATE TABLE IF NOT EXISTS participants (\n"
+        String sql = "CREATE TABLE IF NOT EXISTS " + TableParticipants.NAME + " (\n"
                 + TableParticipants.PID + " integer PRIMARY KEY,\n"
                 + TableParticipants.IDGROUP + " integer NOT NULL,\n"
                 + TableParticipants.IDACCOUNT + " integer NOT NULL,\n"
                 + "UNIQUE(" + TableParticipants.IDGROUP + "," + TableParticipants.IDACCOUNT + ")\n"
                 + "FOREIGN KEY (" + TableParticipants.IDGROUP + ")\n"
-                + "REFERENCES groupChats(" + TableGroup.GID + ")\n"
+                + "REFERENCES " + TableGroup.NAME + "(" + TableGroup.GID + ")\n"
                 + "FOREIGN KEY (" + TableParticipants.IDACCOUNT + ")\n"
                 + "REFERENCES account(" + TableAccount.AID + ")\n"
                 + "ON DELETE CASCADE"
@@ -153,6 +165,27 @@ public class DatabaseService {
         }
         catch(SQLException e) {
             e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void createNewTableMessages() {
+        String sql = "CREATE TABLE IF NOT EXISTS " + TableMessages.NAME + " (\n"
+                + TableMessages.SMID + " integer PRIMARY KEY,\n"
+                + TableMessages.AID + " integer NOT NULL,\n"
+                + TableMessages.SENDER + " text NOT NULL,\n"
+                + TableMessages.RECEIVER + " text NOT NULL,\n"
+                + TableMessages.TIMESTAMP + " text NOT NULL,\n"
+                + TableMessages.TEXT + " text NOT NULL,\n"
+                + "FOREIGN KEY (" + TableMessages.AID + ")\n"
+                + "REFERENCES " + TableAccount.NAME + "(" + TableAccount.AID + ")\n"
+                + "ON DELETE CASCADE"
+                + ");";
+        try (Connection conn = DriverManager.getConnection(URL);
+             Statement stmt = conn.createStatement()) {
+            // create a new table
+            stmt.execute(sql);
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -178,6 +211,10 @@ public class DatabaseService {
         }
     }
 
+    /**
+     * Account Table
+     */
+
     public void insertAccount(Account acc) throws Exception {
         String sql="INSERT INTO " + TableAccount.NAME + "(" + TableAccount.AID + ", " + TableAccount.USERNAME + ", " + TableAccount.PASSWORD + ", "
                 + TableAccount.ABOUTME + ", " + TableAccount.PROFILEPICTURE + ", " + TableAccount.LANGUAGES + ") VALUES(NULL,?,?,?,?,?)";
@@ -196,8 +233,7 @@ public class DatabaseService {
                 lastRow=rs.getInt(1);
                 System.out.println("Inserted into DB:\t" + acc);
             }
-        }
-        catch(SQLException e) {
+        } catch(SQLException e) {
             if(e.getMessage().contains("[SQLITE_CONSTRAINT]  Abort due to constraint violation (UNIQUE constraint failed: account.userName)")) {
                 throw new Exception("Username is already in use!");
             }
@@ -211,8 +247,7 @@ public class DatabaseService {
             while(rs.next()) {
                 acc.setAid(rs.getInt(TableAccount.AID));
             }
-        }
-        catch(SQLException e) {
+        } catch(SQLException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
@@ -297,12 +332,12 @@ public class DatabaseService {
             PreparedStatement pstmt=conn.prepareStatement(sql)) {
             pstmt.setInt(1, acc.getAid());
             pstmt.executeUpdate();
-        }
-        catch(SQLException e) {
+        } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
     }
 
+    /** Contact Table */
     //This method is for debugging.
     public void selectAllContactsOfAccount(Account acc) {
         String sql="SELECT * FROM contact WHERE " + TableContact.AIDO + " = ?";
@@ -315,8 +350,7 @@ public class DatabaseService {
                         + rs.getInt(TableContact.AIDO) + "\t"
                         + rs.getInt(TableContact.AIDC) + "\t");
             }
-        }
-        catch(SQLException e) {
+        } catch(SQLException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
@@ -363,61 +397,11 @@ public class DatabaseService {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        //createNewDatabase("sojaping.db");
-        DatabaseService db = new DatabaseService(SOJAPING);
-        db.dropTableContactList();
-        db.dropTableAccount();
-        db.dropTableParticipants();
-        db.dropTableGroup();
-
-        createNewTableAccount();
-        createNewTableContactList();
-        createNewTableGroup();
-        createNewTableParticipants();
-
-        System.out.println("Insert");
-        Account acc = new AccountBuilder().setUserName("phil").setPassword("phil")
-                .setAboutMe("Hi, I'm using SOJAPING.")
-                .setLanguages(Arrays.asList("de", "en"))
-                .createAccount();
-        Account acc2 = new AccountBuilder().setUserName("jan").setPassword("jan")
-                .setLanguages(Arrays.asList("de", "en", "es", "hi"))
-                .setAboutMe("Hi, I'm using SOJAPING.").createAccount();
-        Account acc3 = new AccountBuilder().setUserName("irina").setPassword("irina")
-                .setLanguages(Arrays.asList("de", "en", "ru"))
-                .setAboutMe("Hi, I'm using SOJAPING.").createAccount();
-        Account acc4 = new AccountBuilder().setUserName("sophie").setPassword("sophie")
-                .setLanguages(Arrays.asList("de", "en", "fr"))
-                .setAboutMe("Hi, I'm using SOJAPING.").createAccount();
-        db.insertAccount(acc);
-        db.insertAccount(acc2);
-        db.insertAccount(acc3);
-        db.insertAccount(acc4);
-       /* Group group = new Group("#test", acc4.getProfile());
-        group.addParticipant(acc4.getProfile());
-        db.insertGroup(group);
-        db.insertParticipant(group, acc.getProfile());
-        db.insertParticipant(group, acc2.getProfile());
-        db.insertParticipant(group, acc3.getProfile());
-        System.out.println("in main: Group after insert: " + group);*/
-        ArrayList<Group> myGroups = db.getMyGroups(acc4);
-        System.out.println(myGroups);
-        //db.selectAllAccounts();
-        /*
-        db.insertContactOfAccount(acc, acc2.getProfile());
-        db.insertContactOfAccount(acc, acc3.getProfile());
-
-        Account accTest=db.getAccountByLoginUser(new LoginUser("phil", "phil"));
-        System.out.println("Contacts of " + accTest.getUserName());
-        db.getAllContactsOfAccount(accTest).forEach(System.out::println);
-        */
-        //ArrayList<Profile> onlineUser = db.getOnlineAccounts();
-    }
+    /** Group Participant Table */
 
     public void insertParticipant(Group group, Profile participant) {
         int particpantID = this.getAccountByUsername(participant.getUserName()).getAid();
-        String sql = "INSERT INTO participants (" + TableParticipants.PID + ", " + TableParticipants.IDGROUP + ", "
+        String sql = "INSERT INTO " + TableParticipants.NAME + " (" + TableParticipants.PID + ", " + TableParticipants.IDGROUP + ", "
                 + TableParticipants.IDACCOUNT + ") VALUES(NULL,?,?)";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -434,7 +418,7 @@ public class DatabaseService {
 
     public ArrayList<Profile> getParticipants(Group group){
         ArrayList<Profile> participants = new ArrayList<>();
-        String sql="SELECT " + TableParticipants.IDACCOUNT + " FROM participants WHERE " + TableParticipants.IDGROUP + " = ?";
+        String sql = "SELECT " + TableParticipants.IDACCOUNT + " FROM " + TableParticipants.NAME + " WHERE " + TableParticipants.IDGROUP + " = ?";
         try(Connection conn=this.connect();
             PreparedStatement pstmt=conn.prepareStatement(sql)) {
             pstmt.setInt(1, group.getGroupID());
@@ -452,7 +436,7 @@ public class DatabaseService {
 
     public ArrayList<Profile> getParticipants(String groupName){
         ArrayList<Profile> participants = new ArrayList<>();
-        String sql = "SELECT " + TableGroup.GID + " FROM groupChats WHERE " + TableGroup.GROUPNAME + " = ?";
+        String sql = "SELECT " + TableGroup.GID + " FROM " + TableGroup.NAME + " WHERE " + TableGroup.GROUPNAME + " = ?";
         int gid = -1;
         try(Connection conn=this.connect();
             PreparedStatement pstmt=conn.prepareStatement(sql)) {
@@ -461,12 +445,11 @@ public class DatabaseService {
             while(rs.next()) {
                 gid = rs.getInt(TableGroup.GID);
             }
-        }
-        catch(SQLException e) {
+        } catch(SQLException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
-        String sql2="SELECT " + TableParticipants.IDACCOUNT + " FROM participants WHERE " + TableParticipants.IDGROUP + " = ?";
+        String sql2 = "SELECT " + TableParticipants.IDACCOUNT + " FROM " + TableParticipants.NAME + " WHERE " + TableParticipants.IDGROUP + " = ?";
         try(Connection conn2=this.connect();
             PreparedStatement pstmt2=conn2.prepareStatement(sql2)) {
             pstmt2.setInt(1, gid);
@@ -474,19 +457,20 @@ public class DatabaseService {
             while(rs2.next()) {
                 participants.add(getProfileByAccountId(rs2.getInt(TableParticipants.IDACCOUNT)));
             }
-        }
-        catch(SQLException e) {
+        } catch(SQLException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
         return participants;
     }
 
+    /** Group Table */
+
     public ArrayList<Group> getMyGroups(Account acc){
         ArrayList<Group> groups = new ArrayList<>();
-        String sql = "SELECT " + TableParticipants.IDGROUP + " FROM participants WHERE " +
+        String sql = "SELECT " + TableParticipants.IDGROUP + " FROM " + TableParticipants.NAME+" WHERE " +
                 TableParticipants.IDACCOUNT + " = ?";
-        String sql2 = "SELECT " + TableGroup.GROUPNAME + " FROM groupChats WHERE " +
+        String sql2 = "SELECT " + TableGroup.GROUPNAME + " FROM " + TableGroup.NAME+" WHERE " +
                 TableGroup.GID + " = ?";
         List<Integer> groupIDs = new ArrayList<>();
         try(Connection conn=this.connect();
@@ -497,8 +481,7 @@ public class DatabaseService {
             while(rs.next()) {
                 groupIDs.add(rs.getInt(TableParticipants.IDGROUP));
             }
-        }
-        catch(SQLException e) {
+        } catch(SQLException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
@@ -525,67 +508,8 @@ public class DatabaseService {
         return groups;
     }
 
-    //This method is for debugging.
-    private void resetTable() {
-        String sql="DELETE FROM " + TableAccount.NAME + " WHERE " + TableAccount.AID + " = ?";
-        try(Connection conn=this.connect();
-            PreparedStatement pstmt=conn.prepareStatement(sql)) {
-            for(int i=1; i<=lastRow; i++) {
-                pstmt.setInt(1, i);
-                pstmt.executeUpdate();
-            }
-        }
-        catch(SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-    }
-
-    public void dropTableAccount() {
-        String sql="DROP TABLE " + TableAccount.NAME;
-        try(Connection conn=this.connect();
-            PreparedStatement pstmt=conn.prepareStatement(sql)) {
-            pstmt.executeUpdate();
-        }
-        catch(SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public void dropTableContactList() {
-        String sql="DROP TABLE " + TableContact.NAME;
-        try(Connection conn=this.connect();
-            PreparedStatement pstmt=conn.prepareStatement(sql)) {
-            pstmt.executeUpdate();
-        }
-        catch(SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public void dropTableGroup(){
-        String sql="DROP TABLE groupChats";
-        try(Connection conn=this.connect();
-            PreparedStatement pstmt=conn.prepareStatement(sql)) {
-            pstmt.executeUpdate();
-        }
-        catch(SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public void dropTableParticipants(){
-        String sql = "DROP TABLE participants";
-        try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public void insertGroup(Group group) throws Exception {
-        String sql = "INSERT OR IGNORE INTO groupChats (" + TableGroup.GID + ", " + TableGroup.GROUPNAME + ", "
+        String sql = "INSERT OR IGNORE INTO " + TableGroup.NAME + " (" + TableGroup.GID + ", " + TableGroup.GROUPNAME + ", "
                 + TableGroup.GROUPPICTURE + ") VALUES(NULL,?,?)";
         Account founder = getAccountByUsername(group.getParticipants().get(0).getUserName());
         try (Connection conn = this.connect();
@@ -606,7 +530,7 @@ public class DatabaseService {
             }
             e.printStackTrace();
         }
-        sql = "INSERT OR IGNORE INTO participants (" + TableParticipants.PID + ", " + TableParticipants.IDGROUP + ", "
+        sql = "INSERT OR IGNORE INTO " + TableParticipants.NAME + " (" + TableParticipants.PID + ", " + TableParticipants.IDGROUP + ", "
                 + TableParticipants.IDACCOUNT + ") VALUES(NULL,?,?)";
         for (Profile member : group.getParticipants()) {
             Account memberAcc = getAccountByUsername(member.getUserName());
@@ -619,6 +543,169 @@ public class DatabaseService {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Stored Messages Table
+     */
+
+    public void insertMessage(Message message, String userName) {
+        Account receiverAcc = getAccountByUsername(userName);
+        String sql = "INSERT INTO " + TableMessages.NAME + "(" + TableMessages.SMID + ", " + TableMessages.AID
+                + ", " + TableMessages.TEXT
+                + ", " + TableMessages.SENDER
+                + ", " + TableMessages.RECEIVER
+                + ", " + TableMessages.TIMESTAMP
+                + ") VALUES(NULL,?,?,?,?,?)";
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setInt(1, receiverAcc.getAid());
+            pstmt.setString(2, message.getText());
+            pstmt.setString(3, message.getSender());
+            pstmt.setString(4, message.getReceiver());
+            pstmt.setString(5, Util.dateFormat.format(message.getTimestamp()));
+            pstmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                System.out.println("Inserted into Messages DB of " + userName + ":\t" + message);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Message> getStoredMessagesOfAccount(Account loggedAccount) {
+        ArrayList<Message> messages = new ArrayList<>();
+        String sql = "SELECT " + TableMessages.TEXT
+                + "," + TableMessages.RECEIVER
+                + "," + TableMessages.SENDER
+                + "," + TableMessages.TIMESTAMP
+                + " FROM " + TableMessages.NAME + " WHERE " + TableMessages.AID + " = ?";
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, loggedAccount.getAid());
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Message msg = new Message(rs.getString(1), rs.getString(4), rs.getString(3),
+                        rs.getString(2));
+                messages.add(msg);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return messages;
+    }
+
+    public void removeStoredMessagesOfAcoount(Account loggedAccount) {
+        String sql = "DELETE FROM " + TableMessages.NAME + " WHERE " + TableMessages.AID + " = ?";
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, loggedAccount.getAid());
+            pstmt.execute();
+        } catch (SQLException e) {
+            //System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    //This method is for debugging.
+    private void resetTable() {
+        String sql = "DELETE FROM " + TableAccount.NAME + " WHERE " + TableAccount.AID + " = ?";
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            for (int i = 1; i <= lastRow; i++) {
+                pstmt.setInt(1, i);
+                pstmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    public void dropTableAccount() {
+        dropTable(TableAccount.NAME);
+    }
+
+    public void dropTableContactList() {
+        dropTable(TableContact.NAME);
+    }
+
+    public void dropTableGroup() {
+        dropTable(TableGroup.NAME);
+    }
+
+    public void dropTableParticipants() {
+        dropTable(TableParticipants.NAME);
+    }
+
+    public void dropTableMessages() {
+        dropTable(TableMessages.NAME);
+    }
+
+    public void dropTable(String tableName) {
+        String sql = "DROP TABLE " + tableName + "";
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        //createNewDatabase("sojaping.db");
+        DatabaseService db = new DatabaseService(SOJAPING);
+        db.dropTableContactList();
+        db.dropTableAccount();
+        db.dropTableParticipants();
+        db.dropTableGroup();
+        db.dropTableMessages();
+
+        createNewTableAccount();
+        createNewTableContactList();
+        createNewTableGroup();
+        createNewTableParticipants();
+        createNewTableMessages();
+
+        System.out.println("Insert");
+        Account acc = new AccountBuilder().setUserName("phil").setPassword("phil")
+                .setAboutMe("Hi, I'm using SOJAPING.")
+                .setLanguages(Arrays.asList("de", "en"))
+                .createAccount();
+        Account acc2 = new AccountBuilder().setUserName("jan").setPassword("jan")
+                .setLanguages(Arrays.asList("de", "en", "es", "hi"))
+                .setAboutMe("Hi, I'm using SOJAPING.").createAccount();
+        Account acc3 = new AccountBuilder().setUserName("irina").setPassword("irina")
+                .setLanguages(Arrays.asList("de", "en", "ru"))
+                .setAboutMe("Hi, I'm using SOJAPING.").createAccount();
+        Account acc4 = new AccountBuilder().setUserName("sophie").setPassword("sophie")
+                .setLanguages(Arrays.asList("de", "en", "fr"))
+                .setAboutMe("Hi, I'm using SOJAPING.").createAccount();
+        db.insertAccount(acc);
+        db.insertAccount(acc2);
+        db.insertAccount(acc3);
+        db.insertAccount(acc4);
+        Group group = new Group("#testGroup");
+        group.addParticipant(acc4.getProfile());
+        db.insertGroup(group);
+        db.insertParticipant(group, acc.getProfile());
+        db.insertParticipant(group, acc2.getProfile());
+        db.insertParticipant(group, acc3.getProfile());
+        System.out.println("in main: Group after insert: " + group);
+        ArrayList<Group> myGroups = db.getMyGroups(acc4);
+        System.out.println(myGroups);
+        //db.selectAllAccounts();
+        /*
+        db.insertContactOfAccount(acc, acc2.getProfile());
+        db.insertContactOfAccount(acc, acc3.getProfile());
+
+        Account accTest=db.getAccountByLoginUser(new LoginUser("phil", "phil"));
+        System.out.println("Contacts of " + accTest.getUserName());
+        db.getAllContactsOfAccount(accTest).forEach(System.out::println);
+        */
+        //ArrayList<Profile> onlineUser = db.getOnlineAccounts();
     }
 
 }

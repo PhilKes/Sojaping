@@ -78,7 +78,7 @@ class ClientHandler implements Runnable {
                 break;
             case MESSAGE_RECEIVED:
                 Message msg=receivedPacket.getData();
-                Platform.runLater(() -> client.getGUIController().displayNewMessage(msg));
+                Platform.runLater(() -> client.getGUIController().displayNewMessage(msg, true));
                 client.storeMessageLocal(msg);
                 break;
             case USERLIST:
@@ -89,8 +89,11 @@ class ClientHandler implements Runnable {
                 break;
             case SHUTDOWN:
                 String text=receivedPacket.getData();
-                System.out.println("\t\t\t\t" + "SERVER is shutting down: " + text);
+                System.err.println("\t\t\t\t" + "SHUTDOWN: " + text);
                 running=false;
+                while (client.peekController() != null) {
+                    client.closeCurrentWindow();
+                }
                 break;
             case GROUPLIST:
                 ArrayList<Group> groupList=receivedPacket.getData();

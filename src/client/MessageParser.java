@@ -1,12 +1,12 @@
 package client;
 
 import client.presentation.FXUtil;
-import common.data.MessageStore;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import java.io.File;
 import java.io.InputStream;
 
 /**
@@ -62,4 +62,16 @@ public class MessageParser {
         return true;
     }
 
+    public boolean resetMessageStore(String userName) {
+        File store = FXUtil.getMessageStoreFile(userName);
+        if (store.exists()) {
+            if (store.delete()) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
 }

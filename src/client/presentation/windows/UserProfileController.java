@@ -7,6 +7,7 @@ import common.Constants;
 import common.data.Account;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
@@ -119,5 +120,9 @@ public class UserProfileController extends UIControllerWithInfo {
 	private void onCancelClick() {
         //Platform.runLater(() -> ((Stage) btnCancel.getScene().getWindow()).close());
         client.closeCurrentWindowNoExit();
+    }
+
+    public void onResetStoreClicked(ActionEvent actionEvent) {
+        client.resetLocalMessageStore();
     }
 }

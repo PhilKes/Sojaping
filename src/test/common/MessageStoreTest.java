@@ -1,7 +1,8 @@
 package test.common;
 
+import client.MessageStore;
+import client.presentation.FXUtil;
 import common.data.Message;
-import common.data.MessageStore;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -9,14 +10,12 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.io.File;
 import java.sql.Timestamp;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 
 public class MessageStoreTest {
-    static File file;
     static JAXBContext jaxbContext;
     static Marshaller jaxbMarshaller;
     static Unmarshaller jaxbUnmarshaller;
@@ -24,12 +23,10 @@ public class MessageStoreTest {
     @BeforeClass
     public static void init() {
         try {
-            file=new File("", "testMessageStore.xml");
             jaxbContext=JAXBContext.newInstance(MessageStore.class);
             jaxbMarshaller=jaxbContext.createMarshaller();
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             jaxbUnmarshaller=jaxbContext.createUnmarshaller();
-
         }
         catch(JAXBException e) {
             e.printStackTrace();
@@ -48,7 +45,7 @@ public class MessageStoreTest {
             store.addMessage(msg);
         }
         try {
-            jaxbMarshaller.marshal(store, file);
+            jaxbMarshaller.marshal(store, FXUtil.getMessageStoreFileOutStream("test"));
             jaxbMarshaller.marshal(store, System.out);
         }
         catch(JAXBException e) {
@@ -56,7 +53,7 @@ public class MessageStoreTest {
         }
         MessageStore store1=null;
         try {
-            store1=(MessageStore) jaxbUnmarshaller.unmarshal(file);
+            store1 = (MessageStore) jaxbUnmarshaller.unmarshal(FXUtil.getMessageStoreFileStream("test"));
             System.out.println(store1);
 
         }

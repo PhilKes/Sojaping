@@ -9,7 +9,6 @@ import common.Connection;
 import common.Util;
 import common.data.Account;
 import common.data.Message;
-import common.data.MessageStore;
 import common.data.Packet;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -31,8 +30,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static common.Constants.Contexts.CONNECT;
-import static common.Constants.Contexts.SHUTDOWN;
+import static common.Constants.Contexts.*;
 
 public class Client {
 
@@ -194,7 +192,6 @@ public class Client {
                 e.printStackTrace();
             }
         }
-        storeMessageStore();
     }
 
     public GUIController getGUIController() {
@@ -207,7 +204,10 @@ public class Client {
     }
 
     public UIController peekController() {
-        return controllerStack.peek();
+        if (!controllerStack.isEmpty()) {
+            return controllerStack.peek();
+        }
+        return null;
     }
 
     public void pushController(UIController controller) {
@@ -222,6 +222,7 @@ public class Client {
     public void setMessageStoreUser(String userName) {
         messageStore.setUserName(userName);
     }
+
     public Account getAccount() {
         return connection.getLoggedAccount();
     }
@@ -241,6 +242,7 @@ public class Client {
     private void storeMessageStore() {
         System.out.println("Storing local messages");
         new MessageParser().storeMessageStore(messageStore);
+        messageStore.getMessages().clear();
     }
 
     /**
@@ -250,9 +252,22 @@ public class Client {
         System.out.println("Fetching local messages");
         List<Message> messages=new MessageParser().getMessageStore(getAccount().getUserName()).getMessages();
         for(Message msg : messages) {
-            Platform.runLater(() -> getGUIController().displayNewMessage(msg));
+            Platform.runLater(() -> getGUIController().displayNewMessage(msg, false));
         }
     }
 
+    public void resetLocalMessageStore() {
+        if (new MessageParser().resetMessageStore(getAccount().getUserName())) {
+            ((UIControllerWithInfo) peekController()).showInfo("MessageStore has been reset", UIControllerWithInfo.InfoType.SUCCESS);
+        }
+    }
+
+    public void logout() {
+        sendToServer(LOGOFF, getAccount());
+        storeMessageStore();
+        setAccount(null);
+        closeCurrentWindowNoExit();
+        openWindow("login");
+    }
 }
 

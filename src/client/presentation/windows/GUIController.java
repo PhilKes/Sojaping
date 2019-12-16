@@ -4,6 +4,10 @@ import client.Client;
 import client.presentation.FXUtil;
 import client.presentation.TitleBarController;
 import client.presentation.UIControllerWithInfo;
+import client.presentation.genericarea.LinkedImage;
+import client.presentation.genericarea.ParStyle;
+import client.presentation.RichTextArea;
+import client.presentation.genericarea.TextStyle;
 import client.presentation.listcells.ChatListViewCell;
 import client.presentation.listcells.ContactListViewCell;
 import client.presentation.listcells.GroupChatListViewCell;
@@ -14,8 +18,6 @@ import common.data.Message;
 import common.data.Profile;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -25,19 +27,22 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.fxmisc.flowless.VirtualizedScrollPane;
+import org.fxmisc.richtext.GenericStyledArea;
+import org.reactfx.util.Either;
 
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static common.Constants.Contexts.*;
 import static common.Constants.SERVER_HOST;
@@ -48,8 +53,7 @@ public class GUIController extends UIControllerWithInfo {
     private BorderPane rootPane;
     @FXML
     private Button btnSend, btnMyProfile, btnLogout;
-    @FXML
-    private TextArea textASendText;
+
     @FXML
     private CheckBox checkTranslate;
     @FXML
@@ -70,6 +74,12 @@ public class GUIController extends UIControllerWithInfo {
     private Label labelUserName, labelAbout, labelGroupName;
     @FXML
     private VBox centerVbox, vBoxInfo;
+    @FXML
+    private CheckBox checkSmileys;
+    @FXML
+    private HBox hBoxSmileys, hBoxTextArea;
+    @FXML
+    private ScrollPane scrollSmileys;
 
     //Message broadcast
     private ObservableList<Message> broadcastObservableList;
@@ -81,45 +91,77 @@ public class GUIController extends UIControllerWithInfo {
     private ObservableList<Group> groupsObservableList;
     private ObservableList<Profile> participantsObservableList;
 
-	private Menu addToGroupChatContacts;
+    private Menu addToGroupChatContacts;
 
-	@FXML
-	private void initialize() {
-		/**Basic GUI initialize + Listener **/
-		addListener();
-		/**get Instance of Client **/
+    private RichTextArea richTextArea;
+
+    @FXML
+    private void initialize() {
+        /**Basic GUI initialize + Listener **/
+        addListener();
+        /**get Instance of Client **/
         client=Client.getInstance(SERVER_HOST, SERVER_PORT);
-		/** Message Window initialize **/
-		initializeChatWindow();
-		/** User Tab Pane(Left) initialize **/
-		initializeTabPaneUsers();
-		/**list participants of the selected group**/
-		participantsObservableList = FXCollections.observableArrayList();
-		listVInfo.setItems(participantsObservableList);
-		listVInfo.setCellFactory(profilesListView -> new ContactListViewCell(listVInfo.prefWidthProperty()));
-		/**Group List Context Menu**/
-		btnLogout.setOnMouseClicked(e -> onLogoutClicked());
-		labelAbout.setWrapText(true);
-		VBox.setVgrow(tabPaneChat, Priority.ALWAYS);
-		loadAccount(client.getAccount());
-		tabPaneChat.getSelectionModel().selectedItemProperty().addListener((observable, tabOld, tabNew) -> {
-			if (tabNew.getId().startsWith("#")) {
-				Group g = groupsObservableList.stream().filter(group -> tabNew.getId().equals(group.getName())).findFirst().get();
-				participantsObservableList.clear();
-				for (Profile p : g.getParticipants()) {
+        /** Message Window initialize **/
+        initializeChatWindow();
+        /** User Tab Pane(Left) initialize **/
+        initializeTabPaneUsers();
+        /**list participants of the selected group**/
+        participantsObservableList = FXCollections.observableArrayList();
+        listVInfo.setItems(participantsObservableList);
+        listVInfo.setCellFactory(profilesListView -> new ContactListViewCell(listVInfo.prefWidthProperty()));
+        /**Group List Context Menu**/
+        btnLogout.setOnMouseClicked(e -> onLogoutClicked());
+        labelAbout.setWrapText(true);
+        VBox.setVgrow(tabPaneChat, Priority.ALWAYS);
+        loadAccount(client.getAccount());
+        tabPaneChat.getSelectionModel().selectedItemProperty().addListener((observable, tabOld, tabNew) -> {
+            if (tabNew.getId().startsWith("#")) {
+                Group g = groupsObservableList.stream().filter(group -> tabNew.getId().equals(group.getName())).findFirst().get();
+                participantsObservableList.clear();
+                for (Profile p : g.getParticipants()) {
                     Profile c=p.clone();
                     c.setStatus(-1);
                     participantsObservableList.add(c);
-				}
-			}else{
-			    participantsObservableList.clear();
+                }
+            } else {
+                participantsObservableList.clear();
             }
         });
         rootPane.setRight(null);
-        this.initializeNotificationHandling();
         tabPContacts.tabMinWidthProperty().bind(tabPContacts.prefWidthProperty().subtract(90).divide(tabPContacts.getTabs().size()));
 
+        initializeNotificationHandling();
+        initSendRichTextArea();
+        /** Load locally stored Messages */
         client.fetchAndShowLocalMessageStore();
+        /** Fetch missed messages from Server*/
+        client.sendToServer(MESSAGE_FETCH, null);
+
+    }
+
+    /**
+     * Init bottom RichTextArea for send text
+     */
+    private void initSendRichTextArea() {
+        hBoxSmileys.getChildren().clear();
+        /** Show/Hide smiley bar*/
+        checkSmileys.selectedProperty().addListener((old, v, newV) -> {
+            if (old.getValue()) {
+                hBoxSmileys.getChildren().add(scrollSmileys);
+                checkSmileys.setPrefHeight(FXUtil.SMILEY_BAR_HEIGHT);
+            } else {
+                hBoxSmileys.getChildren().clear();
+                checkSmileys.setPrefHeight(20.0);
+            }
+            Platform.runLater(() -> richTextArea.getArea().requestFocus());
+        });
+        richTextArea = new RichTextArea();
+        VirtualizedScrollPane<GenericStyledArea<ParStyle, Either<String, LinkedImage>, TextStyle>> vsPane = new VirtualizedScrollPane<>(richTextArea.getArea());
+        vsPane.prefWidthProperty().bind(hBoxTextArea.prefWidthProperty());
+        vsPane.prefHeightProperty().bind(hBoxTextArea.prefWidthProperty());
+        vsPane.getStyleClass().add("text-area");
+        hBoxTextArea.getChildren().add(vsPane);
+        fillSmileysGrid(richTextArea);
     }
 
     private void initializeNotificationHandling() {
@@ -129,15 +171,11 @@ public class GUIController extends UIControllerWithInfo {
             }
         });
 
-        this.textASendText.setOnMouseClicked(ev -> this.removeNotification());
-
-        this.tabPaneChat.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
-                Tab selectedTab=tabPaneChat.getTabs().get(newValue.intValue());
-                if(selectedTab!=null && selectedTab.getStyleClass().contains("tab-notification")) {
-                    selectedTab.getStyleClass().remove("tab-notification");
-                }
+        this.hBoxTextArea.setOnMouseClicked(ev -> this.removeNotification());
+        this.tabPaneChat.getSelectionModel().selectedIndexProperty().addListener((ov, oldValue, newValue) -> {
+            Tab selectedTab = tabPaneChat.getTabs().get(newValue.intValue());
+            if (selectedTab != null && selectedTab.getStyleClass().contains("tab-notification")) {
+                selectedTab.getStyleClass().remove("tab-notification");
             }
         });
     }
@@ -147,11 +185,58 @@ public class GUIController extends UIControllerWithInfo {
      **/
     private void addListener() {
         btnSend.setOnMouseClicked(ev -> onSendClicked());
-        textASendText.setOnKeyReleased(event -> {
+        hBoxTextArea.setOnKeyReleased(event -> {
             if(event.getCode()==KeyCode.ENTER) {
                 onSendClicked();
             }
         });
+    }
+
+    /**
+     * Fill smileys images into Grid
+     * Smileys from: https://www.flaticon.com/packs/smileys-3
+     */
+    private void fillSmileysGrid(RichTextArea textAreaSend) {
+        //scrollSmileys.setContent(null);
+        scrollSmileys.setMaxHeight(FXUtil.SMILEY_BAR_HEIGHT);
+        scrollSmileys.setMinHeight(FXUtil.SMILEY_BAR_HEIGHT);
+        scrollSmileys.setPrefHeight(FXUtil.SMILEY_BAR_HEIGHT);
+        scrollSmileys.setMaxWidth(FXUtil.SMILEY_BAR_WIDTH);
+        scrollSmileys.setPrefWidth(FXUtil.SMILEY_BAR_WIDTH);
+        scrollSmileys.setMinWidth(FXUtil.SMILEY_BAR_WIDTH);
+
+        scrollSmileys.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        GridPane smileyGrid = new GridPane();
+        smileyGrid.setPrefWidth(FXUtil.SMILEY_BAR_WIDTH);
+        smileyGrid.setMaxWidth(FXUtil.SMILEY_BAR_WIDTH);
+        smileyGrid.setMinWidth(FXUtil.SMILEY_BAR_WIDTH);
+        /** Fill gridPane with 20 columns, load smiley images with click listenersT*/
+        int columns = 20;
+        for (int i = 0; i < columns; i++) {
+            ColumnConstraints columnConstraints = new ColumnConstraints();
+            columnConstraints.setPercentWidth(100.0 / columns);
+            smileyGrid.getColumnConstraints().add(columnConstraints);
+        }
+        List<String> smileyPaths = FXUtil.getSmileyImagePaths();
+        for (int y = 0; y < (smileyPaths.size() / columns) + (smileyPaths.size() % columns > 0 ? 1 : 0); y++) {
+            RowConstraints rowConstraints = new RowConstraints();
+            rowConstraints.setMinHeight(22);
+            rowConstraints.setPrefHeight(22);
+            smileyGrid.getRowConstraints().add(rowConstraints);
+            for (int x = 0; x < columns; x++) {
+                if (y * columns + x >= smileyPaths.size()) {
+                    break;
+                }
+                ImageView imgSmiley = new ImageView(FXUtil.getSmileyImage(y * columns + x));
+                int finalI = y * columns + x;
+                imgSmiley.setOnMouseClicked(ev -> {
+                    textAreaSend.insertImage(smileyPaths.get(finalI));
+                    Platform.runLater(() -> richTextArea.getArea().requestFocus());
+                });
+                smileyGrid.add(imgSmiley, x, y);
+            }
+        }
+        scrollSmileys.setContent(smileyGrid);
     }
 
     /**
@@ -200,7 +285,7 @@ public class GUIController extends UIControllerWithInfo {
         contextMenuOnlineUsers.setId("OnlineUsersContextMenu");
         MenuItem addFriend=new MenuItem("Add as Friend");
         addFriend.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.USER_PLUS));
-        MenuItem createChat=new MenuItem("Create Chat");
+        MenuItem createChat = new MenuItem("Open Chat");
         createChat.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.ALIGN_JUSTIFY));
         MenuItem showProfile=new MenuItem("Show Profile");
         showProfile.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.USER_SECRET));
@@ -215,7 +300,7 @@ public class GUIController extends UIControllerWithInfo {
         /**Contact List Context Menu**/
         ContextMenu contextMenuContacts=new ContextMenu();
         contextMenuContacts.setId("ContactsContextMenu");
-        MenuItem createChat1=new MenuItem("Create Chat");
+        MenuItem createChat1 = new MenuItem("Open Chat");
         createChat1.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.ALIGN_JUSTIFY));
         createChat1.setOnAction(e ->
                 createNewChatTab(tabContactsListView.getSelectionModel().getSelectedItem().getUserName()));
@@ -254,10 +339,8 @@ public class GUIController extends UIControllerWithInfo {
     }
 
     private void onLogoutClicked() {
-        client.sendToServer(LOGOFF, client.getAccount());
-        client.setAccount(null);
-        client.closeCurrentWindowNoExit();
-        client.openWindow("login");
+        client.logout();
+
     }
 
     /**
@@ -281,7 +364,40 @@ public class GUIController extends UIControllerWithInfo {
      * send text in text area to server as a message and displays the text in the currently active chat window
      **/
     private void onSendClicked() {
-        if(!textASendText.getText().isEmpty()) {
+        StringBuilder stringBuilder = new StringBuilder();
+        if (richTextArea.getArea().getLength() > 1) {
+            richTextArea.getArea().getParagraphs().forEach(list -> {
+                for (Either<String, LinkedImage> item : list.getSegments()) {
+                    /** If is String */
+                    item.ifLeft(str -> {
+                        System.out.println(str);
+                        stringBuilder.append(str);
+                    });
+                    /** If is smiley get number of smiley */
+                    Pattern numberPattern = Pattern.compile("/(\\d*?)-", Pattern.DOTALL);
+                    item.ifRight(img -> {
+                        Matcher m = numberPattern.matcher(img.getImagePath());
+                        if (m.find()) {
+                            String smileyNumber = m.group(1);
+                            System.out.println("Smiley: " + smileyNumber);
+                            stringBuilder.append("<i>").append(smileyNumber).append("</i>");
+                        }
+                    });
+                }
+            });
+            System.out.println("Sent message: " + stringBuilder);
+            String receiver = tabPaneChat.getSelectionModel().getSelectedItem().getId();
+            Message newMessage = new Message(checkTranslate.isSelected(), stringBuilder.toString(),
+                    new Timestamp(System.currentTimeMillis()), client.getAccount().getUserName(), receiver);
+            ListView<Message> lv = (ListView<Message>) tabPaneChat.getSelectionModel().getSelectedItem().getContent();
+            lv.getItems().add(newMessage);
+
+            client.sendToServer(MESSAGE_SENT, newMessage);
+            client.storeMessageLocal(newMessage);
+            richTextArea.getArea().clear();
+            checkSmileys.setSelected(false);
+        }
+       /* if(!textASendText.getText().isEmpty()) {
             Profile selectedUser=tabOnlineListView.getSelectionModel().getSelectedItem();
             String receiver=tabPaneChat.getSelectionModel().getSelectedItem().getId();
             //String receiver = selectedUser==null? "broadcast" : selectedUser.getUserName();
@@ -297,13 +413,13 @@ public class GUIController extends UIControllerWithInfo {
         }
         else {
 
-        }
+        }*/
     }
 
     /**
      * for displaying received messages, one messages are displayed via onSendClicked method
      **/
-    public void displayNewMessage(Message message) {
+    public void displayNewMessage(Message message, boolean newMessage) {
         Tab displayTab=null;
         if(message.getReceiver().equals(BROADCAST) || message.getReceiver().startsWith("#")) {
             displayTab=createNewChatTab(message.getReceiver());
@@ -320,7 +436,9 @@ public class GUIController extends UIControllerWithInfo {
         //get ListView from tab to add text
         ListView<Message> lv=(ListView<Message>) displayTab.getContent();
         lv.getItems().add(message);
-        displayTab.getStyleClass().add("tab-notification");
+        if (newMessage) {
+            displayTab.getStyleClass().add("tab-notification");
+        }
         lv.scrollTo(lv.getItems().size() - 1);
     }
 
@@ -347,105 +465,108 @@ public class GUIController extends UIControllerWithInfo {
         contactsObservableList.addAll(profiles);
     }
 
-	public void displayGroupChats(ArrayList<Group> groups) {
-		groupsObservableList.clear();
-		for (Group g : groups)
-			groupsObservableList.add(g);
-		tabPaneChat.getSelectionModel().selectedItemProperty().addListener((observable, tabOld, tabNew) -> {
-			if(tabNew.getId().startsWith("#")){
-				Group g = groupsObservableList.stream().filter(group -> tabNew.getId().equals(group.getName())).findFirst().get();
-				participantsObservableList.clear();
-				for (Profile p : g.getParticipants()) {
+    public void displayGroupChats(ArrayList<Group> groups) {
+        groupsObservableList.clear();
+        for (Group g : groups)
+            groupsObservableList.add(g);
+        tabPaneChat.getSelectionModel().selectedItemProperty().addListener((observable, tabOld, tabNew) -> {
+            if (tabNew.getId().startsWith("#")) {
+                Group g = groupsObservableList.stream().filter(group -> tabNew.getId().equals(group.getName())).findFirst().get();
+                participantsObservableList.clear();
+                for (Profile p : g.getParticipants()) {
                     Profile c=p.clone();
                     c.setStatus(-1);
                     participantsObservableList.add(c);
-				}
+                }
                 rootPane.setRight(vBoxInfo);
                 labelGroupName.setText(g.getName());
-			} else {
-				participantsObservableList.clear();
+            } else {
+                participantsObservableList.clear();
                 rootPane.setRight(null);
-			}
-		});
-	}
+            }
+        });
+    }
 
-	public void fillContextMenuAddToGroup(ArrayList<Group> groups) {
-		//addToGroupChat.getItems().clear();
-		addToGroupChatContacts.getItems().clear();
-		MenuItem createNewGroup = new MenuItem("Create New Group");
-		addToGroupChatContacts.getItems().add(createNewGroup);
-		createNewGroup.setOnAction(e ->
+    public void fillContextMenuAddToGroup(ArrayList<Group> groups) {
+        //addToGroupChat.getItems().clear();
+        addToGroupChatContacts.getItems().clear();
+        MenuItem createNewGroup = new MenuItem("Create New Group");
+        addToGroupChatContacts.getItems().add(createNewGroup);
+        createNewGroup.setOnAction(e ->
                 createNewGroup(showNewGroupDialog(), tabContactsListView.getSelectionModel().getSelectedItem()));
-		for (Group g : groups) {
-			MenuItem group = new MenuItem(g.getName());
-			group.setOnAction(ev -> {
-				System.out.println("Clicked on " + g.getName());
-				System.out.println("On profile " + tabContactsListView.getSelectionModel().getSelectedItem());
-				Group myGroup = groups.stream().filter(gr -> gr.getName().equals(group.getText())).findFirst().get();
-				myGroup.addParticipant(tabContactsListView.getSelectionModel().getSelectedItem());
-				client.sendToServer(GROUP_UPDATE, myGroup);
-			});
-			//addToGroupChat.getItems().add(group);
-			addToGroupChatContacts.getItems().add(group);
-		}
-	}
+        for (Group g : groups) {
+            MenuItem group = new MenuItem(g.getName());
+            group.setOnAction(ev -> {
+                System.out.println("Clicked on " + g.getName());
+                System.out.println("On profile " + tabContactsListView.getSelectionModel().getSelectedItem());
+                Group myGroup = groups.stream().filter(gr -> gr.getName().equals(group.getText())).findFirst().get();
+                myGroup.addParticipant(tabContactsListView.getSelectionModel().getSelectedItem());
+                client.sendToServer(GROUP_UPDATE, myGroup);
+            });
+            //addToGroupChat.getItems().add(group);
+            addToGroupChatContacts.getItems().add(group);
+        }
+    }
 
-	public void onMyProfileClicked() {
+    public void onMyProfileClicked() {
         client.openWindow(Constants.Windows.USER_PROFILE);
-	}
+    }
 
-	/**
-	 * returns existing tab or create & returns new one
-	 **/
-	private Tab createNewChatTab(String tabName) {
-		Tab newTab = new Tab();
-		newTab.setText(tabName);
-		//Check if tab already exists then return
-		for (Tab tab : tabPaneChat.getTabs()) {
-			if (tab.getId().equals(tabName))
-				return tab;
-		}
-		ObservableList<Message> newObservableList = FXCollections.observableArrayList();
-		ListView<Message> newListView = new ListView<>();
-		newListView.setItems(newObservableList);
-		newListView.setCellFactory(messagesListView -> new ChatListViewCell(newListView.prefWidthProperty()));
-		newTab.setContent(newListView);
-		newTab.setId(tabName);
-		tabPaneChat.getTabs().add(newTab);
-		return newTab;
-	}
+    /**
+     * returns existing tab or create & returns new one
+     **/
+    private Tab createNewChatTab(String tabName) {
+        Tab newTab = new Tab();
+        newTab.setText(tabName);
+        //Check if tab already exists then return
+        for (Tab tab : tabPaneChat.getTabs()) {
+            if (tab.getId().equals(tabName)) {
+                tabPaneChat.getSelectionModel().select(tab);
+                return tab;
+            }
+        }
+        ObservableList<Message> newObservableList = FXCollections.observableArrayList();
+        ListView<Message> newListView = new ListView<>();
+        newListView.setItems(newObservableList);
+        newListView.setCellFactory(messagesListView -> new ChatListViewCell(newListView.prefWidthProperty()));
+        newTab.setContent(newListView);
+        newTab.setId(tabName);
+        tabPaneChat.getTabs().add(newTab);
+        tabPaneChat.getSelectionModel().select(newTab);
+        return newTab;
+    }
 
     /**
      * Shows new Group Dialog and returns name of new Group
      */
     private String showNewGroupDialog() {
-		Stage window = new Stage();
-		window.initModality(Modality.APPLICATION_MODAL);
-		window.setMinWidth(250);
+        Stage window = new Stage();
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.setMinWidth(250);
         window.setTitle("Enter new Group name");
         window.initStyle(StageStyle.UNDECORATED);
         window.getIcons().add(FXUtil.getDefaultIcon());
 
-		TextField textField = new TextField();
-		Button yButton = new Button("Create");
+        TextField textField = new TextField();
+        Button yButton = new Button("Create");
         yButton.getStyleClass().add("green");
-		Button nbButton = new Button("Cancel");
+        Button nbButton = new Button("Cancel");
         nbButton.getStyleClass().add("orange");
-		AtomicReference<String> exitCode = new AtomicReference<>();
-		yButton.setOnAction(e -> {
-			exitCode.set(textField.getText());
-			window.close();
-		});
-		nbButton.setOnAction(e -> {
-			exitCode.set(null);
-			window.close();
-		});
+        AtomicReference<String> exitCode = new AtomicReference<>();
+        yButton.setOnAction(e -> {
+            exitCode.set(textField.getText());
+            window.close();
+        });
+        nbButton.setOnAction(e -> {
+            exitCode.set(null);
+            window.close();
+        });
 
-		VBox layout = new VBox(5);
-		HBox buttons = new HBox(200);
-        buttons.getChildren().addAll(nbButton,yButton);
-		layout.getChildren().addAll(textField, buttons);
-		layout.setAlignment(Pos.CENTER);
+        VBox layout = new VBox(5);
+        HBox buttons = new HBox(200);
+        buttons.getChildren().addAll(nbButton, yButton);
+        layout.getChildren().addAll(textField, buttons);
+        layout.setAlignment(Pos.CENTER);
 
         VBox wrapBox=new VBox();
         wrapBox.setId("window-wrapper");
@@ -469,8 +590,8 @@ public class GUIController extends UIControllerWithInfo {
             e.printStackTrace();
         }
 
-		return exitCode.get();
-	}
+        return exitCode.get();
+    }
 
     private void createNewGroup(String groupName, Profile firstMember) {
         if(groupName==null) {

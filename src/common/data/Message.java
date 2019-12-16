@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -35,6 +36,15 @@ public class Message {
         this.timestamp = timestamp;
         this.sender = sender;
         this.receiver = receiver;
+    }
+
+    public Message(String text, String timestamp, String sender, String receiver) {
+        this(false, text, (Timestamp) null, sender, receiver);
+        try {
+            this.timestamp = new Timestamp(Util.dateFormat.parse(timestamp).getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     @XmlTransient

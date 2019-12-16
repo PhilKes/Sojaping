@@ -44,7 +44,7 @@ public class Profile {
         this.aboutMe=aboutMe;
     }
 
-    public String getProfilePictureAsBase64() {
+    public String getProfilePicture() {
         return profilePicture;
     }
     public void setProfilePicture(String profilePicture) {

@@ -187,7 +187,7 @@ public class DatabaseService {
             pstmt.setString(2, acc.getPassword());
             //pstmt.setInt(3, acc.getStatus());
             pstmt.setString(3, acc.getAboutMe());
-            pstmt.setString(4, acc.getProfilePictureAsBase64());
+            pstmt.setString(4, acc.getProfilePicture());
             pstmt.setString(5, String.join(",", acc.getLanguages()));
             pstmt.executeUpdate();
             ResultSet rs=pstmt.getGeneratedKeys();
@@ -230,7 +230,7 @@ public class DatabaseService {
             pstmt.setString(1, acc.getUserName());
             pstmt.setString(2, acc.getPassword());
             pstmt.setString(3, acc.getAboutMe());
-            pstmt.setString(4, acc.getProfilePictureAsBase64());
+            pstmt.setString(4, acc.getProfilePicture());
             pstmt.setString(5, String.join(",", acc.getLanguages()));
             pstmt.setInt(6, acc.getAid());
             pstmt.executeUpdate();

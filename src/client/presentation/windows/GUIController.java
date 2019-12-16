@@ -265,8 +265,8 @@ public class GUIController extends UIControllerWithInfo {
         labelUserName.setText(acc.getUserName());
         labelAbout.setText(acc.getAboutMe());
 
-		if(acc.getProfilePictureAsBase64() != null && !"".equals(acc.getProfilePictureAsBase64())){
-			Image image = FXUtil.convertBase64ToImage(acc.getProfilePictureAsBase64());
+		if(acc.getProfilePicture() != null && !"".equals(acc.getProfilePicture())){
+			Image image = FXUtil.convertBase64ToImage(acc.getProfilePicture());
 			imgAvatar.setImage(image);
 		} else {/** Default Avatar */
 			imgAvatar.setImage(FXUtil.getDefaultAvatarMin());

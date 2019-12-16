@@ -59,6 +59,6 @@ public class Account extends Profile {
         return this.aid==acc.getAid() && this.userName.equals(acc.getUserName())
                 && this.password.equals(acc.getPassword()) && this.status==acc.getStatus()
                 && this.aboutMe.equals(acc.getAboutMe())
-                && ((this.profilePicture==null && acc.getProfilePictureAsBase64()==null) || this.profilePicture.equals(acc.getProfilePictureAsBase64()));
+                && ((this.profilePicture==null && acc.getProfilePicture()==null) || this.profilePicture.equals(acc.getProfilePicture()));
     }
 }

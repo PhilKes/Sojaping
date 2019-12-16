@@ -9,8 +9,13 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.FileChooser;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,7 +29,7 @@ import static common.Constants.SERVER_PORT;
 public class UserProfileController extends UIControllerWithInfo {
 
 	@FXML
-	private Button btnSave, btnCancel, btnDeleteAccount;
+	private Button btnSave, btnCancel, btnDeleteAccount, btnUploadPic;
 
 	@FXML
 	private TextField txtAboutMe, txtNewPassword, txtNewPasswordConfirm, txtCurrentPassword;
@@ -39,6 +44,8 @@ public class UserProfileController extends UIControllerWithInfo {
 
 	private List<String> selectedLanguages;
 
+	private String base64ProfilePic;
+
     private int[] languageCounter;
 
 	@FXML
@@ -46,6 +53,7 @@ public class UserProfileController extends UIControllerWithInfo {
 		btnSave.setOnMouseClicked(ev -> onSaveClick());
 		btnCancel.setOnMouseClicked(ev -> onCancelClick());
 		btnDeleteAccount.setOnMouseClicked(ev -> onDeleteAccountClick());
+		btnUploadPic.setOnMouseClicked(ev -> onUploadPicClick());
         this.loggedInAccount=Client.getInstance(SERVER_HOST, SERVER_PORT).getAccount();
 		if (this.loggedInAccount != null) {
 			lblUserName.setText("Hi, " + this.loggedInAccount.getUserName() + "!");
@@ -54,6 +62,26 @@ public class UserProfileController extends UIControllerWithInfo {
 
 		this.initializeLanguageDropDown();
 	}
+	private void onUploadPicClick() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Choose profile picture");
+
+		File file = fileChooser.showOpenDialog(stage);
+		if (file != null) {
+			this.base64ProfilePic = this.convertFileToBase24(file.getAbsolutePath());
+		}
+	}
+
+	private String convertFileToBase24(String filePath){
+		byte[] fileContent = new byte[0];
+		try {
+			fileContent = FileUtils.readFileToByteArray(new File(filePath));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return Base64.getEncoder().encodeToString(fileContent);
+	}
+
 
 	private void initializeLanguageDropDown() {
         languageCounter=new int[]{0};
@@ -89,6 +117,9 @@ public class UserProfileController extends UIControllerWithInfo {
 		this.loggedInAccount.setLanguages(selectedLanguages.stream()
                 .map(key -> Constants.Translation.languages.get(key))
 				.collect(Collectors.toList()));
+		if(this.base64ProfilePic != null && !"".equals(this.base64ProfilePic)){
+			this.loggedInAccount.setProfilePicture(this.base64ProfilePic);
+		}
 		try {
 			this.handlePasswordGuardedProfileChanges();
 			this.client.sendToServer(PROFILE_UPDATE, this.loggedInAccount);

@@ -60,12 +60,15 @@ public class UserProfileController extends UIControllerWithInfo {
 		this.initializeLanguageDropDown();
 	}
 	private void onUploadPicClick() {
-		// TODO only jpg and pngs, not greater than 2 MB
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Choose profile picture");
 
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif", "*.bmp", "*.jpeg"));
+
 		File file = fileChooser.showOpenDialog(stage);
-		if (file != null) {
+		if (file != null && file.length() > 2000000) {
+			showInfo("Image file is too large. Please, upload a picture < 2 MB", InfoType.ERROR);
+		} else if(file != null){
 			this.base64ProfilePic = FXUtil.convertFileToBase64(file.getAbsolutePath());
 		}
 	}

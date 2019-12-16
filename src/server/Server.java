@@ -264,6 +264,7 @@ public class Server {
      */
     public boolean sendMessage(Message message, Connection receiverCon) {
         Profile receiverProfile=receiverCon.getLoggedAccount();
+
         /** Only check translation if user wants message to be translated */
         if(message.isTranslate()) {
             /** Identify message's original language*/
@@ -346,9 +347,12 @@ public class Server {
     }
 
     public void addFriend(Account currentAcc, Profile newFriend) throws Exception {
-        dbService.insertContactOfAccount(currentAcc, newFriend);
+        dbService.insertContactOfAccount(currentAcc, newFriend, false);
     }
 
+    public void blockUser(Account currentAcc, Profile newFriend, boolean block) throws Exception {
+        dbService.insertContactOfAccount(currentAcc, newFriend, block);
+    }
     public ArrayList<Profile> getFriendList(Account currentAcc) {
         return dbService.getAllContactsOfAccount(currentAcc);
     }
@@ -383,5 +387,9 @@ public class Server {
         List<Message> messages = dbService.getStoredMessagesOfAccount(loggedAccount);
         dbService.removeStoredMessagesOfAcoount(loggedAccount);
         return messages;
+    }
+
+    public boolean hasUserBlocked(Account account, String contact) {
+        return dbService.hasBlocked(contact, account);
     }
 }

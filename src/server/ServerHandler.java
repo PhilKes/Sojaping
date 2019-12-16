@@ -75,6 +75,10 @@ public class ServerHandler implements Runnable {
                     Message message=receivedPacket.getData();
                     /** Check login credentials, send Account from DB to user or send failed Exception */
                     String receiver=message.getReceiver();
+                    if (server.hasUserBlocked(connection.getLoggedAccount(), receiver)) {
+                        System.out.println("Not sending message, Receiver has blocked the Sender!");
+                        throw new Exception(receiver + " has blocked you!");
+                    }
                     if(receiver.equals(BROADCAST)) {
                         server.broadcastMessages(message);
                     }
@@ -114,6 +118,20 @@ public class ServerHandler implements Runnable {
                     break;
                 case ADD_FRIEND:
                     server.addFriend(connection.getLoggedAccount(), receivedPacket.getData());
+                    server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
+                    server.sendToUser(connection, USERLIST, server.getOnlineUsers());
+                    break;
+                case BLOCK:
+                    Profile contact = receivedPacket.getData();
+                    System.out.println("Blocking " + contact.getUserName());
+                    server.blockUser(connection.getLoggedAccount(), contact, true);
+                    server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
+                    server.sendToUser(connection, USERLIST, server.getOnlineUsers());
+                    break;
+                case UNBLOCK:
+                    Profile contact1 = receivedPacket.getData();
+                    System.out.println("Unblocking " + contact1.getUserName());
+                    server.blockUser(connection.getLoggedAccount(), contact1, false);
                     server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
                     server.sendToUser(connection, USERLIST, server.getOnlineUsers());
                     break;

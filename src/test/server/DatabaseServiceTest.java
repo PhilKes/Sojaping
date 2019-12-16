@@ -259,7 +259,7 @@ public class DatabaseServiceTest {
             e.printStackTrace();
         }
         try {
-            db.insertContactOfAccount(acc, friend.getProfile());
+            db.insertContactOfAccount(acc, friend.getProfile(), false);
         }
         catch(Exception e) {
             fail(e.getMessage());
@@ -288,7 +288,7 @@ public class DatabaseServiceTest {
             e.printStackTrace();
         }
         try {
-            db.insertContactOfAccount(acc, friend.getProfile());
+            db.insertContactOfAccount(acc, friend.getProfile(), false);
         }
         catch(Exception e) {
             fail(e.getMessage());

@@ -142,6 +142,8 @@ public class Constants {
                 PROFILE_UPDATE = "profileUpdate",
                 DELETE_ACCOUNT = "deleteAccount",
                 ADD_FRIEND = "addFriend",
+                BLOCK = "block",
+                UNBLOCK = "unblock",
                 FRIEND_LIST = "friendList",
                 GROUP_UPDATE = "groupUpdate";
     }

@@ -66,8 +66,8 @@ public class UserProfileController extends UIControllerWithInfo {
 		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif", "*.bmp", "*.jpeg"));
 
 		File file = fileChooser.showOpenDialog(stage);
-		if (file != null && file.length() > 2000000) {
-			showInfo("Image file is too large. Please, upload a picture < 2 MB", InfoType.ERROR);
+		if (file != null && file.length() > 3000000) {
+			showInfo("Image file is too large. Please, upload a picture < 3 MB", InfoType.ERROR);
 		} else if(file != null){
 			this.base64ProfilePic = FXUtil.convertFileToBase64(file.getAbsolutePath());
 		}

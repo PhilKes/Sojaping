@@ -10,12 +10,9 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -63,23 +60,14 @@ public class UserProfileController extends UIControllerWithInfo {
 		this.initializeLanguageDropDown();
 	}
 	private void onUploadPicClick() {
+		// TODO only jpg and pngs, not greater than 2 MB
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Choose profile picture");
 
 		File file = fileChooser.showOpenDialog(stage);
 		if (file != null) {
-			this.base64ProfilePic = this.convertFileToBase24(file.getAbsolutePath());
+			this.base64ProfilePic = FXUtil.convertFileToBase64(file.getAbsolutePath());
 		}
-	}
-
-	private String convertFileToBase24(String filePath){
-		byte[] fileContent = new byte[0];
-		try {
-			fileContent = FileUtils.readFileToByteArray(new File(filePath));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return Base64.getEncoder().encodeToString(fileContent);
 	}
 
 

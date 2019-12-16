@@ -1,5 +1,6 @@
 package client.presentation;
 
+import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
 import common.Constants;
 import de.jensd.fx.glyphs.GlyphIcon;
 import de.jensd.fx.glyphs.GlyphsBuilder;
@@ -12,7 +13,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
+import org.apache.commons.io.FileUtils;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -100,5 +106,27 @@ public class FXUtil {
             }
         });
     }
+
+    public static String convertFileToBase64(String filePath){
+        byte[] fileContent = new byte[0];
+        try {
+            fileContent = FileUtils.readFileToByteArray(new File(filePath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Base64.getEncoder().encodeToString(fileContent);
+    }
+
+    public static Image convertBase64ToImage(String base64Picture){
+        byte[] imageBytes= new byte[0];
+        try {
+            imageBytes = com.sun.org.apache.xml.internal.security.utils.Base64.decode(base64Picture.getBytes());
+        } catch (Base64DecodingException e) {
+            e.printStackTrace();
+        }
+        ByteArrayInputStream is=new ByteArrayInputStream(imageBytes);
+        return new Image(is);
+    }
+
 }
 

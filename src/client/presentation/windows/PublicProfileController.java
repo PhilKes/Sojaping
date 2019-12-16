@@ -42,7 +42,7 @@ public class PublicProfileController extends UIController {
         labelUserName.setText(profile.getUserName());
         labelAbout.setText(profile.getAboutMe());
         //TODO LOAD AVATAR FROM DB
-        if(profile.getProfilePicture()==null) {
+        if(profile.getProfilePictureAsBase64()==null) {
             imgAvatar.setImage(FXUtil.getDefaultAvatar());
         }
     }

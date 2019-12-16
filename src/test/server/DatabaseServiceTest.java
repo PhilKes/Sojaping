@@ -299,8 +299,8 @@ public class DatabaseServiceTest {
         if(friend.getUserName().equals(contact.getUserName())
             && friend.getStatus() == contact.getStatus()
             && friend.getAboutMe().equals(contact.getAboutMe())
-            &&((friend.getProfilePicture() == null && contact.getProfilePicture() == null)
-            || friend.getProfilePicture().equals(contact.getProfilePicture()))){
+            &&((friend.getProfilePictureAsBase64() == null && contact.getProfilePictureAsBase64() == null)
+            || friend.getProfilePictureAsBase64().equals(contact.getProfilePictureAsBase64()))){
             result = true;
         }
         assertTrue(result);

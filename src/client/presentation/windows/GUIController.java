@@ -23,6 +23,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
@@ -263,11 +264,13 @@ public class GUIController extends UIControllerWithInfo {
     public void loadAccount(Account acc) {
         labelUserName.setText(acc.getUserName());
         labelAbout.setText(acc.getAboutMe());
-        //TODO Load Profilepicture (from DB?)
-        /** Default Avatar */
-        if(acc.getProfilePicture()==null) {
-            imgAvatar.setImage(FXUtil.getDefaultAvatarMin());
-        }
+
+		if(acc.getProfilePictureAsBase64() != null && !"".equals(acc.getProfilePictureAsBase64())){
+			Image image = FXUtil.convertBase64ToImage(acc.getProfilePictureAsBase64());
+			imgAvatar.setImage(image);
+		} else {/** Default Avatar */
+			imgAvatar.setImage(FXUtil.getDefaultAvatarMin());
+		}
     }
 
     private void addFriend(Profile selectedUser) {

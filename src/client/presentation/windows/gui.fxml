@@ -6,9 +6,9 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -51,7 +51,7 @@
                         <Insets bottom="20.0" top="20.0"/>
                     </VBox.margin>
                 </HBox>
-                <TabPane fx:id="tabPContacts" prefHeight="468.0" prefWidth="248.0" tabClosingPolicy="UNAVAILABLE">
+                <TabPane fx:id="tabPContacts" prefWidth="250.0" tabClosingPolicy="UNAVAILABLE" tabMinHeight="30.0">
                     <tabs>
                         <Tab fx:id="tabContacts" text="Contacts">
                             <content>
@@ -79,9 +79,9 @@
                   </Tab>
                     </tabs>
                 </TabPane>
-                <Label fx:id="labelError" alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="238.0"
+                <Label fx:id="labelError" alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="250.0"
                        textAlignment="CENTER"/>
-                <HBox alignment="CENTER">
+                <HBox fx:id="hBoxSettings" alignment="CENTER">
                     <children>
                         <Button fx:id="btnLogout" layoutX="51.0" layoutY="10.0" mnemonicParsing="false"
                                 onMouseClicked="#onMyProfileClicked" prefHeight="37.0" prefWidth="94.0"
@@ -108,14 +108,24 @@
         </VBox>
     </left>
     <right>
-        <VBox fx:id="vBoxInfo" prefHeight="550.0" prefWidth="154.0" BorderPane.alignment="CENTER">
+        <VBox fx:id="vBoxInfo" alignment="CENTER" prefHeight="589.0" prefWidth="160.0" BorderPane.alignment="CENTER">
             <children>
-                <ImageView fx:id="imageLogo" pickOnBounds="true" preserveRatio="true">
+                <HBox fx:id="hBoxGroupName" alignment="CENTER" prefHeight="81.0">
+                    <children>
+                        <Label fx:id="labelGroupName" alignment="CENTER" text="GroupName" textAlignment="CENTER"
+                               wrapText="true">
+                            <font>
+                                <Font name="System Bold" size="14.0"/>
+                            </font>
+                        </Label>
+                    </children>
+                </HBox>
+                <ImageView fx:id="imageLogo" fitHeight="125.0" fitWidth="130.0" pickOnBounds="true"
+                           preserveRatio="true">
                     <image>
                         <Image url="@../resources/SojaPing_border_color.png"/>
                     </image></ImageView>
-                <Label alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" text="Group Members"
-                       textAlignment="CENTER">
+                <Label alignment="CENTER" contentDisplay="CENTER" text="Members" textAlignment="CENTER">
                     <VBox.margin>
                         <Insets bottom="8.0"/>
                     </VBox.margin>
@@ -130,7 +140,7 @@
     <center>
         <VBox fx:id="vBoxChat" BorderPane.alignment="CENTER">
             <children>
-                <TabPane fx:id="tabPaneChat" prefWidth="400.0" tabClosingPolicy="ALL_TABS">
+                <TabPane fx:id="tabPaneChat" prefWidth="400.0" tabClosingPolicy="ALL_TABS" tabMinHeight="30.0">
               <tabs>
                 <Tab closable="false" text="Broadcast">
                      <content>
@@ -146,17 +156,45 @@
         </VBox>
     </center>
     <bottom>
-        <HBox fx:id="bottomHbox" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <HBox fx:id="bottomHbox" prefHeight="142.0" prefWidth="911.0" BorderPane.alignment="CENTER">
             <children>
-                <TextArea fx:id="textASendText" prefHeight="80.0" prefWidth="781.0" styleClass="text-area">
-                    <BorderPane.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0"/>
-                    </BorderPane.margin>
-                    <HBox.margin>
-                        <Insets right="10.0"/>
-                    </HBox.margin>
-                </TextArea>
-                <VBox prefHeight="100.0" BorderPane.alignment="CENTER">
+                <VBox>
+                    <children>
+                        <HBox alignment="CENTER_LEFT" prefWidth="724.0">
+                            <children>
+                                <CheckBox fx:id="checkSmileys" mnemonicParsing="false" prefHeight="26.0"
+                                          prefWidth="46.0">
+                                    <graphic>
+                                        <FontAwesomeIconView glyphName="SMILE_ALT" size="18" strokeType="OUTSIDE"
+                                                             strokeWidth="0.0"/>
+                                    </graphic>
+                                    <HBox.margin>
+                                        <Insets/>
+                                    </HBox.margin>
+                                </CheckBox>
+                                <HBox fx:id="hBoxSmileys" alignment="BOTTOM_LEFT">
+                                    <HBox.margin>
+                                        <Insets/>
+                                    </HBox.margin>
+                                    <children>
+                                        <ScrollPane fx:id="scrollSmileys" fitToHeight="true" fitToWidth="true"
+                                                    maxHeight="22.0" maxWidth="560.0" minHeight="22.0" minWidth="560.0"
+                                                    prefHeight="22.0" prefWidth="686.0" styleClass="text-area">
+                                            <content>
+
+                                            </content>
+                                        </ScrollPane>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </HBox>
+                        <HBox fx:id="hBoxTextArea" prefHeight="100.0" prefWidth="733.0"/>
+                    </children>
+                    <padding>
+                        <Insets top="8.0"/>
+                    </padding>
+                </VBox>
+                <VBox prefHeight="140.0" prefWidth="149.0" BorderPane.alignment="CENTER">
                     <children>
                         <HBox alignment="CENTER_LEFT">
                             <children>
@@ -174,7 +212,7 @@
                                 </CheckBox>
                             </children>
                         </HBox>
-                        <Button fx:id="btnSend" mnemonicParsing="false" prefHeight="125.0" prefWidth="153.0"
+                        <Button fx:id="btnSend" mnemonicParsing="false" prefHeight="94.0" prefWidth="149.0"
                                 styleClass="green" text="Send">
                             <graphic>
                                 <FontAwesomeIconView glyphName="COMMENTING" size="22"/>
@@ -184,13 +222,16 @@
                             </VBox.margin>
                         </Button>
                     </children>
+                    <HBox.margin>
+                        <Insets left="10.0"/>
+                    </HBox.margin>
                 </VBox>
             </children>
             <BorderPane.margin>
                 <Insets/>
             </BorderPane.margin>
             <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                <Insets bottom="10.0" left="10.0" right="10.0"/>
             </padding>
         </HBox>
     </bottom>

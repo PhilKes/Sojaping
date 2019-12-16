@@ -68,18 +68,4 @@ public class Group {
         return participants;
     }
 
-    public static void main(String[] args) {
-        /*
-        Profile a = new Profile("a", 0, "a", null);
-        Profile b = new Profile("b", 0, "b", null);
-        Group g = new Group("test", a);
-        g.addParticipant(b);
-        System.out.println(g);
-        g.deleteParticipant(a);
-        System.out.println(g);
-        g.changeName("test2");
-        System.out.println(g);
-        */
-
-    }
 }

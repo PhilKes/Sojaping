@@ -36,14 +36,22 @@ public class Packet {
     }
 
     public String getJson(){
-        return getJsonFromPacket(context,data);
+        return getJsonFromPacket(this);
+
     }
 
     @Override
     public String toString() {
-        return "Packet{" +
-                "context='" + context + '\'' +
-                ", data=" + data +
-                '}';
+        int l=context.length();
+        int tabs=(l / 4);
+        if(l % 4>0) {
+            tabs++;
+        }
+        String s=" " + context;
+        for(int i=0; i<5 - tabs; i++) {
+            s+="\t";
+        }
+        s+="data= " + data;
+        return s;
     }
 }

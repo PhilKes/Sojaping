@@ -1,5 +1,7 @@
 package server;
 
+import common.Connection;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;

@@ -10,7 +10,7 @@ public class Profile {
     protected String aboutMe;
     protected String profilePicture;
     protected List<String> languages;
-
+    protected boolean blocked;
 
     public Profile() {
         languages=new ArrayList<>();
@@ -21,6 +21,7 @@ public class Profile {
         this.aboutMe=aboutMe;
         this.profilePicture=profilePicture;
         this.languages=languages;
+        this.blocked = false;
     }
 
     public String getUserName() {
@@ -56,6 +57,14 @@ public class Profile {
     }
     public void setLanguages(List<String> languages) {
         this.languages=languages;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 
     @Override

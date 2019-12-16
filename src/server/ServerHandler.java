@@ -1,5 +1,6 @@
 package server;
 
+import common.Connection;
 import common.Util;
 import common.data.*;
 
@@ -52,7 +53,7 @@ public class ServerHandler implements Runnable {
                     server.registerUser(account);
                     server.sendToUser(connection, REGISTER_SUCCESS, "Welcome to Sojaping " + account.getUserName() + " !");
                     break;
-                /** Try to authenticate sent LToginUser*/
+                /** Try to authenticate sent LoginUser*/
                 case LOGIN:
                     System.out.println("Login Account");
                     LoginUser loginUser=receivedPacket.getData();
@@ -74,6 +75,10 @@ public class ServerHandler implements Runnable {
                     Message message=receivedPacket.getData();
                     /** Check login credentials, send Account from DB to user or send failed Exception */
                     String receiver=message.getReceiver();
+                    if (server.hasUserBlocked(connection.getLoggedAccount(), receiver)) {
+                        System.out.println("Not sending message, Receiver has blocked the Sender!");
+                        throw new Exception(receiver + " has blocked you!");
+                    }
                     if(receiver.equals(BROADCAST)) {
                         server.broadcastMessages(message);
                     }
@@ -83,8 +88,15 @@ public class ServerHandler implements Runnable {
                     else {
                         /** Private message */
                         if(!server.sendMessage(message)) {
-                            throw new Exception("Receiver not found!");
+                            System.out.println("User not online, storing message in DB");
+                            server.storeMessage(message, message.getReceiver());
                         }
+                    }
+                    break;
+                case MESSAGE_FETCH:
+                    /** Get stored messages from DB of user */
+                    for (Message msg : server.getStoredMessages(connection.getLoggedAccount())) {
+                        server.sendToUser(connection, MESSAGE_RECEIVED, msg);
                     }
                     break;
                 case USERLIST:
@@ -94,9 +106,6 @@ public class ServerHandler implements Runnable {
                     break;
                 case GROUPLIST:
                     server.sendToUser(connection, GROUPLIST, server.getGroups(connection.getLoggedAccount()));
-                    break;
-                case GROUP_ADD:
-
                     break;
                 case SHUTDOWN:
                     server.removeConnectionAccount(connection, (Account) receivedPacket.getData());
@@ -112,6 +121,20 @@ public class ServerHandler implements Runnable {
                     server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
                     server.sendToUser(connection, USERLIST, server.getOnlineUsers());
                     break;
+                case BLOCK:
+                    Profile contact = receivedPacket.getData();
+                    System.out.println("Blocking " + contact.getUserName());
+                    server.blockUser(connection.getLoggedAccount(), contact, true);
+                    server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
+                    server.sendToUser(connection, USERLIST, server.getOnlineUsers());
+                    break;
+                case UNBLOCK:
+                    Profile contact1 = receivedPacket.getData();
+                    System.out.println("Unblocking " + contact1.getUserName());
+                    server.blockUser(connection.getLoggedAccount(), contact1, false);
+                    server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
+                    server.sendToUser(connection, USERLIST, server.getOnlineUsers());
+                    break;
                 case PROFILE_UPDATE:
                     Account updatedAccount=receivedPacket.getData();
                     server.updateUser(connection, updatedAccount);
@@ -122,11 +145,13 @@ public class ServerHandler implements Runnable {
                     server.deleteUser(accountForDeletion);
                     break;
                 case GROUP_UPDATE:
-                    Group group = receivedPacket.getData();
+                    Group group=receivedPacket.getData();
                     server.updateGroup(group);
-                    for (Profile member : group.getParticipants()) {
-                        Connection memberCon = server.getConnectionOfUser(member.getUserName());
-                        server.sendToUser(memberCon, GROUPLIST, server.getGroups(memberCon.getLoggedAccount()));
+                    for(Profile member : group.getParticipants()) {
+                        Connection memberCon=server.getConnectionOfUser(member.getUserName());
+                        if(memberCon!=null) {
+                            server.sendToUser(memberCon, GROUPLIST, server.getGroups(memberCon.getLoggedAccount()));
+                        }
                     }
                     break;
                 default:

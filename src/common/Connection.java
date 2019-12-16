@@ -1,4 +1,4 @@
-package server;
+package common;
 
 import common.data.Account;
 
@@ -8,7 +8,7 @@ import java.io.PrintStream;
 import java.net.Socket;
 
 /**
- * Socket connection to host with Input/Output Streams and loggedAcount if logged in
+ * Socket connection to host with Input/Output Streams and loggedAccount if logged in
  */
 public class Connection {
 

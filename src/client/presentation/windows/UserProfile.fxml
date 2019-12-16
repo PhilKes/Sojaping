@@ -108,7 +108,13 @@
                         <Insets right="40.0" />
                     </HBox.margin>
                 </Button>
-                <Button fx:id="btnSave" mnemonicParsing="false" styleClass="green" text="Save" />
+                <Button fx:id="btnSave" mnemonicParsing="false" styleClass="green" text="Save"/>
+                <Button fx:id="btnResetStore" mnemonicParsing="false" onAction="#onResetStoreClicked"
+                        text="Reset MessageStore">
+                    <HBox.margin>
+                        <Insets left="200.0"/>
+                    </HBox.margin>
+                </Button>
             </children>
             <VBox.margin>
                 <Insets top="10.0" />

@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import server.Connection;
+import common.Connection;
 import server.Server;
 import server.ServerHandler;
 

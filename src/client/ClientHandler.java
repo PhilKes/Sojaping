@@ -61,7 +61,8 @@ class ClientHandler implements Runnable {
             case LOGIN_SUCCESS:
                 Account account=receivedPacket.getData();
                 client.setAccount(account);
-                System.out.println("Logged into " + account);
+                client.setMessageStoreUser(account.getUserName());
+                System.out.println("\t\t\t\t" + "Logged into " + account);
                 client.closeCurrentWindowNoExit();
                 client.openWindow(Constants.Windows.GUI);
                 break;
@@ -71,29 +72,33 @@ class ClientHandler implements Runnable {
                 ((UIControllerWithInfo) client.peekController()).showInfo(error1.getMessage(), UIControllerWithInfo.InfoType.ERROR);
                 break;
             case REGISTER_SUCCESS:
-                System.out.println("Successfully registered !");
+                System.out.println("\t\t\t\t" + "Successfully registered !");
                 String message=receivedPacket.getData();
                 ((UIControllerWithInfo) client.peekController()).showInfo(message, UIControllerWithInfo.InfoType.SUCCESS);
                 break;
             case MESSAGE_RECEIVED:
                 Message msg=receivedPacket.getData();
-                Platform.runLater(() -> client.getGUIController().displayNewMessage(msg));
+                Platform.runLater(() -> client.getGUIController().displayNewMessage(msg, true));
+                client.storeMessageLocal(msg);
                 break;
             case USERLIST:
                 ArrayList<Profile> userList=receivedPacket.getData();
-                System.out.println("Profiles received:");
-                userList.forEach(u -> System.out.println(u));
+                System.out.println("\t\t\t\tProfiles received:");
+                userList.forEach(u -> System.out.println("\t\t\t\t" + u));
                 Platform.runLater(() -> client.getGUIController().displayOnlineProfiles(userList));
                 break;
             case SHUTDOWN:
                 String text=receivedPacket.getData();
-                System.out.println("SERVER is shutting down: " + text);
+                System.err.println("\t\t\t\t" + "SHUTDOWN: " + text);
                 running=false;
+                while (client.peekController() != null) {
+                    client.closeCurrentWindow();
+                }
                 break;
             case GROUPLIST:
                 ArrayList<Group> groupList=receivedPacket.getData();
-                System.out.println("Groups received:");
-                groupList.forEach(g -> System.out.println(g));
+                System.out.println("\t\t\t\t" + "Groups received:");
+                groupList.forEach(g -> System.out.println("\t\t\t\t" + g));
                 Platform.runLater(() -> client.getGUIController().displayGroupChats(groupList));
                 Platform.runLater(() -> client.getGUIController().fillContextMenuAddToGroup(groupList));
                 break;

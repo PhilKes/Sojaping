@@ -1,15 +1,20 @@
 package client.presentation.listcells;
 
+import client.presentation.FXUtil;
+import common.Util;
 import common.data.Message;
 import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 
 
 public class ChatListViewCell extends ListCell<Message> {
@@ -21,7 +26,7 @@ public class ChatListViewCell extends ListCell<Message> {
     private Label labelTime;
 
     @FXML
-    private Label labelText;
+    private TextFlow textFlow;
 
     @FXML
     private BorderPane borderPane;
@@ -34,14 +39,14 @@ public class ChatListViewCell extends ListCell<Message> {
     }
 
     @Override
-    protected void updateItem(Message message, boolean empty){
-        super.updateItem(message,empty);
-        if(empty || message == null){
+    protected void updateItem(Message message, boolean empty) {
+        super.updateItem(message, empty);
+        if (empty || message == null) {
             setGraphic(null);
             setText(null);
         }
         else {
-            if(fxmlLoader == null){
+            if (fxmlLoader == null) {
                 fxmlLoader = new FXMLLoader(getClass().getResource("ChatListCell.fxml"));
                 fxmlLoader.setController(this);
                 try {
@@ -50,9 +55,34 @@ public class ChatListViewCell extends ListCell<Message> {
                     e.printStackTrace();
                 }
             }
-            labelTime.setText(new SimpleDateFormat("HH:mm:ss \n dd-MM-yy").format(message.getTimestamp()));//message.getTimestamp()//.toString().split("\\.")[0]);
-            labelText.setText(message.getText());
-            labelText.setWrapText(true);
+            labelTime.setText(Util.dateFormat.format(message.getTimestamp()).replace('\t', '\n'));//message.getTimestamp()//.toString().split("\\.")[0]);
+            textFlow.getChildren().clear();
+            /** Render text + smileys */
+            String msg = message.getText();
+            while (true) {
+                int textEnd = msg.indexOf("<i>");
+                Text txt = new Text();
+                //TODO CSS CLASS
+                txt.setFill(Color.WHITE);
+                if (textEnd == -1) {
+                    txt.setText(msg);
+                    textFlow.getChildren().add(txt);
+                    break;
+                }
+                String text = msg.substring(0, textEnd);
+                if (text.length() > 0) {
+                    txt.setText(text);
+                    textFlow.getChildren().add(txt);
+                }
+                int smileyNumber = Integer.parseInt(msg.substring(textEnd + 3, textEnd + 3 + 3)) - 1;
+                ImageView imgSmiley = new ImageView(FXUtil.getSmileyImage(smileyNumber));
+
+                textFlow.getChildren().add(imgSmiley);
+                msg = msg.substring(textEnd + 3 + 3 + 3 + 1);
+            }
+
+          /*  labelText.setText(message.getText());
+            labelText.setWrapText(true);*/
             labelSender.setText(message.getSender());
             /** Fit Width to ListView width*/
             borderPane.prefWidthProperty().bind(listViewWidthProperty.subtract(2));

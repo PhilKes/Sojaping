@@ -5,6 +5,7 @@ import common.Constants;
 import common.Util;
 import common.data.*;
 
+import java.awt.print.PageFormat;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -35,16 +36,18 @@ public class Server {
 
     private final DatabaseService dbService;
     private final TranslationService translateService;
+    private final MailService mailService;
 
     private final ServerDispatcher dispatcher;
 
     public Server(int port, DatabaseService dbService) {
-        this.port=port;
-        this.connections=new HashMap<>();
-        this.dbService=dbService;
-        this.translateService=new TranslationService();
-        dispatcher=new ServerDispatcher(this, connections);
-        running=new AtomicBoolean(true);
+        this.port = port;
+        this.connections = new HashMap<>();
+        this.dbService = dbService;
+        this.translateService = new TranslationService();
+        this.mailService = new MailService();
+        dispatcher = new ServerDispatcher(this, connections);
+        running = new AtomicBoolean(true);
     }
 
     public static void main(String[] args) throws IOException {
@@ -391,5 +394,8 @@ public class Server {
 
     public boolean hasUserBlocked(Account account, String contact) {
         return dbService.hasBlocked(contact, account);
+    }
+    public void sendInvitationEmail(String receiver, Profile sender){
+        mailService.sendInviteMail(receiver,sender);
     }
 }

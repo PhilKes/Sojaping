@@ -15,6 +15,9 @@ import javafx.scene.image.Image;
 import javafx.util.Duration;
 import org.apache.commons.io.FileUtils;
 
+import java.io.*;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 

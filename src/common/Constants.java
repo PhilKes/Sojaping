@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Constants {
-    public static String SERVER_HOST="192.168.178.26";
-    public static int SERVER_PORT=9999;//443;
+    public static String SERVER_HOST = "192.168.0.190";
+    public static int SERVER_PORT = 9999;//443;c
 
     public static class Translation {
-        public final static String ENGLISH_VALUE="en",
-                ENGLISH_KEY="English";
+        public final static String ENGLISH_VALUE = "en",
+                ENGLISH_KEY = "English";
         /**
          * All Options for languages
          */
@@ -145,7 +145,8 @@ public class Constants {
                 BLOCK = "block",
                 UNBLOCK = "unblock",
                 FRIEND_LIST = "friendList",
-                GROUP_UPDATE = "groupUpdate";
+                GROUP_UPDATE = "groupUpdate",
+                INVITATION_EMAIL = "inviteEmail";
     }
 
     public static class Windows {

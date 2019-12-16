@@ -3,9 +3,10 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.Line?>
-<?import javafx.scene.text.Font?>
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="460.0" prefWidth="600.0" stylesheets="@../resources/main.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.presentation.windows.UserProfileController">
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="460.0" prefWidth="600.0" stylesheets="@../resources/main.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.presentation.windows.UserProfileController">
     <children>
         <Pane>
             <children>
@@ -102,23 +103,23 @@
                 </HBox>
         <Label fx:id="labelError" alignment="BOTTOM_CENTER" contentDisplay="CENTER" prefWidth="600.0" textAlignment="CENTER" textFill="#e11010" />
         <HBox>
+
             <children>
-                <Button fx:id="btnCancel" mnemonicParsing="false" styleClass="orange" text="Cancel">
+                <Button fx:id="btnCancel" alignment="CENTER_LEFT" mnemonicParsing="false" styleClass="orange" text="Cancel">
                     <HBox.margin>
-                        <Insets right="40.0" />
+                        <Insets right="5.0" />
                     </HBox.margin>
                 </Button>
-                <Button fx:id="btnSave" mnemonicParsing="false" styleClass="green" text="Save"/>
                 <Button fx:id="btnResetStore" mnemonicParsing="false" onAction="#onResetStoreClicked"
                         text="Reset MessageStore">
                     <HBox.margin>
-                        <Insets left="200.0"/>
+                        <Insets left="100.0"/>
                     </HBox.margin>
                 </Button>
+                <Button fx:id="btnSave" mnemonicParsing="false" styleClass="green" text="Save" />
+                <Pane HBox.hgrow="ALWAYS" />
+            <Button fx:id="btnInvite" alignment="CENTER_RIGHT" mnemonicParsing="false" styleClass="green" text="Invite Friend" textAlignment="CENTER" />
             </children>
-            <VBox.margin>
-                <Insets top="10.0" />
-            </VBox.margin>
         </HBox>
 
     </children>

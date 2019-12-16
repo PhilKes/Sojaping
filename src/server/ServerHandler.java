@@ -154,6 +154,9 @@ public class ServerHandler implements Runnable {
                         }
                     }
                     break;
+                case INVITATION_EMAIL:
+                    server.sendInvitationEmail(receivedPacket.getData(),connection.getLoggedAccount().getProfile());
+                    break;
                 default:
                     System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());
                     throw new Exception("Unknown Packet context('" + receivedPacket.getContext() + "') sent!");

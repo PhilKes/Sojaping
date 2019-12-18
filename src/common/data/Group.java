@@ -56,6 +56,9 @@ public class Group {
         this.name = newName;
     }
 
+    public void setGroupPicture(final String groupPicture) {
+        this.groupPicture = groupPicture;
+    }
     @Override
     public String toString() {
         return "Group{" +

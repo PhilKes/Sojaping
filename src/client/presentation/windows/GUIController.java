@@ -69,7 +69,7 @@ public class GUIController extends UIControllerWithInfo {
     @FXML
     private ListView<Profile> tabContactsListView;
     @FXML
-    private ImageView imgAvatar;
+    private ImageView imgAvatar, imageLogo;
     @FXML
     private Label labelUserName, labelAbout, labelGroupName;
     @FXML
@@ -97,6 +97,8 @@ public class GUIController extends UIControllerWithInfo {
 
     private RichTextArea richTextArea;
 
+    private Group currentSelectedGroup;
+
     @FXML
     private HBox hBoxAvatar;
 
@@ -122,6 +124,9 @@ public class GUIController extends UIControllerWithInfo {
         tabPaneChat.getSelectionModel().selectedItemProperty().addListener((observable, tabOld, tabNew) -> {
             if(tabNew.getId().startsWith("#")) {
                 Group g=groupsObservableList.stream().filter(group -> tabNew.getId().equals(group.getName())).findFirst().get();
+                this.currentSelectedGroup = g;
+                // TODO Group Picture - set picture from current group from DB in imageView
+                // FXUtil.setBase64PicInImageView(imgAvatar, this.currentSelectedGroup.getGroupPicture(), true);
                 participantsObservableList.clear();
                 for(Profile p : g.getParticipants()) {
                     Profile c=p.clone();
@@ -142,6 +147,18 @@ public class GUIController extends UIControllerWithInfo {
         client.fetchAndShowLocalMessageStore();
         /** Fetch missed messages from Server*/
         client.sendToServer(MESSAGE_FETCH, null);
+        /** Handle group picture*/
+        imageLogo.setOnMouseClicked(ev -> changeGroupPicture());
+    }
+
+    private void changeGroupPicture() {
+        try {
+            String base64Picture = FXUtil.uploadPictureViaFileChooser(this.stage, this.imageLogo);
+            this.currentSelectedGroup.setGroupPicture(base64Picture);
+            this.client.sendToServer(GROUP_UPDATE, this.currentSelectedGroup);
+        } catch (Exception e) {
+            showInfo(e.getMessage(), InfoType.ERROR);
+        }
     }
 
     /**
@@ -365,7 +382,7 @@ public class GUIController extends UIControllerWithInfo {
     public void loadAccount(Account acc) {
         labelUserName.setText(acc.getUserName());
         labelAbout.setText(acc.getAboutMe());
-        FXUtil.setAvatarOfProfile(imgAvatar, acc.getProfilePicture());
+        FXUtil.setBase64PicInImageView(imgAvatar, acc.getProfilePicture());
     }
 
     private void addFriend(Profile selectedUser) {

@@ -14,6 +14,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.apache.commons.io.FileUtils;
 
@@ -30,6 +32,7 @@ public class FXUtil {
     private static final Image DEFAULT_AVATAR_MIN=new Image(UIController.class.getResourceAsStream("resources/default_avatar_min.png"));
     private static final Image DEFAULT_AVATAR=new Image(UIController.class.getResourceAsStream("resources/default_avatar.png"));
     private static final Image DEFAULT_ICON=new Image(UIController.class.getResourceAsStream("resources/icon.png"));
+    public static final Image DEFAULT_GROUP_PIC=new Image(UIController.class.getResourceAsStream("resources/icon.png"));
     public static final double SMILEY_BAR_HEIGHT = 46.0, SMILEY_BAR_WIDTH = 687.0;
     private static final File SMILEY_PATH = getSmileyDirFile();
 
@@ -40,6 +43,7 @@ public class FXUtil {
     public static Image getDefaultAvatar() {
         return DEFAULT_AVATAR;
     }
+
 
     public static Image getDefaultIcon() {
         return DEFAULT_ICON;
@@ -210,20 +214,44 @@ public class FXUtil {
     }
 
     /**
-     * Sets cropped Image as Avatar or loads default Avatar if no profilepicture
+     * Sets cropped Image into imageview or loads default image if no image available
      */
-    public static void setAvatarOfProfile(ImageView imgView, String profilePicture) {
+    public static void setBase64PicInImageView(ImageView imgView, String base64Picture) {
+      setBase64PicInImageView(imgView, base64Picture, false);
+    }
+
+    public static void setBase64PicInImageView(ImageView imgView, String profilePicture, boolean isGroupPicture) {
         if(profilePicture!=null && !"".equals(profilePicture)) {
             Image image=FXUtil.convertBase64ToImage(profilePicture);
             imgView.setImage(image);
             imgView.setViewport(FXUtil.getImageCropBounds(image));
-
         }
         else {/** Default Avatar */
-            Image img=FXUtil.getDefaultAvatar();
+            Image img = isGroupPicture ? FXUtil.DEFAULT_GROUP_PIC : FXUtil.getDefaultAvatar();
             imgView.setImage(img);
             imgView.setViewport(new Rectangle2D(0, 0, img.getWidth(), img.getHeight()));
         }
+    }
+
+    public static String uploadPictureViaFileChooser(Stage stage, ImageView image) throws Exception {
+        String base64ProfilePic = "";
+        FileChooser fileChooser=new FileChooser();
+        fileChooser.setTitle("Choose profile picture");
+
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif", "*.bmp", "*.jpeg"));
+
+        File file=fileChooser.showOpenDialog(stage);
+        if(file!=null && file.length()>3000000) {
+                    throw new Exception("Image file is too large. Please, upload a picture < 3 MB");
+
+        }
+        else if(file!=null) {
+            base64ProfilePic=FXUtil.convertFileToBase64(file.getAbsolutePath());
+            Image img=FXUtil.convertBase64ToImage(base64ProfilePic);
+            image.setImage(img);
+            image.setViewport(FXUtil.getImageCropBounds(img));
+        }
+        return base64ProfilePic;
     }
 
 }

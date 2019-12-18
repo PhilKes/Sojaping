@@ -42,6 +42,6 @@ public class PublicProfileController extends UIController {
         labelUserName.setText(profile.getUserName());
         labelAbout.setText(profile.getAboutMe());
 
-        FXUtil.setAvatarOfProfile(imgAvatar, profile.getProfilePicture());
+        FXUtil.setBase64PicInImageView(imgAvatar, profile.getProfilePicture());
     }
 }

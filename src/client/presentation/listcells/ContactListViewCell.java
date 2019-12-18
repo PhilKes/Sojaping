@@ -64,7 +64,7 @@ public class ContactListViewCell extends ListCell<Profile> {
                 circleStatus.setVisible(false);
                 circleStatus.setDisable(true);
             }
-            FXUtil.setAvatarOfProfile(imgAvatar, profile.getProfilePicture());
+            FXUtil.setBase64PicInImageView(imgAvatar, profile.getProfilePicture());
             borderPane.prefWidthProperty().bind(listViewWidthProperty);
             setGraphic(borderPane);
         }

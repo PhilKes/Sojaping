@@ -144,11 +144,11 @@ public class GUIController extends UIControllerWithInfo {
         initializeNotificationHandling();
         initSendRichTextArea();
         /** Load locally stored Messages */
-        client.fetchAndShowLocalMessageStore();
-        /** Fetch missed messages from Server*/
-        client.sendToServer(MESSAGE_FETCH, null);
+
         /** Handle group picture*/
         imageLogo.setOnMouseClicked(ev -> changeGroupPicture());
+        /** Start loading process*/
+        new Thread(() -> client.incLoadingCount()).start();
     }
 
     private void changeGroupPicture() {

@@ -101,6 +101,7 @@ public class Profile {
                 "userName='" + userName + '\'' +
                 ", status=" + status +
                 ", aboutMe='" + aboutMe + '\'' +
+                ", profilePicture='" + (profilePicture.length() >= 5 ? profilePicture.substring(0, 5) : profilePicture) + '\'' +
                 ", languages=" + languages +
                 '}';
     }

@@ -68,9 +68,9 @@ public class ServerHandler implements Runnable {
                     //TODO Check Account profilepicture
                     server.setConnectionAccount(connection, loginAccount);
                     server.sendToUser(connection, LOGIN_SUCCESS, loginAccount);
-                    server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
-                    server.broadcastPacket(USERLIST, server.getOnlineUsers());
-                    server.sendToUser(connection, GROUPLIST, server.getGroups(connection.getLoggedAccount()));
+                    //server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
+                    //server.broadcastPacket(USERLIST, server.getOnlineUsers());
+                    // server.sendToUser(connection, GROUPLIST, server.getGroups(connection.getLoggedAccount()));
                     break;
                 case MESSAGE_SENT:
                     System.out.println("Send message");
@@ -100,11 +100,15 @@ public class ServerHandler implements Runnable {
                     for (Message msg : server.getStoredMessages(connection.getLoggedAccount())) {
                         server.sendToUser(connection, MESSAGE_RECEIVED, msg);
                     }
+                    server.sendToUser(connection, MESSAGE_FETCH, "complete");
                     break;
                 case USERLIST:
                     System.out.println("Send online User list");
                     /** Send updated online Userlist to clients*/
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
+                    break;
+                case FRIEND_LIST:
+                    server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
                     break;
                 case GROUPLIST:
                     server.sendToUser(connection, GROUPLIST, server.getGroups(connection.getLoggedAccount()));

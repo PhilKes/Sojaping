@@ -128,11 +128,15 @@
                         </Label>
                     </children>
                 </HBox>
-                <ImageView fx:id="imageLogo" fitHeight="125.0" fitWidth="130.0" pickOnBounds="true"
+                <ImageView fx:id="imageLogo" fitHeight="120.0" fitWidth="120.0" pickOnBounds="true"
                            preserveRatio="true">
                     <image>
                         <Image url="@../resources/SojaPing_border_color.png"/>
-                    </image></ImageView>
+                    </image>
+                    <clip>
+                        <Circle centerX="60" centerY="60" radius="60"/>
+                    </clip>
+                </ImageView>
                 <Label alignment="CENTER" contentDisplay="CENTER" text="Members" textAlignment="CENTER">
                     <VBox.margin>
                         <Insets bottom="8.0"/>

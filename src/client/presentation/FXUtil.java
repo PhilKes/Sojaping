@@ -125,7 +125,6 @@ public class FXUtil {
         try {
             String resourceUrl=UIController.class.getResource("resources/").getPath();
             resourceUrl+="messageStore_" + userName + ".xml";
-            System.out.println(resourceUrl);
             file=new File(resourceUrl);
             file.createNewFile();
             OutputStream output=new FileOutputStream(file);

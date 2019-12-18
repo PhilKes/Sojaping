@@ -126,7 +126,7 @@ public class GUIController extends UIControllerWithInfo {
                 Group g=groupsObservableList.stream().filter(group -> tabNew.getId().equals(group.getName())).findFirst().get();
                 this.currentSelectedGroup = g;
                 // TODO Group Picture - set picture from current group from DB in imageView
-                // FXUtil.setBase64PicInImageView(imgAvatar, this.currentSelectedGroup.getGroupPicture(), true);
+                FXUtil.setBase64PicInImageView(imageLogo, this.currentSelectedGroup.getGroupPicture(), true);
                 participantsObservableList.clear();
                 for(Profile p : g.getParticipants()) {
                     Profile c=p.clone();
@@ -547,7 +547,8 @@ public class GUIController extends UIControllerWithInfo {
                 System.out.println("Clicked on " + g.getName());
                 System.out.println("On profile " + tabContactsListView.getSelectionModel().getSelectedItem());
                 Group myGroup = groups.stream().filter(gr -> gr.getName().equals(group.getText())).findFirst().get();
-                myGroup.addParticipant(tabContactsListView.getSelectionModel().getSelectedItem());
+                Group.Participant participant=new Group.Participant(tabContactsListView.getSelectionModel().getSelectedItem());
+                myGroup.addParticipant(participant);
                 client.sendToServer(GROUP_UPDATE, myGroup);
             });
             //addToGroupChat.getItems().add(group);
@@ -666,8 +667,11 @@ public class GUIController extends UIControllerWithInfo {
         System.out.println(groupName);
         groupName="#" + groupName;
         Group newGroup=new Group(groupName);
-        newGroup.addParticipant(client.getAccount().getProfile());
-        newGroup.addParticipant(firstMember);
+        Group.Participant founder=new Group.Participant(client.getAccount().getProfile());
+        founder.setAdmin(true);
+        newGroup.addParticipant(founder);
+        Group.Participant participant=new Group.Participant(firstMember);
+        newGroup.addParticipant(participant);
         client.sendToServer(GROUP_UPDATE, newGroup);
     }
 }

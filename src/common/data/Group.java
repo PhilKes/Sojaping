@@ -6,7 +6,7 @@ public class Group {
     String name;
     String groupPicture;
     int groupID = -1;
-    ArrayList<Profile> participants = new ArrayList<>();
+    ArrayList<Participant> participants=new ArrayList<>();
 
     public Group() {
     }
@@ -18,8 +18,8 @@ public class Group {
         groupPicture = "";
     }
 
-    public void addParticipant(Profile profile){
-        for(Profile p : participants){
+    public void addParticipant(Participant profile) {
+        for(Participant p : participants) {
             if(p.getUserName().equals(profile.getUserName())){
                 return;
             }
@@ -44,6 +44,10 @@ public class Group {
         return groupPicture;
     }
 
+    public void setGroupPicture(String pic) {
+        this.groupPicture=pic;
+    }
+
     public int getGroupID() {
         return groupID;
     }
@@ -55,20 +59,45 @@ public class Group {
     public void changeName(String newName){
         this.name = newName;
     }
-
-    public void setGroupPicture(final String groupPicture) {
-        this.groupPicture = groupPicture;
-    }
     @Override
     public String toString() {
         return "Group{" +
                 "name='" + name + '\'' +
+                ", avatar=" + groupPicture +
                 ", participants=" + participants +
                 '}';
     }
 
-    public ArrayList<Profile> getParticipants() {
+    public ArrayList<Participant> getParticipants() {
         return participants;
+    }
+
+    public static class Participant extends Profile {
+        private boolean admin=false;
+
+        public Participant() {
+            this.admin=false;
+        }
+
+        public Participant(Profile profile) {
+            super(profile.getUserName(), profile.status, profile.aboutMe, profile.profilePicture, profile.languages);
+        }
+
+        public boolean isAdmin() {
+            return admin;
+        }
+
+        public void setAdmin(boolean admin) {
+            this.admin=admin;
+        }
+
+        @Override
+        public String toString() {
+            return "Participant{" +
+                    "admin=" + admin +
+                    ", userName='" + userName + '\'' +
+                    '}';
+        }
     }
 
 }

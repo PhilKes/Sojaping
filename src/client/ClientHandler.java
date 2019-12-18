@@ -96,18 +96,21 @@ class ClientHandler implements Runnable {
                 }
                 break;
             case GROUPLIST:
-                ArrayList<Group> groupList=receivedPacket.getData();
+                ArrayList<Group> groupList = receivedPacket.getData();
                 System.out.println("\t\t\t\t" + "Groups received:");
                 groupList.forEach(g -> System.out.println("\t\t\t\t" + g));
                 Platform.runLater(() -> client.getGUIController().displayGroupChats(groupList));
                 Platform.runLater(() -> client.getGUIController().fillContextMenuAddToGroup(groupList));
                 break;
             case FRIEND_LIST:
-                ArrayList<Profile> contacts=receivedPacket.getData();
+                ArrayList<Profile> contacts = receivedPacket.getData();
                 Platform.runLater(() -> client.getGUIController().displayContactsProfiles(contacts));
                 break;
+            case INVITATION_EMAIL:
+                System.out.println("\t\t\t\t" + " email send: " + receivedPacket.getData());
+                break;
             default:
-                if(!receivedPacket.getContext().contains(FAIL)) {
+                if (!receivedPacket.getContext().contains(FAIL)) {
                     System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());
                     //throw new Exception("Unknown Packet context('" + receivedPacket.getContext() + "') sent!");
                 }

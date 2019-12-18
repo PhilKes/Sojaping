@@ -8,10 +8,12 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 import org.apache.commons.io.FileUtils;
 
@@ -21,6 +23,9 @@ import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * JavaFX Util Class for external resoruces,...
+ */
 public class FXUtil {
     private static final Image DEFAULT_AVATAR_MIN=new Image(UIController.class.getResourceAsStream("resources/default_avatar_min.png"));
     private static final Image DEFAULT_AVATAR=new Image(UIController.class.getResourceAsStream("resources/default_avatar.png"));
@@ -168,8 +173,6 @@ public class FXUtil {
         return Arrays.stream(smileys).map(f -> f.getPath()).collect(Collectors.toList());
     }
 
-
-
     public static String convertFileToBase64(String filePath){
         byte[] fileContent = new byte[0];
         try {
@@ -189,6 +192,38 @@ public class FXUtil {
         }
         ByteArrayInputStream is=new ByteArrayInputStream(imageBytes);
         return new Image(is);
+    }
+
+    public static Rectangle2D getImageCropBounds(Image image) {
+        double imgWidth=image.getWidth();
+        double imgHeight=image.getHeight();
+        double cube=Math.min(imgWidth, imgHeight);
+        double x=imgWidth / 2 - cube / 2;
+        if(x<0) {
+            x=0;
+        }
+        double y=imgHeight / 2 - cube / 2;
+        if(y<0) {
+            y=0;
+        }
+        return new Rectangle2D(x, y, cube, cube);
+    }
+
+    /**
+     * Sets cropped Image as Avatar or loads default Avatar if no profilepicture
+     */
+    public static void setAvatarOfProfile(ImageView imgView, String profilePicture) {
+        if(profilePicture!=null && !"".equals(profilePicture)) {
+            Image image=FXUtil.convertBase64ToImage(profilePicture);
+            imgView.setImage(image);
+            imgView.setViewport(FXUtil.getImageCropBounds(image));
+
+        }
+        else {/** Default Avatar */
+            Image img=FXUtil.getDefaultAvatar();
+            imgView.setImage(img);
+            imgView.setViewport(new Rectangle2D(0, 0, img.getWidth(), img.getHeight()));
+        }
     }
 
 }

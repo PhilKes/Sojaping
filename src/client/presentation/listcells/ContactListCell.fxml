@@ -2,30 +2,67 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="20.0" prefWidth="200.0" stylesheets="@../resources/main.css"
+<BorderPane fx:id="borderPane" maxHeight="44.0" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="44.0" prefWidth="200.0" stylesheets="@../resources/main.css"
             xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
     <left>
-        <Label fx:id="labelUsername" text="Name" BorderPane.alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
-            <padding>
-                <Insets left="4.0"/>
-            </padding>
-            <font>
-                <Font size="15.0"/>
-            </font>
-        </Label>
+        <HBox maxHeight="42.0">
+            <children>
+                <HBox fx:id="hBoxAvatar" styleClass="avatarWrapper">
+                    <HBox.margin>
+                        <Insets/>
+                    </HBox.margin>
+                    <children>
+                        <ImageView fx:id="imgAvatar" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true"
+                                   preserveRatio="true">
+                            <image>
+                                <Image url="@../resources/default_avatar_min.png"/>
+                            </image>
+                            <clip>
+                                <Circle centerX="20" centerY="20" radius="20"/>
+                            </clip>
+                        </ImageView>
+                    </children>
+                </HBox>
+            </children>
+            <BorderPane.margin>
+                <Insets left="2.0"/>
+            </BorderPane.margin>
+        </HBox>
     </left>
     <right>
-        <Circle fx:id="circleStatus" fill="DODGERBLUE" radius="7.0" stroke="BLACK" strokeType="INSIDE"
+        <Circle fx:id="circleStatus" fill="DODGERBLUE" radius="8.0" stroke="BLACK" strokeType="INSIDE"
                 styleClass="offline" BorderPane.alignment="CENTER_RIGHT">
             <BorderPane.margin>
                 <Insets right="10.0"/>
             </BorderPane.margin>
         </Circle>
     </right>
+    <center>
+        <HBox alignment="CENTER_LEFT" BorderPane.alignment="CENTER_LEFT">
+            <BorderPane.margin>
+                <Insets left="8.0"/>
+            </BorderPane.margin>
+            <children>
+                <Label fx:id="labelUsername" text="Name" wrapText="true">
+                    <padding>
+                        <Insets left="4.0"/>
+                    </padding>
+                    <font>
+                        <Font size="16.0"/>
+                    </font>
+                </Label>
+            </children>
+        </HBox>
+    </center>
+    <padding>
+        <Insets bottom="1.0" left="1.0" right="1.0" top="1.0"/>
+    </padding>
 </BorderPane>

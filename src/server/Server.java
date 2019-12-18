@@ -3,9 +3,9 @@ package server;
 import common.Connection;
 import common.Constants;
 import common.Util;
+import common.Util.PacketException;
 import common.data.*;
 
-import java.awt.print.PageFormat;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -194,14 +194,14 @@ public class Server {
      * Checks if loginUser has valid credentials, returns Account from DB
      * throws Exception if invalid credentials
      */
-    public Account loginUser(LoginUser loginUser) throws Exception {
+    public Account loginUser(LoginUser loginUser) throws PacketException {
         //LoginUser loginUser = JsonHelper.convertJsonToObject(accountOrLoginAsJson);
         Account account=this.dbService.getAccountByLoginUser(loginUser);
         if(account!=null) {
             return account;
         }
         else {
-            throw new Exception("Invalid credentials");
+            throw new PacketException("Invalid credentials");
         }
     }
 
@@ -233,7 +233,7 @@ public class Server {
         connection.setLoggedAccount(null);
     }
 
-    public void registerUser(Account account) throws Exception {
+    public void registerUser(Account account) throws PacketException {
         this.dbService.insertAccount(account);
     }
 
@@ -349,13 +349,18 @@ public class Server {
         }
     }
 
-    public void addFriend(Account currentAcc, Profile newFriend) throws Exception {
-        dbService.insertContactOfAccount(currentAcc, newFriend, false);
-    }
-
-    public void blockUser(Account currentAcc, Profile newFriend, boolean block) throws Exception {
+    public void addContact(Account currentAcc, Profile newFriend, boolean block) throws PacketException {
         dbService.insertContactOfAccount(currentAcc, newFriend, block);
     }
+
+    public void removeContact(Account loggedAccount, Profile contact) throws PacketException {
+        dbService.removeContactOfAccount(loggedAccount, contact);
+    }
+
+    public boolean hasUserBlocked(Account account, String contact) {
+        return dbService.hasBlocked(contact, account);
+    }
+
     public ArrayList<Profile> getFriendList(Account currentAcc) {
         return dbService.getAllContactsOfAccount(currentAcc);
     }
@@ -364,14 +369,6 @@ public class Server {
         synchronized (connections) {
             return connections.get(userName);
         }
-    }
-
-    public boolean isRunning() {
-        return running.get();
-    }
-
-    public void setRunning(boolean running) {
-        this.running.set(running);
     }
 
     public ArrayList<Group> getGroups(Account loggedAccount) {
@@ -392,8 +389,12 @@ public class Server {
         return messages;
     }
 
-    public boolean hasUserBlocked(Account account, String contact) {
-        return dbService.hasBlocked(contact, account);
+    public boolean isRunning() {
+        return running.get();
+    }
+
+    public void setRunning(boolean running) {
+        this.running.set(running);
     }
     public void sendInvitationEmail(String receiver, Profile sender){
         mailService.sendInviteMail(receiver,sender);

@@ -172,12 +172,10 @@
     -fx-border-width: 0;
 }
 .list-cell:selected {
-    -fx-font-weight: bold;
     -fx-border-color: -fx-green;
 }
 
 .list-cell:selected .label {
-    -fx-text-fill: -fx-txt-light;
     -fx-font-weight: bold;
 }
 
@@ -396,6 +394,12 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.77), 10, 0, 0, 1);
 }
 
+/** Pane in UserProfile.fxml wrapping Avatar Imageview*/
+.avatarWrapper {
+    -fx-border-width: 1;
+    -fx-border-color: -fx-bgrnd-darker;
+    -fx-border-radius: 100%;
+}
 .icon-left {
     -fx-background-color: -fx-txt-dark;
     -fx-background-radius: 8px 0 0 8px;
@@ -494,6 +498,13 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 4, 0, 0, 1);
     -fx-font-weight: bold;
     -fx-font-size: 1.1em;
+    -fx-text-fill: #4a1e0e;
+}
+
+.button-small {
+    -fx-padding: 3 10 10 10;
+    -fx-background-insets: 0, 0 0 3 0, 0 0 4 0, 0 0 5 0;
+    -fx-background-radius: 5;
 }
 
 .button:hover {

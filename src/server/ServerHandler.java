@@ -2,6 +2,7 @@ package server;
 
 import common.Connection;
 import common.Util;
+import common.Util.PacketException;
 import common.data.*;
 
 import static common.Constants.Contexts.*;
@@ -33,13 +34,14 @@ public class ServerHandler implements Runnable {
         try {
             handlePacket(receivedPacket);
         }
-        catch(Exception e) {
+        catch(PacketException e) {
+            e.setFailedPacket(receivedPacket);
             server.sendToUser(connection, receivedPacket.getContext() + FAIL, e);
         }
     }
 
     //TODO Distinguish Exceptions -> do not throw general Exception()
-    private void handlePacket(Packet receivedPacket) throws Exception {
+    private void handlePacket(Packet receivedPacket) throws PacketException {
         String context=receivedPacket.getContext();
         if(context.contains(FAIL) && !context.equals(FAIL)) {
             System.err.println(context.split(FAIL)[0]);
@@ -61,7 +63,7 @@ public class ServerHandler implements Runnable {
                     Account loginAccount=server.loginUser(loginUser);
                     /** Check if user is already logged in somewhere else*/
                     if(server.getConnectionOfUser(loginAccount.getUserName())!=null) {
-                        throw new Exception("User is already logged in!");
+                        throw new PacketException("User is already logged in!");
                     }
                     //TODO Check Account profilepicture
                     server.setConnectionAccount(connection, loginAccount);
@@ -75,9 +77,9 @@ public class ServerHandler implements Runnable {
                     Message message=receivedPacket.getData();
                     /** Check login credentials, send Account from DB to user or send failed Exception */
                     String receiver=message.getReceiver();
-                    if (server.hasUserBlocked(connection.getLoggedAccount(), receiver)) {
+                    if(server.hasUserBlocked(connection.getLoggedAccount(), receiver)) {
                         System.out.println("Not sending message, Receiver has blocked the Sender!");
-                        throw new Exception(receiver + " has blocked you!");
+                        throw new PacketException(receiver + " has blocked you!");
                     }
                     if(receiver.equals(BROADCAST)) {
                         server.broadcastMessages(message);
@@ -108,30 +110,25 @@ public class ServerHandler implements Runnable {
                     server.sendToUser(connection, GROUPLIST, server.getGroups(connection.getLoggedAccount()));
                     break;
                 case SHUTDOWN:
-                    server.removeConnectionAccount(connection, (Account) receivedPacket.getData());
+                    server.removeConnectionAccount(connection, receivedPacket.getData());
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     break;
                 case LOGOFF:
-                    server.removeConnectionAccount(connection, (Account) receivedPacket.getData());
+                    server.removeConnectionAccount(connection, receivedPacket.getData());
                     server.putIPConnection(connection);
                     server.broadcastPacket(USERLIST, server.getOnlineUsers());
                     break;
                 case ADD_FRIEND:
-                    server.addFriend(connection.getLoggedAccount(), receivedPacket.getData());
-                    server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
-                    server.sendToUser(connection, USERLIST, server.getOnlineUsers());
-                    break;
                 case BLOCK:
-                    Profile contact = receivedPacket.getData();
-                    System.out.println("Blocking " + contact.getUserName());
-                    server.blockUser(connection.getLoggedAccount(), contact, true);
+                case UNBLOCK:
+                    Profile contact=receivedPacket.getData();
+                    System.out.println(receivedPacket.getContext() + " : " + contact.getUserName());
+                    server.addContact(connection.getLoggedAccount(), contact, receivedPacket.getContext().equals(BLOCK));
                     server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
                     server.sendToUser(connection, USERLIST, server.getOnlineUsers());
                     break;
-                case UNBLOCK:
-                    Profile contact1 = receivedPacket.getData();
-                    System.out.println("Unblocking " + contact1.getUserName());
-                    server.blockUser(connection.getLoggedAccount(), contact1, false);
+                case REMOVE_FRIEND:
+                    server.removeContact(connection.getLoggedAccount(), receivedPacket.getData());
                     server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));
                     server.sendToUser(connection, USERLIST, server.getOnlineUsers());
                     break;
@@ -159,7 +156,7 @@ public class ServerHandler implements Runnable {
                     break;
                 default:
                     System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());
-                    throw new Exception("Unknown Packet context('" + receivedPacket.getContext() + "') sent!");
+                    throw new PacketException("Unknown Packet context('" + receivedPacket.getContext() + "') sent!");
             }
         }
     }

@@ -55,5 +55,28 @@ public class Util {
         return sameNetwork(a.getAddress(), b.getAddress(), mask);
     }
 
+    /**
+     * Custom Exceptions for JSON communication
+     */
+    public static class PacketException extends Exception {
+        private Packet failedPacket;
+
+        public PacketException(String message) {
+            super(message);
+        }
+
+        public PacketException(String message, Packet failedPacket) {
+            super(message);
+            this.failedPacket=failedPacket;
+        }
+
+        public Packet getFailedPacket() {
+            return failedPacket;
+        }
+
+        public void setFailedPacket(Packet failedPacket) {
+            this.failedPacket=failedPacket;
+        }
+    }
 
 }

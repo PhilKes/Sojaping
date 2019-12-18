@@ -6,7 +6,6 @@ import common.data.Profile;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import static common.Constants.Contexts.ADD_FRIEND;
@@ -43,11 +42,6 @@ public class PublicProfileController extends UIController {
         labelUserName.setText(profile.getUserName());
         labelAbout.setText(profile.getAboutMe());
 
-        if(profile.getProfilePicture() != null && !"".equals(profile.getProfilePicture())){
-            Image image = FXUtil.convertBase64ToImage(profile.getProfilePicture());
-            imgAvatar.setImage(image);
-        } else {/** Default Avatar */
-            imgAvatar.setImage(FXUtil.getDefaultAvatar());
-        }
+        FXUtil.setAvatarOfProfile(imgAvatar, profile.getProfilePicture());
     }
 }

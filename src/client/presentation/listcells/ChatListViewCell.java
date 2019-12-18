@@ -62,7 +62,6 @@ public class ChatListViewCell extends ListCell<Message> {
             while (true) {
                 int textEnd = msg.indexOf("<i>");
                 Text txt = new Text();
-                //TODO CSS CLASS
                 txt.setFill(Color.WHITE);
                 if (textEnd == -1) {
                     txt.setText(msg);

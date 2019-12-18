@@ -1,21 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="460.0" prefWidth="600.0" stylesheets="@../resources/main.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.presentation.windows.UserProfileController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="460.0"
+      prefWidth="600.0" stylesheets="@../resources/main.css" xmlns="http://javafx.com/javafx/8.0.141"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.presentation.windows.UserProfileController">
     <children>
-        <Pane>
+        <Pane prefHeight="75.0" prefWidth="560.0">
             <children>
                 <Label layoutX="20.0" layoutY="10.0" text="My Profile">
                     <font>
                         <Font size="41.0" />
                     </font>
                 </Label>
-                <Label fx:id="lblUserName" layoutX="380.0" layoutY="18.0" prefHeight="53.0" prefWidth="96.0" text="Hi, ###!" />
+                <Label fx:id="lblUserName" layoutX="264.0" layoutY="16.0" prefHeight="53.0" prefWidth="96.0"
+                       text="Hi, ###!"/>
+                <StackPane id="avatarWrapper" fx:id="avatarWrapper" layoutX="369.0" layoutY="-1.0"
+                           styleClass="avatarWrapper">
+                    <children>
+                        <ImageView fx:id="imgAvatar" fitHeight="120.0" fitWidth="120.0" pickOnBounds="true"
+                                   preserveRatio="true">
+                            <clip>
+                                <Circle centerX="60" centerY="60" radius="60"/>
+                            </clip>
+                            <image>
+                                <Image url="@../resources/default_avatar.png"/>
+                            </image>
+                        </ImageView>
+                    </children>
+                </StackPane>
+                <Button fx:id="btnRemoveAvatar" layoutX="491.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false"
+                        onAction="#onRemoveAvatar" prefHeight="20.0" prefWidth="20.0">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="REMOVE" size="14" strokeType="OUTSIDE" strokeWidth="0.0"/>
+                    </graphic>
+                    <styleClass>
+                        <String fx:value="button-small"/>
+                        <String fx:value="red"/>
+                    </styleClass>
+                </Button>
             </children>
             <VBox.margin>
                 <Insets bottom="20.0" />
@@ -33,13 +72,17 @@
                 <Label prefWidth="100.0" text="Languages:" />
 
                 <MenuButton fx:id="menuLanguages" prefWidth="200.0" />
-                <Button fx:id="btnUploadPic" mnemonicParsing="false" styleClass="green" text="Upload picture">
+                <Button fx:id="btnUploadPic" mnemonicParsing="false" styleClass="green" text="Upload">
                     <padding>
                         <Insets bottom="2.0" left="20.0" top="3.0" />
                     </padding>
                     <HBox.margin>
-                        <Insets />
-                    </HBox.margin></Button>
+                        <Insets left="50.0"/>
+                    </HBox.margin>
+                    <graphic>
+                        <FontAwesomeIconView glyphName="IMAGE" size="16" strokeType="OUTSIDE" strokeWidth="0.0"/>
+                    </graphic>
+                </Button>
             </children>
             <padding>
                 <Insets top="8.0" />
@@ -77,7 +120,12 @@
                             </padding>
                             <HBox.margin>
                                 <Insets />
-                            </HBox.margin></Button>
+                            </HBox.margin>
+                            <graphic>
+                                <FontAwesomeIconView glyphName="REMOVE" size="16" strokeType="OUTSIDE"
+                                                     strokeWidth="0.0"/>
+                            </graphic>
+                        </Button>
                     </children>
             <VBox.margin>
                 <Insets top="10.0" />
@@ -105,20 +153,29 @@
         <HBox>
 
             <children>
-                <Button fx:id="btnCancel" alignment="CENTER_LEFT" mnemonicParsing="false" styleClass="orange" text="Cancel">
+                <Button fx:id="btnCancel" alignment="CENTER_LEFT" mnemonicParsing="false" prefHeight="42.0"
+                        styleClass="orange" text="Cancel">
                     <HBox.margin>
-                        <Insets right="5.0" />
+                        <Insets/>
                     </HBox.margin>
+                </Button>
+                <Button fx:id="btnSave" mnemonicParsing="false" prefHeight="42.0" styleClass="green" text="Save">
+                    <HBox.margin>
+                        <Insets left="30.0"/>
+                    </HBox.margin>
+                    <graphic>
+                        <FontAwesomeIconView glyphName="CHECK" size="16" strokeType="OUTSIDE" strokeWidth="0.0"/>
+                    </graphic>
                 </Button>
                 <Button fx:id="btnResetStore" mnemonicParsing="false" onAction="#onResetStoreClicked"
                         text="Reset MessageStore">
                     <HBox.margin>
-                        <Insets left="100.0"/>
+                        <Insets left="90.0"/>
                     </HBox.margin>
                 </Button>
-                <Button fx:id="btnSave" mnemonicParsing="false" styleClass="green" text="Save" />
                 <Pane HBox.hgrow="ALWAYS" />
-            <Button fx:id="btnInvite" alignment="CENTER_RIGHT" mnemonicParsing="false" styleClass="green" text="Invite Friend" textAlignment="CENTER" />
+                <Button fx:id="btnInvite" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Invite Friend"
+                        textAlignment="CENTER"/>
             </children>
         </HBox>
 

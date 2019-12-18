@@ -25,7 +25,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
@@ -99,17 +98,20 @@ public class GUIController extends UIControllerWithInfo {
     private RichTextArea richTextArea;
 
     @FXML
+    private HBox hBoxAvatar;
+
+    @FXML
     private void initialize() {
         /**Basic GUI initialize + Listener **/
         addListener();
         /**get Instance of Client **/
-        client = Client.getInstance(SERVER_HOST, SERVER_PORT);
+        client=Client.getInstance(SERVER_HOST, SERVER_PORT);
         /** Message Window initialize **/
         initializeChatWindow();
         /** User Tab Pane(Left) initialize **/
         initializeTabPaneUsers();
         /**list participants of the selected group**/
-        participantsObservableList = FXCollections.observableArrayList();
+        participantsObservableList=FXCollections.observableArrayList();
         listVInfo.setItems(participantsObservableList);
         listVInfo.setCellFactory(profilesListView -> new ContactListViewCell(listVInfo.prefWidthProperty()));
         /**Group List Context Menu**/
@@ -118,15 +120,16 @@ public class GUIController extends UIControllerWithInfo {
         VBox.setVgrow(tabPaneChat, Priority.ALWAYS);
         loadAccount(client.getAccount());
         tabPaneChat.getSelectionModel().selectedItemProperty().addListener((observable, tabOld, tabNew) -> {
-            if (tabNew.getId().startsWith("#")) {
-                Group g = groupsObservableList.stream().filter(group -> tabNew.getId().equals(group.getName())).findFirst().get();
+            if(tabNew.getId().startsWith("#")) {
+                Group g=groupsObservableList.stream().filter(group -> tabNew.getId().equals(group.getName())).findFirst().get();
                 participantsObservableList.clear();
-                for (Profile p : g.getParticipants()) {
-                    Profile c = p.clone();
+                for(Profile p : g.getParticipants()) {
+                    Profile c=p.clone();
                     c.setStatus(-1);
                     participantsObservableList.add(c);
                 }
-            } else {
+            }
+            else {
                 participantsObservableList.clear();
             }
         });
@@ -139,7 +142,6 @@ public class GUIController extends UIControllerWithInfo {
         client.fetchAndShowLocalMessageStore();
         /** Fetch missed messages from Server*/
         client.sendToServer(MESSAGE_FETCH, null);
-
     }
 
     /**
@@ -189,7 +191,7 @@ public class GUIController extends UIControllerWithInfo {
     private void addListener() {
         btnSend.setOnMouseClicked(ev -> onSendClicked());
         hBoxTextArea.setOnKeyReleased(event -> {
-            if (event.getCode() == KeyCode.ENTER) {
+            if(event.getCode()==KeyCode.ENTER) {
                 onSendClicked();
             }
         });
@@ -209,29 +211,29 @@ public class GUIController extends UIControllerWithInfo {
         scrollSmileys.setMinWidth(FXUtil.SMILEY_BAR_WIDTH);
 
         scrollSmileys.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        GridPane smileyGrid = new GridPane();
+        GridPane smileyGrid=new GridPane();
         smileyGrid.setPrefWidth(FXUtil.SMILEY_BAR_WIDTH);
         smileyGrid.setMaxWidth(FXUtil.SMILEY_BAR_WIDTH);
         smileyGrid.setMinWidth(FXUtil.SMILEY_BAR_WIDTH);
         /** Fill gridPane with 20 columns, load smiley images with click listenersT*/
-        int columns = 20;
-        for (int i = 0; i < columns; i++) {
-            ColumnConstraints columnConstraints = new ColumnConstraints();
+        int columns=20;
+        for(int i=0; i<columns; i++) {
+            ColumnConstraints columnConstraints=new ColumnConstraints();
             columnConstraints.setPercentWidth(100.0 / columns);
             smileyGrid.getColumnConstraints().add(columnConstraints);
         }
-        List<String> smileyPaths = FXUtil.getSmileyImagePaths();
-        for (int y = 0; y < (smileyPaths.size() / columns) + (smileyPaths.size() % columns > 0 ? 1 : 0); y++) {
-            RowConstraints rowConstraints = new RowConstraints();
+        List<String> smileyPaths=FXUtil.getSmileyImagePaths();
+        for(int y=0; y<(smileyPaths.size() / columns) + (smileyPaths.size() % columns>0 ? 1 : 0); y++) {
+            RowConstraints rowConstraints=new RowConstraints();
             rowConstraints.setMinHeight(22);
             rowConstraints.setPrefHeight(22);
             smileyGrid.getRowConstraints().add(rowConstraints);
-            for (int x = 0; x < columns; x++) {
-                if (y * columns + x >= smileyPaths.size()) {
+            for(int x=0; x<columns; x++) {
+                if(y * columns + x >= smileyPaths.size()) {
                     break;
                 }
-                ImageView imgSmiley = new ImageView(FXUtil.getSmileyImage(y * columns + x));
-                int finalI = y * columns + x;
+                ImageView imgSmiley=new ImageView(FXUtil.getSmileyImage(y * columns + x));
+                int finalI=y * columns + x;
                 imgSmiley.setOnMouseClicked(ev -> {
                     textAreaSend.insertImage(smileyPaths.get(finalI));
                     Platform.runLater(() -> richTextArea.getArea().requestFocus());
@@ -246,7 +248,7 @@ public class GUIController extends UIControllerWithInfo {
      * initializes Chat ListView with 1 tab for broadcast
      **/
     private void initializeChatWindow() {
-        broadcastObservableList = FXCollections.observableArrayList();
+        broadcastObservableList=FXCollections.observableArrayList();
         listViewBroadcast.setItems(broadcastObservableList);
         listViewBroadcast.setCellFactory(messagesListView -> new ChatListViewCell(listViewBroadcast.prefWidthProperty()));
         tabPaneChat.getTabs().get(0).setId(BROADCAST);
@@ -254,47 +256,46 @@ public class GUIController extends UIControllerWithInfo {
 
     private void initializeTabPaneUsers() {
         /**display online Profiles initialize **/
-        profilesObservableList = FXCollections.observableArrayList();
+        profilesObservableList=FXCollections.observableArrayList();
         tabOnlineListView.setItems(profilesObservableList);
         tabOnlineListView.setCellFactory(profilesListView -> new ContactListViewCell(tabOnlineListView.prefWidthProperty()));
         /**display contacts Profiles initialize**/
-        contactsObservableList = FXCollections.observableArrayList();
+        contactsObservableList=FXCollections.observableArrayList();
         tabContactsListView.setItems(contactsObservableList);
         tabContactsListView.setCellFactory(profileListView -> new ContactListViewCell(tabContactsListView.prefWidthProperty()));
         /**display groups initialize**/
-        groupsObservableList = FXCollections.observableArrayList();
+        groupsObservableList=FXCollections.observableArrayList();
         tabGroupChatListView.setItems(groupsObservableList);
         tabGroupChatListView.setCellFactory(groupsListView -> new GroupChatListViewCell());
         /** add double click listener to tabs**/
         tabOnlineListView.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2) {
+            if(e.getClickCount()==2) {
                 createNewChatTab(tabOnlineListView.getSelectionModel().getSelectedItem().getUserName());
             }
         });
         tabContactsListView.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2) {
+            if(e.getClickCount()==2) {
                 createNewChatTab(tabContactsListView.getSelectionModel().getSelectedItem().getUserName());
             }
         });
         tabGroupChatListView.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2) {
+            if(e.getClickCount()==2) {
                 createNewChatTab(tabGroupChatListView.getSelectionModel().getSelectedItem().getName());
             }
         });
 
         /**Online List Context Menu**/
-        //TODO Add to Group Chat, Show Profile, RemoveFriend
-        contextMenuOnlineUsers = new ContextMenu();
+        contextMenuOnlineUsers=new ContextMenu();
         contextMenuOnlineUsers.setId("OnlineUsersContextMenu");
-        MenuItem addFriend = new MenuItem("Add as Friend");
+        MenuItem addFriend=new MenuItem("Add as Friend");
         addFriend.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.USER_PLUS));
-        blockFriend = new MenuItem("Block");
+        blockFriend=new MenuItem("Block");
         blockFriend.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.USER_MD));
         blockFriend.setOnAction(e ->
                 blockUser(tabOnlineListView.getSelectionModel().getSelectedItem(), true));
-        MenuItem createChat = new MenuItem("Open Chat");
+        MenuItem createChat=new MenuItem("Open Chat");
         createChat.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.ALIGN_JUSTIFY));
-        MenuItem showProfile = new MenuItem("Show Profile");
+        MenuItem showProfile=new MenuItem("Show Profile");
         showProfile.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.USER_SECRET));
         setOnShowPublicProfile(showProfile, tabOnlineListView.getSelectionModel());
         addFriend.setOnAction(e ->
@@ -305,20 +306,21 @@ public class GUIController extends UIControllerWithInfo {
         tabOnlineListView.setContextMenu(contextMenuOnlineUsers);
 
         /**Contact List Context Menu**/
-        ContextMenu contextMenuContacts = new ContextMenu();
+        ContextMenu contextMenuContacts=new ContextMenu();
         contextMenuContacts.setId("ContactsContextMenu");
-        MenuItem createChat1 = new MenuItem("Open Chat");
+        MenuItem createChat1=new MenuItem("Open Chat");
         createChat1.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.ALIGN_JUSTIFY));
         createChat1.setOnAction(e ->
                 createNewChatTab(tabContactsListView.getSelectionModel().getSelectedItem().getUserName()));
-        addToGroupChatContacts = new Menu("Add to Group Chat");
+        addToGroupChatContacts=new Menu("Add to Group Chat");
         addToGroupChatContacts.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.USERS));
-        MenuItem showProfile1 = new MenuItem("Show Profile");
+        MenuItem showProfile1=new MenuItem("Show Profile");
         showProfile1.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.USER_SECRET));
         setOnShowPublicProfile(showProfile1, tabContactsListView.getSelectionModel());
-        MenuItem removeFriend = new MenuItem("Remove Friend");
+        MenuItem removeFriend=new MenuItem("Remove Friend");
         removeFriend.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.USER_TIMES));
-
+        removeFriend.setOnAction(e ->
+                removeFriend(tabContactsListView.getSelectionModel().getSelectedItem()));
         contextMenuContacts.getItems().addAll(createChat1, addToGroupChatContacts, showProfile1, removeFriend);
         tabContactsListView.setContextMenu(contextMenuContacts);
     }
@@ -329,17 +331,6 @@ public class GUIController extends UIControllerWithInfo {
         } else {
             client.sendToServer(UNBLOCK, blockedProfile);
         }
-    }
-
-    private void setOnShowPublicProfile(final MenuItem showProfile1, final MultipleSelectionModel<Profile> selectionModel) {
-        showProfile1.setOnAction(e -> {
-                    client.openWindow(Constants.Windows.PUBLIC_PROFILE);
-                    Platform.runLater(() -> {
-                        PublicProfileController publicProfileController = (PublicProfileController) client.peekController();
-                        publicProfileController.setProfile(selectionModel.getSelectedItem());
-                    });
-                }
-        );
     }
 
     private void removeNotification() {
@@ -353,9 +344,19 @@ public class GUIController extends UIControllerWithInfo {
         });
     }
 
+    private void setOnShowPublicProfile(final MenuItem showProfile1, final MultipleSelectionModel<Profile> selectionModel) {
+        showProfile1.setOnAction(e -> {
+                    client.openWindow(Constants.Windows.PUBLIC_PROFILE);
+                    Platform.runLater(() -> {
+                        PublicProfileController publicProfileController=(PublicProfileController) client.peekController();
+                        publicProfileController.setProfile(selectionModel.getSelectedItem());
+                    });
+                }
+        );
+    }
+
     private void onLogoutClicked() {
         client.logout();
-
     }
 
     /**
@@ -364,38 +365,36 @@ public class GUIController extends UIControllerWithInfo {
     public void loadAccount(Account acc) {
         labelUserName.setText(acc.getUserName());
         labelAbout.setText(acc.getAboutMe());
-
-		if(acc.getProfilePicture() != null && !"".equals(acc.getProfilePicture())){
-			Image image = FXUtil.convertBase64ToImage(acc.getProfilePicture());
-			imgAvatar.setImage(image);
-		} else {/** Default Avatar */
-			imgAvatar.setImage(FXUtil.getDefaultAvatarMin());
-		}
+        FXUtil.setAvatarOfProfile(imgAvatar, acc.getProfilePicture());
     }
 
     private void addFriend(Profile selectedUser) {
         client.sendToServer(ADD_FRIEND, selectedUser);
     }
 
+    private void removeFriend(Profile contact) {
+        client.sendToServer(REMOVE_FRIEND, contact);
+    }
+
     /**
      * send text in text area to server as a message and displays the text in the currently active chat window
      **/
     private void onSendClicked() {
-        StringBuilder stringBuilder = new StringBuilder();
-        if (richTextArea.getArea().getLength() > 1) {
+        StringBuilder stringBuilder=new StringBuilder();
+        if(richTextArea.getArea().getLength()>1) {
             richTextArea.getArea().getParagraphs().forEach(list -> {
-                for (Either<String, LinkedImage> item : list.getSegments()) {
+                for(Either<String, LinkedImage> item : list.getSegments()) {
                     /** If is String */
                     item.ifLeft(str -> {
                         System.out.println(str);
                         stringBuilder.append(str);
                     });
                     /** If is smiley get number of smiley */
-                    Pattern numberPattern = Pattern.compile("/(\\d*?)-", Pattern.DOTALL);
+                    Pattern numberPattern=Pattern.compile("/(\\d*?)-", Pattern.DOTALL);
                     item.ifRight(img -> {
-                        Matcher m = numberPattern.matcher(img.getImagePath());
-                        if (m.find()) {
-                            String smileyNumber = m.group(1);
+                        Matcher m=numberPattern.matcher(img.getImagePath());
+                        if(m.find()) {
+                            String smileyNumber=m.group(1);
                             System.out.println("Smiley: " + smileyNumber);
                             stringBuilder.append("<i>").append(smileyNumber).append("</i>");
                         }
@@ -403,10 +402,10 @@ public class GUIController extends UIControllerWithInfo {
                 }
             });
             System.out.println("Sent message: " + stringBuilder);
-            String receiver = tabPaneChat.getSelectionModel().getSelectedItem().getId();
-            Message newMessage = new Message(checkTranslate.isSelected(), stringBuilder.toString(),
+            String receiver=tabPaneChat.getSelectionModel().getSelectedItem().getId();
+            Message newMessage=new Message(checkTranslate.isSelected(), stringBuilder.toString(),
                     new Timestamp(System.currentTimeMillis()), client.getAccount().getUserName(), receiver);
-            ListView<Message> lv = (ListView<Message>) tabPaneChat.getSelectionModel().getSelectedItem().getContent();
+            ListView<Message> lv=(ListView<Message>) tabPaneChat.getSelectionModel().getSelectedItem().getContent();
             lv.getItems().add(newMessage);
 
             client.sendToServer(MESSAGE_SENT, newMessage);
@@ -433,25 +432,31 @@ public class GUIController extends UIControllerWithInfo {
         }*/
     }
 
+    public void onMyProfileClicked() {
+        client.openWindow(Constants.Windows.USER_PROFILE);
+    }
+
     /**
      * for displaying received messages, one messages are displayed via onSendClicked method
      **/
     public void displayNewMessage(Message message, boolean newMessage) {
-        Tab displayTab = null;
-        if (message.getReceiver().equals(BROADCAST) || message.getReceiver().startsWith("#")) {
-            displayTab = createNewChatTab(message.getReceiver());
-        } else {
+        Tab displayTab=null;
+        if(message.getReceiver().equals(BROADCAST) || message.getReceiver().startsWith("#")) {
+            displayTab=createNewChatTab(message.getReceiver());
+        }
+        else {
             /** If logged user is sender, show in receiver Tab*/
-            if (message.getSender().equals(client.getAccount().getUserName())) {
-                displayTab = createNewChatTab(message.getReceiver());
-            } else {
-                displayTab = createNewChatTab(message.getSender());
+            if(message.getSender().equals(client.getAccount().getUserName())) {
+                displayTab=createNewChatTab(message.getReceiver());
+            }
+            else {
+                displayTab=createNewChatTab(message.getSender());
             }
         }
         //get ListView from tab to add text
-        ListView<Message> lv = (ListView<Message>) displayTab.getContent();
+        ListView<Message> lv=(ListView<Message>) displayTab.getContent();
         lv.getItems().add(message);
-        if (newMessage) {
+        if(newMessage) {
             displayTab.getStyleClass().add("tab-notification");
         }
         lv.scrollTo(lv.getItems().size() - 1);
@@ -461,12 +466,13 @@ public class GUIController extends UIControllerWithInfo {
         profilesObservableList.clear();
         profilesObservableList.addAll(profiles);
         /** Update status/profiles of contacts*/
-        for (int i = 0; i < contactsObservableList.size(); i++) {
-            Profile contact = contactsObservableList.get(i);
-            Optional<Profile> profile = profiles.stream().filter(p -> p.getUserName().equals(contact.getUserName())).findFirst();
-            if (profile.isPresent()) {
+        for(int i=0; i<contactsObservableList.size(); i++) {
+            Profile contact=contactsObservableList.get(i);
+            Optional<Profile> profile=profiles.stream().filter(p -> p.getUserName().equals(contact.getUserName())).findFirst();
+            if(profile.isPresent()) {
                 contactsObservableList.set(i, profile.get());
-            } else {
+            }
+            else {
                 contact.setStatus(0);
                 contactsObservableList.set(i, contact);
             }
@@ -476,33 +482,35 @@ public class GUIController extends UIControllerWithInfo {
 
     public void displayContactsProfiles(ArrayList<Profile> profiles) {
         contactsObservableList.clear();
-        List<Profile> blockedUsers = new ArrayList<>();
+        List<Profile> blockedUsers=new ArrayList<>();
         profiles.forEach(profile -> {
-            if (!profile.isBlocked()) {
+            if(!profile.isBlocked()) {
                 contactsObservableList.add(profile);
-            } else {
+            }
+            else {
                 blockedUsers.add(profile);
             }
         });
-        fillBlockUnblockMenu(blockedUsers);
+        contextMenuOnlineUsers.setOnShown(ev -> fillBlockUnblockMenu(blockedUsers));
     }
 
     public void displayGroupChats(ArrayList<Group> groups) {
         groupsObservableList.clear();
-        for (Group g : groups)
+        for(Group g : groups)
             groupsObservableList.add(g);
         tabPaneChat.getSelectionModel().selectedItemProperty().addListener((observable, tabOld, tabNew) -> {
-            if (tabNew.getId().startsWith("#")) {
-                Group g = groupsObservableList.stream().filter(group -> tabNew.getId().equals(group.getName())).findFirst().get();
+            if(tabNew.getId().startsWith("#")) {
+                Group g=groupsObservableList.stream().filter(group -> tabNew.getId().equals(group.getName())).findFirst().get();
                 participantsObservableList.clear();
-                for (Profile p : g.getParticipants()) {
-                    Profile c = p.clone();
+                for(Profile p : g.getParticipants()) {
+                    Profile c=p.clone();
                     c.setStatus(-1);
                     participantsObservableList.add(c);
                 }
                 rootPane.setRight(vBoxInfo);
                 labelGroupName.setText(g.getName());
-            } else {
+            }
+            else {
                 participantsObservableList.clear();
                 rootPane.setRight(null);
             }
@@ -552,25 +560,21 @@ public class GUIController extends UIControllerWithInfo {
         contextMenuOnlineUsers.getItems().add(blockFriend);
     }
 
-    public void onMyProfileClicked() {
-        client.openWindow(Constants.Windows.USER_PROFILE);
-    }
-
     /**
      * returns existing tab or create & returns new one
      **/
     private Tab createNewChatTab(String tabName) {
-        Tab newTab = new Tab();
+        Tab newTab=new Tab();
         newTab.setText(tabName);
         //Check if tab already exists then return
-        for (Tab tab : tabPaneChat.getTabs()) {
-            if (tab.getId().equals(tabName)) {
+        for(Tab tab : tabPaneChat.getTabs()) {
+            if(tab.getId().equals(tabName)) {
                 tabPaneChat.getSelectionModel().select(tab);
                 return tab;
             }
         }
-        ObservableList<Message> newObservableList = FXCollections.observableArrayList();
-        ListView<Message> newListView = new ListView<>();
+        ObservableList<Message> newObservableList=FXCollections.observableArrayList();
+        ListView<Message> newListView=new ListView<>();
         newListView.setItems(newObservableList);
         newListView.setCellFactory(messagesListView -> new ChatListViewCell(newListView.prefWidthProperty()));
         newTab.setContent(newListView);
@@ -584,19 +588,19 @@ public class GUIController extends UIControllerWithInfo {
      * Shows new Group Dialog and returns name of new Group
      */
     private String showNewGroupDialog() {
-        Stage window = new Stage();
+        Stage window=new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
-        window.setMinWidth(250);
+        window.setMinWidth(150);
         window.setTitle("Enter new Group name");
         window.initStyle(StageStyle.UNDECORATED);
         window.getIcons().add(FXUtil.getDefaultIcon());
 
-        TextField textField = new TextField();
-        Button yButton = new Button("Create");
+        TextField textField=new TextField();
+        Button yButton=new Button("Create");
         yButton.getStyleClass().add("green");
-        Button nbButton = new Button("Cancel");
+        Button nbButton=new Button("Cancel");
         nbButton.getStyleClass().add("orange");
-        AtomicReference<String> exitCode = new AtomicReference<>();
+        AtomicReference<String> exitCode=new AtomicReference<>();
         yButton.setOnAction(e -> {
             exitCode.set(textField.getText());
             window.close();
@@ -607,29 +611,31 @@ public class GUIController extends UIControllerWithInfo {
         });
 
         VBox layout = new VBox(5);
+        layout.setStyle("-fx-padding: 8px;");
         HBox buttons = new HBox(200);
         buttons.getChildren().addAll(nbButton, yButton);
         layout.getChildren().addAll(textField, buttons);
         layout.setAlignment(Pos.CENTER);
 
-        VBox wrapBox = new VBox();
+        VBox wrapBox=new VBox();
         wrapBox.setId("window-wrapper");
         wrapBox.getStylesheets().add(getClass().getResource("../resources/main.css").toExternalForm());
-        FXMLLoader titleBarLoader = new FXMLLoader(getClass().getResource("../TitleBar.fxml"));
-        TitleBarController titleBarController = new TitleBarController();
+        FXMLLoader titleBarLoader=new FXMLLoader(getClass().getResource("../TitleBar.fxml"));
+        TitleBarController titleBarController=new TitleBarController();
         titleBarController.setStage(window);
         titleBarLoader.setController(titleBarController);
 
-        HBox titleBar = null;
+        HBox titleBar=null;
         try {
-            titleBar = titleBarLoader.load();
+            titleBar=titleBarLoader.load();
             titleBar.prefWidthProperty().bind(layout.prefWidthProperty());
             wrapBox.getChildren().addAll(titleBar, layout);
-            Scene scene = new Scene(wrapBox);
+            Scene scene=new Scene(wrapBox);
             window.setScene(scene);
             Platform.runLater(() -> textField.requestFocus());
             window.showAndWait();
-        } catch (IOException e) {
+        }
+        catch(IOException e) {
             e.printStackTrace();
         }
 
@@ -637,15 +643,14 @@ public class GUIController extends UIControllerWithInfo {
     }
 
     private void createNewGroup(String groupName, Profile firstMember) {
-        if (groupName == null) {
+        if(groupName==null) {
             return;
         }
         System.out.println(groupName);
-        groupName = "#" + groupName;
-        Group newGroup = new Group(groupName);
+        groupName="#" + groupName;
+        Group newGroup=new Group(groupName);
         newGroup.addParticipant(client.getAccount().getProfile());
         newGroup.addParticipant(firstMember);
         client.sendToServer(GROUP_UPDATE, newGroup);
     }
-
 }

@@ -100,7 +100,6 @@ public class Profile {
                 "userName='" + userName + '\'' +
                 ", status=" + status +
                 ", aboutMe='" + aboutMe + '\'' +
-                ", profilePicture='" + profilePicture + '\'' +
                 ", languages=" + languages +
                 '}';
     }

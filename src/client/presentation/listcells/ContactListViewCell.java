@@ -1,11 +1,13 @@
 package client.presentation.listcells;
 
+import client.presentation.FXUtil;
 import common.data.Profile;
 import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.shape.Circle;
 
@@ -23,6 +25,9 @@ public class ContactListViewCell extends ListCell<Profile> {
     private FXMLLoader fxmlLoader;
 
     private DoubleProperty listViewWidthProperty;
+
+    @FXML
+    private ImageView imgAvatar;
 
     public ContactListViewCell(DoubleProperty listViewWidthProperty) {
         this.listViewWidthProperty=listViewWidthProperty;
@@ -59,6 +64,7 @@ public class ContactListViewCell extends ListCell<Profile> {
                 circleStatus.setVisible(false);
                 circleStatus.setDisable(true);
             }
+            FXUtil.setAvatarOfProfile(imgAvatar, profile.getProfilePicture());
             borderPane.prefWidthProperty().bind(listViewWidthProperty);
             setGraphic(borderPane);
         }

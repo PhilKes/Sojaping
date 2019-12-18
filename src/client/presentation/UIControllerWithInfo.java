@@ -31,11 +31,11 @@ public abstract class UIControllerWithInfo extends UIController {
 
     public void showInfo(String message, InfoType type) {
         FXUtil.showInfo(labelError, message, type);
-        if(type.equals(InfoType.ERROR)) {
+        /*if(type.equals(InfoType.ERROR)) {
             System.err.println(message);
         }
         else {
             System.out.println(message);
-        }
+        }*/
     }
 }

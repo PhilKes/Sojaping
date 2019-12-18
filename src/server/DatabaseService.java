@@ -211,7 +211,7 @@ public class DatabaseService {
      * Account Table
      */
 
-    public void insertAccount(Account acc) throws Exception {
+    public void insertAccount(Account acc) throws Util.PacketException {
         String sql = "INSERT INTO " + TableAccount.NAME + "(" + TableAccount.AID + ", " + TableAccount.USERNAME + ", " + TableAccount.PASSWORD + ", "
                 + TableAccount.ABOUTME + ", " + TableAccount.PROFILEPICTURE + ", " + TableAccount.LANGUAGES + ") VALUES(NULL,?,?,?,?,?)";
         try (Connection conn = this.connect();
@@ -231,7 +231,7 @@ public class DatabaseService {
             }
         } catch (SQLException e) {
             if (e.getMessage().contains("[SQLITE_CONSTRAINT]  Abort due to constraint violation (UNIQUE constraint failed: account.userName)")) {
-                throw new Exception("Username is already in use!");
+                throw new Util.PacketException("Username is already in use!");
             }
             e.printStackTrace();
         }
@@ -375,7 +375,7 @@ public class DatabaseService {
         return profiles;
     }
 
-    public void insertContactOfAccount(Account account, Profile contact, boolean block) throws Exception {
+    public void insertContactOfAccount(Account account, Profile contact, boolean block) throws Util.PacketException {
         String sql = "INSERT OR REPLACE INTO " + TableContact.NAME + "(" + TableContact.CID + ", " + TableContact.AIDO + ", "
                 + TableContact.AIDC + ", "
                 + TableContact.BLOCKED + ") VALUES(NULL,?,?,?)";
@@ -391,15 +391,30 @@ public class DatabaseService {
             }
         } catch (SQLException e) {
             if (e.getMessage().contains("[SQLITE_CONSTRAINT]  Abort due to constraint violation (UNIQUE constraint failed: contact.aido, contact.aidc)")) {
-                throw new Exception(contact.getUserName() + " is already in your contacts!");
+                throw new Util.PacketException(contact.getUserName() + " is already in your contacts!");
             }
+            //e.printStackTrace();
+        }
+    }
+
+    public void removeContactOfAccount(Account account, Profile contact) throws Util.PacketException {
+        String sql="DELETE FROM " + TableContact.NAME + " WHERE " + TableContact.AIDO + " = ? AND " + TableContact.AIDC + " = ?";
+        try(Connection conn=this.connect();
+            PreparedStatement pstmt=conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setInt(1, account.getAid());
+            pstmt.setInt(2, getAccountByUsername(contact.getUserName()).getAid());
+            pstmt.executeUpdate();
+            pstmt.execute();
+        }
+        catch(SQLException e) {
+            throw new Util.PacketException(e.getMessage());
             //e.printStackTrace();
         }
     }
 
     public boolean hasBlocked(String receiver, Account contact) {
         String sql = "SELECT " + TableContact.BLOCKED + " FROM " + TableContact.NAME + " WHERE " + TableContact.AIDO + " = ? AND "
-                + TableContact.CID + " = ?";
+                + TableContact.AIDC + " = ?";
         Account receiverAcc = getAccountByUsername(receiver);
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

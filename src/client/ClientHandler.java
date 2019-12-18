@@ -33,12 +33,12 @@ class ClientHandler implements Runnable {
             Packet receivedPacket=getPacketFromJson(scanner.nextLine());
             try {
                 if(receivedPacket==null) {
-                    throw new Exception("Invalid JSON received");
+                    throw new Util.PacketException("Invalid JSON received", null);
                 }
                 Util.logPacket(true, "Server", receivedPacket);
                 handlePacket(receivedPacket);
             }
-            catch(Exception e) {
+            catch(Util.PacketException e) {
                 System.err.println(e.getMessage());
                 client.sendToServer(FAIL, e);
             }
@@ -47,13 +47,13 @@ class ClientHandler implements Runnable {
         System.out.println("Shutting down ClientHandler");
     }
 
-    private void handlePacket(Packet receivedPacket) throws Exception {
+    private void handlePacket(Packet receivedPacket) throws Util.PacketException {
         String context=receivedPacket.getContext();
         if(context.contains(FAIL) && !context.equals(FAIL)) {
-            System.err.println(context.split(FAIL)[0].toUpperCase() + " failed");
+            //System.err.println(context.split(FAIL)[0].toUpperCase() + " failed");
             UIController controller=client.peekController();
             if(controller instanceof UIControllerWithInfo) {
-                Exception e=receivedPacket.getData();
+                Util.PacketException e=receivedPacket.getData();
                 ((UIControllerWithInfo) controller).showInfo(e.getMessage(), UIControllerWithInfo.InfoType.ERROR);
             }
         }
@@ -68,7 +68,7 @@ class ClientHandler implements Runnable {
                 break;
             case (LOGIN + FAIL):
             case (REGISTER + FAIL):
-                Exception error1=receivedPacket.getData();
+                Util.PacketException error1=receivedPacket.getData();
                 ((UIControllerWithInfo) client.peekController()).showInfo(error1.getMessage(), UIControllerWithInfo.InfoType.ERROR);
                 break;
             case REGISTER_SUCCESS:

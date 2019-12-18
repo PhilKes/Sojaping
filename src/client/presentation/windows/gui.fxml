@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
 <BorderPane id="rootPane" fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
@@ -26,15 +27,22 @@
             <children>
                 <HBox fx:id="hBoxMe" alignment="CENTER_LEFT" maxWidth="248.0">
                     <children>
-                        <ImageView fx:id="imgAvatar" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true"
-                                   preserveRatio="true">
-                            <image>
-                                <Image url="@../resources/default_avatar_min.png"/>
-                            </image>
+                        <HBox fx:id="hBoxAvatar" styleClass="avatarWrapper">
                             <HBox.margin>
                                 <Insets left="10.0" right="10.0"/>
                             </HBox.margin>
-                        </ImageView>
+                            <children>
+                                <ImageView fx:id="imgAvatar" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true"
+                                           preserveRatio="true">
+                                    <image>
+                                        <Image url="@../resources/default_avatar_min.png"/>
+                                    </image>
+                                    <clip>
+                                        <Circle centerX="30" centerY="30" radius="30"/>
+                                    </clip>
+                                </ImageView>
+                            </children>
+                        </HBox>
                         <VBox fx:id="vBoxMyProfile">
                             <children>
                                 <Label fx:id="labelUserName" text="UserName">

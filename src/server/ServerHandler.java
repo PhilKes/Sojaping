@@ -142,17 +142,21 @@ public class ServerHandler implements Runnable {
                     server.deleteUser(accountForDeletion);
                     break;
                 case GROUP_UPDATE:
-                    Group group=receivedPacket.getData();
+                    Group group = receivedPacket.getData();
                     server.updateGroup(group);
-                    for(Profile member : group.getParticipants()) {
-                        Connection memberCon=server.getConnectionOfUser(member.getUserName());
-                        if(memberCon!=null) {
+                    for (Profile member : group.getParticipants()) {
+                        Connection memberCon = server.getConnectionOfUser(member.getUserName());
+                        if (memberCon != null) {
                             server.sendToUser(memberCon, GROUPLIST, server.getGroups(memberCon.getLoggedAccount()));
                         }
                     }
                     break;
                 case INVITATION_EMAIL:
-                    server.sendInvitationEmail(receivedPacket.getData(),connection.getLoggedAccount().getProfile());
+                    if (server.sendInvitationEmail(receivedPacket.getData(), connection.getLoggedAccount().getProfile())) {
+                        server.sendToUser(connection, INVITATION_EMAIL, true);
+                    } else {
+                        server.sendToUser(connection, INVITATION_EMAIL, false);
+                    }
                     break;
                 default:
                     System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());

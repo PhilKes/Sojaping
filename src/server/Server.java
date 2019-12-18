@@ -396,7 +396,8 @@ public class Server {
     public void setRunning(boolean running) {
         this.running.set(running);
     }
-    public void sendInvitationEmail(String receiver, Profile sender){
-        mailService.sendInviteMail(receiver,sender);
+
+    public boolean sendInvitationEmail(String receiver, Profile sender) {
+        return mailService.sendInviteMail(receiver, sender);
     }
 }

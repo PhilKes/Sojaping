@@ -168,8 +168,9 @@ public class UserProfileController extends UIControllerWithInfo {
 			}
             else {
                 FXUtil.showInfo(labelError, "Invalid E-Mail", InfoType.ERROR);
+                System.err.println("Invalid E-Mail");
             }
-            System.err.println("Invalid E-Mail");
+
         });
         VBox layout=new VBox(5);
         layout.getChildren().addAll(textField, labelError, yButton);

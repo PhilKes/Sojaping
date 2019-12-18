@@ -398,7 +398,7 @@ public class GUIController extends UIControllerWithInfo {
      **/
     private void onSendClicked() {
         StringBuilder stringBuilder=new StringBuilder();
-        if(richTextArea.getArea().getLength()>1) {
+        if(richTextArea.getArea().getLength()>0) {
             richTextArea.getArea().getParagraphs().forEach(list -> {
                 for(Either<String, LinkedImage> item : list.getSegments()) {
                     /** If is String */

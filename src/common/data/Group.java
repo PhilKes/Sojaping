@@ -63,7 +63,6 @@ public class Group {
     public String toString() {
         return "Group{" +
                 "name='" + name + '\'' +
-                ", avatar=" + groupPicture.substring(0, 5) +
                 ", participants=" + participants +
                 '}';
     }

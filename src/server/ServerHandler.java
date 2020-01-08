@@ -75,10 +75,7 @@ public class ServerHandler implements Runnable {
                     Message message=receivedPacket.getData();
                     /** Check login credentials, send Account from DB to user or send failed Exception */
                     String receiver=message.getReceiver();
-                    if(server.hasUserBlocked(connection.getLoggedAccount(), receiver)) {
-                        System.out.println("Not sending message, Receiver has blocked the Sender!");
-                        throw new PacketException(receiver + " has blocked you!");
-                    }
+
                     if(receiver.equals(BROADCAST)) {
                         server.broadcastMessages(message);
                     }
@@ -86,8 +83,12 @@ public class ServerHandler implements Runnable {
                         server.sendMessageToGroup(receiver, message);
                     }
                     else {
+                        if (server.hasUserBlocked(connection.getLoggedAccount(), receiver)) {
+                            System.out.println("Not sending message, Receiver has blocked the Sender!");
+                            throw new PacketException(receiver + " has blocked you!");
+                        }
                         /** Private message */
-                        if(!server.sendMessage(message)) {
+                        if (!server.sendMessage(message)) {
                             System.out.println("User not online, storing message in DB");
                             server.storeMessage(message, message.getReceiver());
                         }

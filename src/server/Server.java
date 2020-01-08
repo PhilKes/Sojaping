@@ -273,14 +273,14 @@ public class Server {
             /** Identify message's original language*/
             String msgLanguage=translateService.identifyLanguage(message.getText());
             if(msgLanguage!=null) {
-                String receiverLanguage=receiverProfile.getLanguages().get(0);
+                String receiverLanguage = receiverProfile.getLanguages().get(0);
                 /** Check if receiver doesnt speak message's language */
-                // TODO if(!receiverProfile.getLanguages().contains(msgLanguage))
-                if(!msgLanguage.equals(receiverLanguage)) {
+                // if(!receiverProfile.getLanguages().contains(msgLanguage))
+                if (!receiverProfile.getLanguages().contains(msgLanguage)) {
                     /** Translate to receiver's language*/
-                    // TODO String translated=translateService.translate(message.getText(),
-                    //  msgLanguage, receiverLanguage.get(0));
-                    String translated=translateService.translate(message.getText(), msgLanguage, receiverLanguage);
+                    String translated = translateService.translate(message.getText(),
+                            msgLanguage, receiverLanguage);
+                    //String translated=translateService.translate(message.getText(), msgLanguage, receiverLanguage);
                     message.putTranslation(receiverLanguage, translated);
                     /** Store original message text and langauge*/
                     message.setOriginalLang(msgLanguage);

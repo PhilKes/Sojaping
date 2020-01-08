@@ -50,7 +50,6 @@ public class Account extends Profile {
                 ", password='" + password + '\'' +
                 ", status=" + status +
                 ", aboutMe='" + aboutMe + '\'' +
-                ", profilePicture='" + profilePicture + '\'' +
                 ", languages=" + languages +
                 '}';
     }

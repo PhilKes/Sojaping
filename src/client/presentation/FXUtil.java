@@ -8,12 +8,18 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import org.apache.commons.io.FileUtils;
 
@@ -23,13 +29,15 @@ import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static common.Constants.Contexts.INVITATION_EMAIL;
+
 /**
  * JavaFX Util Class for external resoruces,...
  */
 public class FXUtil {
-    private static final Image DEFAULT_AVATAR_MIN=new Image(UIController.class.getResourceAsStream("resources/default_avatar_min.png"));
-    private static final Image DEFAULT_AVATAR=new Image(UIController.class.getResourceAsStream("resources/default_avatar.png"));
-    private static final Image DEFAULT_ICON=new Image(UIController.class.getResourceAsStream("resources/icon.png"));
+    private static final Image DEFAULT_AVATAR_MIN = new Image(UIController.class.getResourceAsStream("resources/default_avatar_min.png"));
+    private static final Image DEFAULT_AVATAR = new Image(UIController.class.getResourceAsStream("resources/default_avatar.png"));
+    private static final Image DEFAULT_ICON = new Image(UIController.class.getResourceAsStream("resources/icon.png"));
     public static final double SMILEY_BAR_HEIGHT = 46.0, SMILEY_BAR_WIDTH = 687.0;
     private static final File SMILEY_PATH = getSmileyDirFile();
 
@@ -225,6 +233,5 @@ public class FXUtil {
             imgView.setViewport(new Rectangle2D(0, 0, img.getWidth(), img.getHeight()));
         }
     }
-
 }
 

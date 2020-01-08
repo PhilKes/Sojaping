@@ -40,7 +40,6 @@ public class ServerHandler implements Runnable {
         }
     }
 
-    //TODO Distinguish Exceptions -> do not throw general Exception()
     private void handlePacket(Packet receivedPacket) throws PacketException {
         String context=receivedPacket.getContext();
         if(context.contains(FAIL) && !context.equals(FAIL)) {
@@ -65,7 +64,6 @@ public class ServerHandler implements Runnable {
                     if(server.getConnectionOfUser(loginAccount.getUserName())!=null) {
                         throw new PacketException("User is already logged in!");
                     }
-                    //TODO Check Account profilepicture
                     server.setConnectionAccount(connection, loginAccount);
                     server.sendToUser(connection, LOGIN_SUCCESS, loginAccount);
                     server.sendToUser(connection, FRIEND_LIST, server.getFriendList(connection.getLoggedAccount()));

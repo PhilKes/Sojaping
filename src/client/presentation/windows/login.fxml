@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
@@ -93,4 +94,16 @@
             <Font name="Arial Bold" size="40.0"/>
         </font>
     </Label>
+    <Pane fx:id="paneLoading" layoutX="251.0" layoutY="212.0">
+        <children>
+            <ImageView fx:id="imgLoading" fitHeight="60.0" fitWidth="60.0" layoutX="30.0" pickOnBounds="true"
+                       preserveRatio="true">
+                <image>
+                    <Image url="@../resources/loading.png"/>
+                </image>
+            </ImageView>
+            <Label fx:id="txtLoading" alignment="CENTER" contentDisplay="CENTER" layoutY="62.0" prefHeight="17.0"
+                   prefWidth="120.0" text="Loading..." textAlignment="CENTER"/>
+        </children>
+    </Pane>
 </AnchorPane>

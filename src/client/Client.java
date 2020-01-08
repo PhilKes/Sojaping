@@ -5,9 +5,12 @@ import client.presentation.TitleBarController;
 import client.presentation.UIController;
 import client.presentation.UIControllerWithInfo;
 import client.presentation.windows.GUIController;
+import client.presentation.windows.LoginController;
 import common.Connection;
+import common.Constants;
 import common.Util;
 import common.data.Account;
+import common.data.LoginUser;
 import common.data.Message;
 import common.data.Packet;
 import javafx.application.Platform;
@@ -40,8 +43,11 @@ public class Client {
     private int port;
     private PrintWriter output;
     private AtomicBoolean running;
-
     private MessageStore messageStore;
+
+    private int loadingCount;
+    private AtomicBoolean loading;
+    private Stage loadingStage;
 
     /**
      * Storing all Controllers of open FXMLs, top of stack = current active Controller
@@ -62,6 +68,7 @@ public class Client {
         this.host=host;
         this.port=port;
         this.controllerStack=new Stack<>();
+        this.loading=new AtomicBoolean(false);
         messageStore=new MessageStore();
         running=new AtomicBoolean(true);
     }
@@ -114,31 +121,32 @@ public class Client {
     /**
      * Open new GUI window, add UIController to Stack
      */
-    public void openWindow(String window) {
+    public void openWindow(String window, boolean show) {
         Platform.runLater(() -> {
             try {
                 FXMLLoader windowLoader=new FXMLLoader(getClass().getResource("presentation/windows/" + window + ".fxml"));
-                Pane root1 = windowLoader.load();
-                UIController controller = (UIController) windowLoader.getController();
-                controller.setClient(this);
-
+                Pane root1=windowLoader.load();
+                UIController controller=(UIController) windowLoader.getController();
                 Stage stage=new Stage();
                 stage.initModality(Modality.APPLICATION_MODAL);
                 stage.initStyle(StageStyle.UNDECORATED);
                 stage.setTitle(window.substring(0, 1).toUpperCase() + window.substring(1));
-                controller.setStage(stage);
+                if(controller!=null) {
+                    controller.setClient(this);
+                    controller.setStage(stage);
+                }
 
                 /** Wrap Window in custom VBox with TitleBar*/
-                VBox wrapBox = new VBox();
+                VBox wrapBox=new VBox();
                 wrapBox.setId("window-wrapper");
                 wrapBox.getStylesheets().add(getClass().getResource("presentation/resources/main.css").toExternalForm());
-                FXMLLoader titleBarLoader = new FXMLLoader(getClass().getResource("presentation/TitleBar.fxml"));
-                TitleBarController titleBarController = new TitleBarController();
+                FXMLLoader titleBarLoader=new FXMLLoader(getClass().getResource("presentation/TitleBar.fxml"));
+                TitleBarController titleBarController=new TitleBarController();
                 titleBarController.setClient(this);
                 titleBarController.setStage(stage);
                 titleBarLoader.setController(titleBarController);
 
-                HBox titleBar = titleBarLoader.load();
+                HBox titleBar=titleBarLoader.load();
                 titleBar.prefWidthProperty().bind(root1.prefWidthProperty());
                 wrapBox.getChildren().addAll(titleBar, root1);
 
@@ -149,19 +157,31 @@ public class Client {
                 if(connection!=null && connection.isLoggedIn()) {
                     stage.setTitle(stage.getTitle() + " " + connection.getLoggedAccount().getUserName());
                 }
-                stage.show();
-                /** Center new window in current window*/
-                if(!controllerStack.isEmpty()) {
-                    Stage currStage=peekController().getStage();
-                    stage.setX(currStage.getX() + currStage.getWidth() / 2 - stage.getWidth() / 2);
-                    stage.setY(currStage.getY() + currStage.getHeight() / 2 - stage.getHeight() / 2);
+                stage.setOnShown(ev -> {
+                    /** Center new window in current window*/
+                    if(!controllerStack.isEmpty()) {
+                        Stage currStage=peekController().getStage();
+                        stage.setX(currStage.getX() + currStage.getWidth() / 2 - stage.getWidth() / 2);
+                        stage.setY(currStage.getY() + currStage.getHeight() / 2 - stage.getHeight() / 2);
+                    }
+                });
+                if(show) {
+                    stage.show();
                 }
-                pushController(controller);
+
+
+                if(controller!=null) {
+                    pushController(controller);
+                }
             }
             catch(IOException e) {
                 e.printStackTrace();
             }
         });
+    }
+
+    public void openWindow(String window) {
+        openWindow(window, true);
     }
 
     public void closeCurrentWindow() {
@@ -203,8 +223,17 @@ public class Client {
         return null;
     }
 
+    public LoginController getLoginController() {
+        for(UIController controller : controllerStack) {
+            if(controller instanceof LoginController) {
+                return (LoginController) controller;
+            }
+        }
+        return null;
+    }
+
     public UIController peekController() {
-        if (!controllerStack.isEmpty()) {
+        if(!controllerStack.isEmpty()) {
             return controllerStack.peek();
         }
         return null;
@@ -228,7 +257,7 @@ public class Client {
     }
 
     public boolean isConnected() {
-        return output != null;
+        return output!=null;
     }
 
     public void storeMessageLocal(Message message) {
@@ -254,10 +283,13 @@ public class Client {
         for(Message msg : messages) {
             Platform.runLater(() -> getGUIController().displayNewMessage(msg, false));
         }
+        if(isLoading()) {
+            incLoadingCount();
+        }
     }
 
     public void resetLocalMessageStore() {
-        if (new MessageParser().resetMessageStore(getAccount().getUserName())) {
+        if(new MessageParser().resetMessageStore(getAccount().getUserName())) {
             ((UIControllerWithInfo) peekController()).showInfo("MessageStore has been reset", UIControllerWithInfo.InfoType.SUCCESS);
         }
     }
@@ -267,7 +299,67 @@ public class Client {
         storeMessageStore();
         setAccount(null);
         closeCurrentWindowNoExit();
-        openWindow("login");
+        openWindow(Constants.Windows.LOGIN);
+    }
+
+    public void login(LoginUser loginUser) {
+        sendToServer(LOGIN, loginUser);
+        getLoginController().showLoading(true);
+        setLoading(true);
+    }
+
+    /**
+     * Start next loading step
+     */
+    public void incLoadingCount() {
+        loadingCount++;
+        System.out.println("Loading Step: " + loadingCount);
+        LoginController loginController=getLoginController();
+        switch(loadingCount) {
+            case 1:
+                loginController.setTxtLoading("Loading local MessageStore...");
+                fetchAndShowLocalMessageStore();
+                break;
+            case 2:
+                loginController.setTxtLoading("Fetching Messages...");
+                sendToServer(MESSAGE_FETCH, null);
+                break;
+            case 3:
+                loginController.setTxtLoading("Fetching FriendList...");
+                sendToServer(FRIEND_LIST, null);
+                break;
+            case 4:
+                loginController.setTxtLoading("Fetching Online Users...");
+                sendToServer(USERLIST, null);
+                break;
+            case 5:
+                loginController.setTxtLoading("Fetching Groups...");
+                sendToServer(GROUPLIST, null);
+                break;
+            /** loading finished*/
+            case Constants.CLIENT_LOADING_STEPS:
+                Platform.runLater(() -> {
+                    /** Close laoding dilaog and Login Window */
+                    getLoginController().showLoading(false);
+                    getLoginController().close();
+                    controllerStack.remove(getLoginController());
+                    getGUIController().getStage().show();
+                });
+                setLoading(false);
+                break;
+        }
+    }
+
+    public boolean isLoading() {
+        return loading.get();
+    }
+
+    public void setLoading(boolean loading) {
+        System.out.println("Loading " + (loading ? "started" : "finished"));
+        this.loading.set(loading);
+        if(!loading) {
+            loadingCount=0;
+        }
     }
 }
 

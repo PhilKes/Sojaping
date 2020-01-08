@@ -10,6 +10,7 @@ public class Profile {
     protected String aboutMe;
     protected String profilePicture;
     protected List<String> languages;
+    //TODO Subclass with blocked extended Profile
     protected boolean blocked;
 
     public Profile() {
@@ -100,6 +101,7 @@ public class Profile {
                 "userName='" + userName + '\'' +
                 ", status=" + status +
                 ", aboutMe='" + aboutMe + '\'' +
+                ", profilePicture='" + (profilePicture.length() >= 5 ? profilePicture.substring(0, 5) : profilePicture) + '\'' +
                 ", languages=" + languages +
                 '}';
     }

@@ -72,7 +72,7 @@ public class UserProfileController extends UIControllerWithInfo {
         if(this.loggedInAccount!=null) {
             lblUserName.setText("Hi, " + this.loggedInAccount.getUserName() + "!");
             this.txtAboutMe.setText(this.loggedInAccount.getAboutMe()!=null ? this.loggedInAccount.getAboutMe() : "");
-            FXUtil.setAvatarOfProfile(imgAvatar, loggedInAccount.getProfilePicture());
+            FXUtil.setBase64PicInImageView(imgAvatar, loggedInAccount.getProfilePicture());
         }
 
         this.initializeLanguageDropDown();
@@ -226,6 +226,6 @@ public class UserProfileController extends UIControllerWithInfo {
 
     public void onRemoveAvatar(ActionEvent actionEvent) {
         this.base64ProfilePic=null;
-        FXUtil.setAvatarOfProfile(imgAvatar, base64ProfilePic);
+        FXUtil.setBase64PicInImageView(imgAvatar, base64ProfilePic);
     }
 }

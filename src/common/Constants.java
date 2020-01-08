@@ -7,6 +7,8 @@ public class Constants {
     public static String SERVER_HOST = "141.59.130.79";
     public static int SERVER_PORT = 9999;//443;c
 
+    public final static int CLIENT_LOADING_STEPS=6;
+
     public static class Translation {
         public final static String ENGLISH_VALUE = "en",
                 ENGLISH_KEY = "English";
@@ -135,6 +137,7 @@ public class Constants {
                 BRDCAST_MSG = "broadcastMsg",
                 BRDCAST_USERS = "broadcastUsers",
                 USERLIST = "userlist",
+                USERLIST_SINGLE="userlistSingle",
                 GROUPLIST = "grouplist",
                 GROUP_ADD = "groupAdd",
                 SHUTDOWN = "shutdown",

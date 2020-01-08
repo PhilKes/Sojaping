@@ -19,6 +19,8 @@ class ClientHandler implements Runnable {
     private boolean running;
     private Scanner scanner;
 
+    private final static int LOAD_DELAY=1200;
+
     public ClientHandler(Client client, InputStream inputStream) {
         this.client=client;
         this.running=true;
@@ -63,10 +65,11 @@ class ClientHandler implements Runnable {
                 client.setAccount(account);
                 client.setMessageStoreUser(account.getUserName());
                 System.out.println("\t\t\t\t" + "Logged into " + account);
-                client.closeCurrentWindowNoExit();
-                client.openWindow(Constants.Windows.GUI);
+                client.openWindow(Constants.Windows.GUI, false);
                 break;
             case (LOGIN + FAIL):
+                client.getLoginController().showLoading(false);
+                client.setLoading(false);
             case (REGISTER + FAIL):
                 Util.PacketException error1=receivedPacket.getData();
                 ((UIControllerWithInfo) client.peekController()).showInfo(error1.getMessage(), UIControllerWithInfo.InfoType.ERROR);
@@ -81,36 +84,53 @@ class ClientHandler implements Runnable {
                 Platform.runLater(() -> client.getGUIController().displayNewMessage(msg, true));
                 client.storeMessageLocal(msg);
                 break;
+            case MESSAGE_FETCH:
+                String result=receivedPacket.getData();
+                if(result.equals("complete") && client.isLoading()) {
+                    client.incLoadingCount();
+                }
+                break;
+            case USERLIST_SINGLE:
             case USERLIST:
                 ArrayList<Profile> userList=receivedPacket.getData();
                 System.out.println("\t\t\t\tProfiles received:");
                 userList.forEach(u -> System.out.println("\t\t\t\t" + u));
                 Platform.runLater(() -> client.getGUIController().displayOnlineProfiles(userList));
+                if(client.isLoading()) {
+                    client.incLoadingCount();
+                }
                 break;
             case SHUTDOWN:
                 String text=receivedPacket.getData();
                 System.err.println("\t\t\t\t" + "SHUTDOWN: " + text);
                 running=false;
-                while (client.peekController() != null) {
+                while(client.peekController()!=null) {
                     client.closeCurrentWindow();
                 }
                 break;
             case GROUPLIST:
-                ArrayList<Group> groupList = receivedPacket.getData();
+                ArrayList<Group> groupList=receivedPacket.getData();
                 System.out.println("\t\t\t\t" + "Groups received:");
                 groupList.forEach(g -> System.out.println("\t\t\t\t" + g));
                 Platform.runLater(() -> client.getGUIController().displayGroupChats(groupList));
                 Platform.runLater(() -> client.getGUIController().fillContextMenuAddToGroup(groupList));
+                if(client.isLoading()) {
+                    client.incLoadingCount();
+                }
                 break;
             case FRIEND_LIST:
-                ArrayList<Profile> contacts = receivedPacket.getData();
-                Platform.runLater(() -> client.getGUIController().displayContactsProfiles(contacts));
+                ArrayList<Profile> contacts=receivedPacket.getData();
+                Platform.runLater(() ->
+                        client.getGUIController().displayContactsProfiles(contacts));
+                if(client.isLoading()) {
+                    client.incLoadingCount();
+                }
                 break;
             case INVITATION_EMAIL:
                 System.out.println("\t\t\t\t" + " email send: " + receivedPacket.getData());
                 break;
             default:
-                if (!receivedPacket.getContext().contains(FAIL)) {
+                if(!receivedPacket.getContext().contains(FAIL)) {
                     System.err.println("Received unknown Packet context:\t" + receivedPacket.getContext());
                     //throw new Exception("Unknown Packet context('" + receivedPacket.getContext() + "') sent!");
                 }

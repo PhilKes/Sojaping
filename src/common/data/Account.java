@@ -7,19 +7,25 @@ public class Account extends Profile {
     int aid=-1;
     private String password;
 
-    public Account(){
+    public Account() {
+        this.profilePicture="";
     }
 
     /*Status = 0 : offline
-    * Status = 1 : online
-    */
+     * Status = 1 : online
+     */
     public Account(int aid, String userName, String password, int status, String aboutMe, String profilePicture, List<String> languages) {
-        this.aid = aid;
-        this.userName = userName;
-        this.password = password;
-        this.status = status;
-        this.aboutMe = aboutMe;
-        this.profilePicture = profilePicture;
+        this.aid=aid;
+        this.userName=userName;
+        this.password=password;
+        this.status=status;
+        this.aboutMe=aboutMe;
+        if(profilePicture!=null) {
+            this.profilePicture=profilePicture;
+        }
+        else {
+            this.profilePicture="";
+        }
         this.languages=languages;
     }
 
@@ -28,7 +34,7 @@ public class Account extends Profile {
     }
 
     public void setAid(int aid) {
-        this.aid = aid;
+        this.aid=aid;
     }
 
     public String getPassword() {
@@ -39,8 +45,8 @@ public class Account extends Profile {
         this.password=password;
     }
 
-    public Profile getProfile(){
-        return new Profile(userName,status,aboutMe,profilePicture,languages);
+    public Profile getProfile() {
+        return new Profile(userName, status, aboutMe, profilePicture, languages);
     }
 
     @Override

@@ -306,8 +306,8 @@ public class Server {
 
     public void sendMessageToGroup(String groupName, Message message) {
         Connection receiverCon=null;
-        ArrayList<Profile> groupMembers=getUsersForGroup(groupName);
-        for(Profile p : groupMembers) {
+        ArrayList<Group.Participant> groupMembers=getUsersForGroup(groupName);
+        for(Group.Participant p : groupMembers) {
             if (message.getSender().equals(p.getUserName())) {
                 continue;
             }
@@ -375,7 +375,7 @@ public class Server {
         return dbService.getMyGroups(loggedAccount);
     }
 
-    public ArrayList<Profile> getUsersForGroup(String groupName) {
+    public ArrayList<Group.Participant> getUsersForGroup(String groupName) {
         return dbService.getParticipants(groupName);
     }
 

@@ -153,7 +153,7 @@ public class FXUtil {
     public static Image getSmileyImage(int i) {
         File smileyDir = SMILEY_PATH;
         File[] smileys = smileyDir.listFiles();
-        if (smileys.length < i) {
+        if(smileys.length<i || i<0) {
             return null;
         }
         File smiley = smileys[i];

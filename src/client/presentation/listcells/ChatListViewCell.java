@@ -73,7 +73,7 @@ public class ChatListViewCell extends ListCell<Message> {
                     txt.setText(text);
                     textFlow.getChildren().add(txt);
                 }
-                int smileyNumber = Integer.parseInt(msg.substring(textEnd + 3, textEnd + 3 + 3)) - 1;
+                int smileyNumber=Integer.parseInt(msg.substring(textEnd + 3, textEnd + 3 + 3));
                 ImageView imgSmiley = new ImageView(FXUtil.getSmileyImage(smileyNumber));
 
                 textFlow.getChildren().add(imgSmiley);

@@ -25,7 +25,6 @@ public class LoginController extends UIControllerWithInfo {
     private TextField txtUsername;
     @FXML
     private PasswordField txtPassword;
-
     @FXML
     private Pane paneLoading;
     @FXML

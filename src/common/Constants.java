@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Constants {
-    public static String SERVER_HOST = "141.59.130.79";
+    public static String SERVER_HOST="192.168.178.26";
     public static int SERVER_PORT = 9999;//443;c
 
     public final static int CLIENT_LOADING_STEPS=6;

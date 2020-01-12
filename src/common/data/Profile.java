@@ -10,7 +10,7 @@ public class Profile {
     protected String aboutMe;
     protected String profilePicture;
     protected List<String> languages;
-    //TODO Subclass with blocked extended Profile
+
     protected boolean blocked;
 
     public Profile() {

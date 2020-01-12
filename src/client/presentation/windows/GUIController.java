@@ -52,8 +52,7 @@ public class GUIController extends UIControllerWithInfo {
     @FXML
     private BorderPane rootPane;
     @FXML
-    private Button btnSend, btnMyProfile, btnLogout;
-
+    private Button btnSend, btnLogout;
     @FXML
     private CheckBox checkTranslate;
     @FXML
@@ -73,7 +72,7 @@ public class GUIController extends UIControllerWithInfo {
     @FXML
     private Label labelUserName, labelAbout, labelGroupName;
     @FXML
-    private VBox centerVbox, vBoxInfo;
+    private VBox vBoxInfo;
     @FXML
     private CheckBox checkSmileys;
     @FXML
@@ -81,13 +80,10 @@ public class GUIController extends UIControllerWithInfo {
     @FXML
     private ScrollPane scrollSmileys;
 
-    //Message broadcast
     private ObservableList<Message> broadcastObservableList;
     private ObservableList<Profile> profilesObservableList;
     private ObservableList<Profile> contactsObservableList;
-    //FriendList
 
-    //Group Contact (Left in Gui)
     private ObservableList<Group> groupsObservableList;
     private ObservableList<Profile> participantsObservableList;
 
@@ -98,9 +94,6 @@ public class GUIController extends UIControllerWithInfo {
     private RichTextArea richTextArea;
 
     private Group currentSelectedGroup;
-
-    @FXML
-    private HBox hBoxAvatar;
 
     @FXML
     private void initialize() {
@@ -123,12 +116,14 @@ public class GUIController extends UIControllerWithInfo {
         loadAccount(client.getAccount());
         tabPaneChat.getSelectionModel().selectedItemProperty().addListener((observable, tabOld, tabNew) -> {
             if(tabNew.getId().startsWith("#")) {
-                Group g=groupsObservableList.stream().filter(group -> tabNew.getId().equals(group.getName())).findFirst().get();
-                this.currentSelectedGroup = g;
-                // TODO Group Picture - set picture from current group from DB in imageView
+                Optional<Group> group=groupsObservableList.stream().filter(g -> tabNew.getId().equals(g.getName())).findFirst();
+                if(!group.isPresent()) {
+                    return;
+                }
+                this.currentSelectedGroup=group.get();
                 FXUtil.setBase64PicInImageView(imageLogo, this.currentSelectedGroup.getGroupPicture(), true);
                 participantsObservableList.clear();
-                for(Profile p : g.getParticipants()) {
+                for(Profile p : group.get().getParticipants()) {
                     Profile c=p.clone();
                     c.setStatus(-1);
                     participantsObservableList.add(c);
@@ -153,10 +148,11 @@ public class GUIController extends UIControllerWithInfo {
 
     private void changeGroupPicture() {
         try {
-            String base64Picture = FXUtil.uploadPictureViaFileChooser(this.stage, this.imageLogo);
+            String base64Picture=FXUtil.uploadPictureViaFileChooser(this.stage, this.imageLogo);
             this.currentSelectedGroup.setGroupPicture(base64Picture);
             this.client.sendToServer(GROUP_UPDATE, this.currentSelectedGroup);
-        } catch (Exception e) {
+        }
+        catch(Exception e) {
             showInfo(e.getMessage(), InfoType.ERROR);
         }
     }
@@ -168,17 +164,18 @@ public class GUIController extends UIControllerWithInfo {
         hBoxSmileys.getChildren().clear();
         /** Show/Hide smiley bar*/
         checkSmileys.selectedProperty().addListener((old, v, newV) -> {
-            if (old.getValue()) {
+            if(old.getValue()) {
                 hBoxSmileys.getChildren().add(scrollSmileys);
                 checkSmileys.setPrefHeight(FXUtil.SMILEY_BAR_HEIGHT);
-            } else {
+            }
+            else {
                 hBoxSmileys.getChildren().clear();
                 checkSmileys.setPrefHeight(20.0);
             }
             Platform.runLater(() -> richTextArea.getArea().requestFocus());
         });
-        richTextArea = new RichTextArea();
-        VirtualizedScrollPane<GenericStyledArea<ParStyle, Either<String, LinkedImage>, TextStyle>> vsPane = new VirtualizedScrollPane<>(richTextArea.getArea());
+        richTextArea=new RichTextArea();
+        VirtualizedScrollPane<GenericStyledArea<ParStyle, Either<String, LinkedImage>, TextStyle>> vsPane=new VirtualizedScrollPane<>(richTextArea.getArea());
         vsPane.prefWidthProperty().bind(hBoxTextArea.prefWidthProperty());
         vsPane.prefHeightProperty().bind(hBoxTextArea.prefWidthProperty());
         vsPane.getStyleClass().add("text-area");
@@ -188,15 +185,15 @@ public class GUIController extends UIControllerWithInfo {
 
     private void initializeNotificationHandling() {
         this.tabOnlineListView.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2) {
+            if(e.getClickCount()==2) {
                 createNewChatTab(this.tabOnlineListView.getSelectionModel().getSelectedItem().getUserName());
             }
         });
 
         this.hBoxTextArea.setOnMouseClicked(ev -> this.removeNotification());
         this.tabPaneChat.getSelectionModel().selectedIndexProperty().addListener((ov, oldValue, newValue) -> {
-            Tab selectedTab = tabPaneChat.getTabs().get(newValue.intValue());
-            if (selectedTab != null && selectedTab.getStyleClass().contains("tab-notification")) {
+            Tab selectedTab=tabPaneChat.getTabs().get(newValue.intValue());
+            if(selectedTab!=null && selectedTab.getStyleClass().contains("tab-notification")) {
                 selectedTab.getStyleClass().remove("tab-notification");
             }
         });
@@ -343,19 +340,20 @@ public class GUIController extends UIControllerWithInfo {
     }
 
     private void blockUser(Profile blockedProfile, boolean block) {
-        if (block) {
+        if(block) {
             client.sendToServer(BLOCK, blockedProfile);
-        } else {
+        }
+        else {
             client.sendToServer(UNBLOCK, blockedProfile);
         }
     }
 
     private void removeNotification() {
-        String selectedUserName = this.tabPaneChat.getSelectionModel().getSelectedItem().getId();
-        Optional<Tab> selectedTabPane = this.tabPaneChat.getTabs().stream().filter(tab -> tab.getText().toLowerCase().equals(selectedUserName.toLowerCase())).findFirst();
+        String selectedUserName=this.tabPaneChat.getSelectionModel().getSelectedItem().getId();
+        Optional<Tab> selectedTabPane=this.tabPaneChat.getTabs().stream().filter(tab -> tab.getText().toLowerCase().equals(selectedUserName.toLowerCase())).findFirst();
 
         selectedTabPane.ifPresent(tab -> {
-            if (tab.getStyleClass().contains("tab-notification")) {
+            if(tab.getStyleClass().contains("tab-notification")) {
                 tab.getStyleClass().remove("tab-notification");
             }
         });
@@ -537,16 +535,16 @@ public class GUIController extends UIControllerWithInfo {
     public void fillContextMenuAddToGroup(ArrayList<Group> groups) {
         //addToGroupChat.getItems().clear();
         addToGroupChatContacts.getItems().clear();
-        MenuItem createNewGroup = new MenuItem("Create New Group");
+        MenuItem createNewGroup=new MenuItem("Create New Group");
         addToGroupChatContacts.getItems().add(createNewGroup);
         createNewGroup.setOnAction(e ->
                 createNewGroup(showNewGroupDialog(), tabContactsListView.getSelectionModel().getSelectedItem()));
-        for (Group g : groups) {
-            MenuItem group = new MenuItem(g.getName());
+        for(Group g : groups) {
+            MenuItem group=new MenuItem(g.getName());
             group.setOnAction(ev -> {
                 System.out.println("Clicked on " + g.getName());
                 System.out.println("On profile " + tabContactsListView.getSelectionModel().getSelectedItem());
-                Group myGroup = groups.stream().filter(gr -> gr.getName().equals(group.getText())).findFirst().get();
+                Group myGroup=groups.stream().filter(gr -> gr.getName().equals(group.getText())).findFirst().get();
                 Group.Participant participant=new Group.Participant(tabContactsListView.getSelectionModel().getSelectedItem());
                 myGroup.addParticipant(participant);
                 client.sendToServer(GROUP_UPDATE, myGroup);
@@ -557,20 +555,22 @@ public class GUIController extends UIControllerWithInfo {
     }
 
     public void fillBlockUnblockMenu(List<Profile> blockedUsers) {
-        Profile profile = tabOnlineListView.getSelectionModel().getSelectedItem();
-        if (profile == null)
+        Profile profile=tabOnlineListView.getSelectionModel().getSelectedItem();
+        if(profile==null) {
             return;
-        Optional<Profile> user = blockedUsers.stream().filter(b -> b.getUserName().equals(profile.getUserName())).findFirst();
+        }
+        Optional<Profile> user=blockedUsers.stream().filter(b -> b.getUserName().equals(profile.getUserName())).findFirst();
         contextMenuOnlineUsers.getItems().remove(contextMenuOnlineUsers.getItems().size() - 1);
-        if (user.isPresent()) {
+        if(user.isPresent()) {
             /** Show unblock*/
-            blockFriend = new MenuItem("Unblock");
+            blockFriend=new MenuItem("Unblock");
             blockFriend.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.USER_PLUS));
             blockFriend.setOnAction(e ->
                     blockUser(user.get(), false));
-        } else {
+        }
+        else {
             /** show block*/
-            blockFriend = new MenuItem("Block");
+            blockFriend=new MenuItem("Block");
             blockFriend.setGraphic(FXUtil.generateIcon(FontAwesomeIcon.USER_MD));
             blockFriend.setOnAction(e ->
                     blockUser(profile, true));
@@ -628,9 +628,9 @@ public class GUIController extends UIControllerWithInfo {
             window.close();
         });
 
-        VBox layout = new VBox(5);
+        VBox layout=new VBox(5);
         layout.setStyle("-fx-padding: 8px;");
-        HBox buttons = new HBox(200);
+        HBox buttons=new HBox(200);
         buttons.getChildren().addAll(nbButton, yButton);
         layout.getChildren().addAll(textField, buttons);
         layout.setAlignment(Pos.CENTER);

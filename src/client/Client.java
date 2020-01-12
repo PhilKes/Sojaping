@@ -339,7 +339,7 @@ public class Client {
             /** loading finished*/
             case Constants.CLIENT_LOADING_STEPS:
                 Platform.runLater(() -> {
-                    /** Close laoding dilaog and Login Window */
+                    /** Close loading dialog and Login Window */
                     getLoginController().showLoading(false);
                     getLoginController().close();
                     controllerStack.remove(getLoginController());

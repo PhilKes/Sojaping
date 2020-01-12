@@ -73,6 +73,7 @@ public class UserProfileController extends UIControllerWithInfo {
             lblUserName.setText("Hi, " + this.loggedInAccount.getUserName() + "!");
             this.txtAboutMe.setText(this.loggedInAccount.getAboutMe()!=null ? this.loggedInAccount.getAboutMe() : "");
             FXUtil.setBase64PicInImageView(imgAvatar, loggedInAccount.getProfilePicture());
+            this.base64ProfilePic=loggedInAccount.getProfilePicture();
         }
 
         this.initializeLanguageDropDown();

@@ -11,9 +11,6 @@ public class Account extends Profile {
         this.profilePicture="";
     }
 
-    /*Status = 0 : offline
-     * Status = 1 : online
-     */
     public Account(int aid, String userName, String password, int status, String aboutMe, String profilePicture, List<String> languages) {
         this.aid=aid;
         this.userName=userName;

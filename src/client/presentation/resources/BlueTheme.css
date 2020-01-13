@@ -1,0 +1,556 @@
+/*@font-face {
+    font-family: 'Roboto';
+    src: url('Roboto-Medium.ttf');
+}
+.root{
+    -fx-font: 9pt Roboto;
+}
+.text{
+    -fx-font: 9pt Roboto;
+}*/
+.root > *{
+    -fx-bgrnd-darker: #0B0B3B;
+    -fx-bgrnd-dark: #0B0B61;
+    -fx-bgrnd: #5858FA;
+    -fx-bgrnd-light: #8181F7;
+    -fx-fgrnd: #c7cbc9;
+    -fx-green: #6fea1b;
+    -fx-green-dark: derive(-fx-green, -55%);
+    -fx-green-darker: derive(-fx-green-dark, -25%);
+    -fx-orange: #ff9e00;
+    -fx-orange-dark: derive(-fx-orange, -55%);
+    -fx-orange-darker: derive(-fx-orange-dark, -25%);
+    -fx-red: #db3610;
+    -fx-red-dark: derive(-fx-red, -55%);
+    -fx-red-darker: derive(-fx-red-dark, -25%);
+    -fx-txt-light: #fffbee;
+    -fx-txt-dark: #000000;
+    -fx-background-color: -fx-bgrnd;
+}
+
+* {
+    -fx-focus-color: transparent;
+    /*-fx-icon-color: -fx-txt-light;*/
+}
+.label {
+    -fx-text-fill: -fx-txt-light;
+}
+/** Wrapper for TitleBar + Window*/
+#window-wrapper {
+    -fx-border-color: -fx-txt-dark;
+    -fx-border-width: 1px;
+}
+
+#titleBar {
+    -fx-background-color: -fx-bgrnd-dark;
+}
+
+#btnMinimize {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+}
+
+#btnMinimize > * {
+    -fx-fill: -fx-txt-light;
+}
+
+#btnMinimize:hover {
+    -fx-background-color: -fx-orange;
+}
+
+#btnMinimize:hover > * {
+    -fx-fill: -fx-txt-light;
+}
+
+#btnClose {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+}
+
+#btnClose > * {
+    -fx-fill: -fx-txt-light;
+}
+
+#btnClose:hover {
+    -fx-background-color: -fx-red;
+}
+
+#btnClose:hover > * {
+    -fx-fill: -fx-txt-light;
+}
+
+.offline {
+    -fx-fill: -fx-red;
+}
+
+.online {
+    -fx-fill: -fx-green;
+}
+
+.invisible {
+    -fx-background-color: transparent;
+    -fx-fill: transparent;
+    -fx-border-width: 0;
+}
+
+.anchor-pane {
+    -fx-background-color: -fx-bgrnd;
+}
+
+.tab-pane {
+    -fx-background-color: -fx-bgrnd-dark;
+    -fx-open-tab-animation: grow;
+}
+
+/* Background of TabPane next to Tabs*/
+.tab-pane *.tab-header-background {
+    -fx-background-color: -fx-bgrnd-darker;
+    -fx-border-width: 0 0 4 0;
+    -fx-border-color: -fx-bgrnd-dark;
+}
+
+/** Contacts,... TabPane and ListViews*/
+.tab {
+    -fx-background-color: transparent;
+    -fx-font-weight: bold;
+    -fx-border-width: 0 0 4 0;
+    -fx-border-color: -fx-bgrnd;
+    -fx-border-insets: 0 4 4 4;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.tab * {
+    -fx-text-fill: -fx-fgrnd;
+}
+
+.tab .glyph-icon {
+    -fx-fill: -fx-fgrnd;
+}
+
+.tab-down-button {
+    -fx-padding: 0;
+}
+
+.tab-down-button .arrow {
+    -fx-padding: 0;
+}
+.tab:selected {
+    -fx-border-color: -fx-green;
+}
+
+.tab-pane:top *.tab-header-area {
+    -fx-border-width: 0 0 4 0;
+    -fx-border-color: -fx-txt-dark;
+    -fx-padding: 0.0em 0.166667em 0.0em 0.0em;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab {
+    -fx-background-radius: 0;
+}
+
+/** Contacts list, Chat list,...*/
+.list-view {
+    -fx-background-color: transparent;
+}
+
+.list-cell {
+    -fx-background-color: -fx-bgrnd-darker;
+    -fx-text-fill: -fx-txt-light;
+    -fx-pref-width: 100%;
+    -fx-border-width: 0 0 0 4;
+    -fx-border-insets: 4 4 4 4;
+    -fx-border-color: -fx-bgrnd;
+}
+
+.list-cell:empty {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+.list-cell:selected {
+    -fx-border-color: -fx-green;
+}
+
+.list-cell:selected .label {
+    -fx-font-weight: bold;
+}
+
+/** Logout, MyProfile button box*/
+#hBoxSettings {
+    -fx-border-width: 1px 0 0 0;
+    -fx-border-color: -fx-txt-dark;
+}
+
+/** GUI bottom (Smileys,...)*/
+#bottomHbox {
+    -fx-background-color: -fx-bgrnd;
+    -fx-border-color: -fx-txt-dark;
+    -fx-border-width: 1px 0 0 0;
+}
+
+#checkSmileys {
+    -fx-background-color: -fx-bgrnd-darker;
+    -fx-background-radius: 10px 10px 0 0;
+    -fx-padding: 4px;
+}
+
+#checkSmileys:hover {
+    -fx-cursor: hand;
+}
+
+#checkSmileys:selected {
+    -fx-background-color: -fx-bgrnd-darker;
+    -fx-background-radius: 10px 0 0 0;
+    -fx-padding: 4px;
+}
+
+#hBoxSmileys {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0 10px 0 0;
+}
+
+/** Smiley scroll pane scroll speed*/
+#scrollSmileys {
+    -fx-background-radius: 0 10px 0 0;
+    -fx-padding: 4px 0 0 0;
+}
+
+#scrollSmileys * {
+    -fx-background-radius: 0 10px 0 0;
+}
+
+#scrollSmileys .scroll-bar:vertical {
+    -fx-unit-increment: 20;
+    -fx-block-increment: 50;
+}
+
+#smiley {
+    -fx-background-color: red;
+}
+
+#smiley:hover {
+    -fx-cursor: hand;
+    -fx-border-color: -fx-txt-dark;
+    -fx-border-width: 2px;
+    -fx-border-radius: 20px;
+}
+
+/** Set rich text area caret color,...*/
+.styled-text-area .caret {
+    -fx-stroke: white;
+}
+
+.styled-text-area {
+    -fx-padding: 4px;
+    -fx-background-radius: 10px;
+}
+
+/** .styled-text-area, .paragraph-box, .paragraph-text {  } */
+/** GUI left (Contacts,...)*/
+#vBoxContacts {
+    -fx-background-color: -fx-bgrnd;
+    -fx-border-color: -fx-txt-dark;
+    -fx-border-width: 0 1px 0 0;
+}
+
+/** GUI Right (Group Info)*/
+#vBoxInfo {
+    -fx-background-color: -fx-bgrnd-dark;
+}
+
+#hBoxGroupName {
+    -fx-text-fill: -fx-txt-light;
+    -fx-background-color: -fx-bgrnd-darker;
+}
+
+/** GUI Center (Chats,...)*/
+#vBoxChat {
+    -fx-background-color: -fx-bgrnd;
+    -fx-border-color: -fx-txt-dark;
+    -fx-border-width: 0 1px 0 0;
+}
+
+#rootPane {
+    -fx-background-color: -fx-bgrnd;
+}
+
+
+.label {
+    -fx-text-fill: -fx-txt-light;
+}
+
+#labelLogo {
+    -fx-text-fill: -fx-green;
+}
+
+#labelLogo .text {
+    -fx-stroke: -fx-txt-dark;
+    -fx-stroke-width: 1px;
+    -fx-effect: dropshadow(three-pass-box, -fx-txt-dark, 6, 0, 0, 0);
+}
+.menu-button {
+    -fx-padding: 2px;
+    -fx-background-color: -fx-bgrnd-darker;
+}
+
+.menu-button > .label {
+    -fx-text-fill: -fx-txt-light;
+}
+
+.check-menu-item {
+    -fx-text-fill: -fx-txt-dark;
+}
+
+.check-menu-item > .label {
+    -fx-text-fill: -fx-txt-light;
+}
+
+/** CheckBox translate*/
+.check-box {
+    -fx-text-fill: -fx-txt-light;
+}
+
+.check-box > .glyph-icon {
+    /* -fx-icon-color: -fx-fgrnd;*/
+    -fx-fill: -fx-fgrnd;
+}
+
+.check-box:selected > .glyph-icon {
+    /*-fx-icon-color: -fx-green;*/
+    -fx-fill: -fx-green;
+}
+
+.check-box:selected {
+    -fx-text-fill: -fx-green;
+}
+
+.check-box > .box {
+    -fx-background-color: transparent;
+    -fx-shape: none;
+    -fx-pref-width: 0;
+}
+
+.check-box .mark {
+    -fx-background-color: transparent;
+    -fx-shape: none;
+    -fx-mark-color: transparent; /* OK */
+    -fx-focused-mark-color: transparent;
+}
+
+#labelError {
+    -fx-text-fill: #ff5342;
+    -fx-background-color: transparent;
+}
+
+#labelSuccess {
+    -fx-text-fill: -fx-green;
+}
+
+#labelInfo {
+    -fx-text-fill: -fx-txt-light;
+}
+
+.invalid {
+/ / -fx-border-color: linear-gradient(to bottom, rgba(255, 4, 0, 0), #cd0006);
+    -fx-border-color: rgba(255, 13, 0, 0.67);
+    -fx-border-width: 3px;
+    -fx-border-radius: 3px;
+}
+
+.tab-notification {
+    /*-fx-background-color: blue !important;*/
+    -fx-background-color: -fx-orange;
+}
+
+.tab-notification * {
+    -fx-text-fill: -fx-txt-dark;
+}
+
+.context-menu {
+    -fx-background-color: -fx-bgrnd-darker;
+    -fx-text-fill: -fx-txt-light;
+}
+
+.menu-item:focused {
+    -fx-background-color: linear-gradient(#e68400, #ffd65b);
+}
+
+.menu-item .glyph-icon {
+    -fx-fill: -fx-txt-light;
+}
+
+.menu-item:focused .label {
+    -fx-text-fill: #654b00;
+}
+
+.menu-item:focused .glyph-icon {
+    -fx-fill: #654b00;
+}
+.avatar {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.77), 10, 0, 0, 1);
+}
+
+/** Pane in UserProfile.fxml wrapping Avatar Imageview*/
+.avatarWrapper {
+    -fx-border-width: 1;
+    -fx-border-color: -fx-bgrnd-darker;
+    -fx-border-radius: 100%;
+}
+.icon-left {
+    -fx-background-color: -fx-txt-dark;
+    -fx-background-radius: 8px 0 0 8px;
+}
+
+.text-field {
+    -fx-background-color: -fx-bgrnd-darker;
+    -fx-text-fill: -fx-txt-light;
+}
+
+/** RichTextArea for send Text*/
+.text-area {
+    -fx-background-color: -fx-bgrnd-darker;
+    -fx-control-inner-background: -fx-bgrnd-darker;
+    -fx-text-fill: -fx-txt-light;
+    -fx-background-radius: 0 4px 4px 4px;
+    -fx-padding: 4px;
+}
+
+.text-area * {
+    -fx-background-color: -fx-bgrnd-darker;
+    -fx-control-inner-background: -fx-bgrnd-darker;
+    -fx-text-fill: -fx-txt-light;
+}
+
+.text-area .content {
+    -fx-background-color: -fx-bgrnd-darker;
+    -fx-background-radius: 0;
+    -fx-text-fill: -fx-txt-light;
+    -fx-font-size: 9pt;
+}
+
+.text-area.scroll-pane {
+    -fx-background-radius: 0;
+}
+
+#textASendText {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+    -fx-text-fill: red;
+}
+
+#textASendText * {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+    /*-fx-text-fill: transparent;*/
+}
+
+
+.scroll-pane .scroll-bar:horizontal {
+    -fx-unit-increment: 15;
+    -fx-block-increment: 20;
+}
+/** Scroll bar of TextArea*/
+.scroll-bar:vertical .track {
+    -fx-background-color: -fx-bgrnd-dark;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0.0em;
+    -fx-border-radius: 2.0em;
+}
+
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0.0em;
+    -fx-padding: 0.0 10.0 0.0 0.0;
+
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-shape: " ";
+    -fx-padding: 0.15em 0.0;
+}
+
+.scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow {
+    -fx-shape: " ";
+    -fx-padding: 0.0 0.15em;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: -fx-bgrnd-darker;
+    -fx-background-insets: 2.0, 0.0, 0.0;
+    -fx-background-radius: 2.0em;
+}
+
+.button {
+    -fx-padding: 8 15 15 15;
+    -fx-background-insets: 0, 0 0 5 0, 0 0 6 0, 0 0 7 0;
+    -fx-background-radius: 8;
+    -fx-background-color: linear-gradient(from 0% 93% to 0% 100%, #a34313 0%, #903b12 100%),
+    #9d4024,
+    #d86e3a,
+    radial-gradient(center 50% 50%, radius 100%, #d86e3a, #c54e2c);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 4, 0, 0, 1);
+    -fx-font-weight: bold;
+    -fx-font-size: 1.1em;
+    -fx-text-fill: #4a1e0e;
+}
+
+.button-small {
+    -fx-padding: 3 10 10 10;
+    -fx-background-insets: 0, 0 0 3 0, 0 0 4 0, 0 0 5 0;
+    -fx-background-radius: 5;
+}
+
+.button:hover {
+    -fx-cursor: hand;
+}
+
+.button:pressed {
+    -fx-padding: 10 15 13 15;
+    -fx-background-insets: 2 0 0 0, 2 0 3 0, 2 0 4 0, 2 0 5 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.7), 10, 0, 0, 5);
+}
+
+.button Text {
+    -fx-fill: white;
+    -fx-effect: dropshadow(gaussian, #a30000, 0, 0, 0, 2);
+}
+
+
+/** Colors */
+.green {
+    -fx-background-color: -fx-green-dark,
+    -fx-green;
+    -fx-text-fill: -fx-green-darker;
+}
+
+/** Set color of Icons*/
+.green > .glyph-icon {
+    -fx-fill: -fx-green-darker;
+}
+
+.orange {
+    -fx-background-color: -fx-orange-dark,
+    -fx-orange;
+    -fx-text-fill: -fx-orange-darker;
+}
+.orange > .glyph-icon {
+    -fx-fill: -fx-orange-darker;
+}
+
+.red {
+    -fx-background-color: -fx-red-dark,
+    -fx-red;
+    -fx-text-fill: -fx-red-darker;
+}
+.red > .glyph-icon {
+    -fx-fill: -fx-red-darker;
+}
+
+

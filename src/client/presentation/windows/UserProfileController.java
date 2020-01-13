@@ -3,15 +3,19 @@ package client.presentation.windows;
 import client.Client;
 import client.presentation.FXUtil;
 import client.presentation.TitleBarController;
+import client.presentation.UIController;
 import client.presentation.UIControllerWithInfo;
 import common.Constants;
 import common.data.Account;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -59,6 +63,9 @@ public class UserProfileController extends UIControllerWithInfo {
     private int[] languageCounter;
 
     @FXML
+    private ChoiceBox<String> menuThemes;
+
+    @FXML
     private ImageView imgAvatar;
 
     @FXML
@@ -77,6 +84,7 @@ public class UserProfileController extends UIControllerWithInfo {
         }
 
         this.initializeLanguageDropDown();
+        this.initializeThemeDropDown();
     }
 
     private void onUploadPicClick() {
@@ -114,6 +122,13 @@ public class UserProfileController extends UIControllerWithInfo {
                 }
             }
         }
+    }
+
+    private void initializeThemeDropDown(){
+        menuThemes.getItems().addAll("Default", "Ocean");
+        menuThemes.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            client.changeTheme(newValue);
+        });
     }
 
     private void onDeleteAccountClick() {

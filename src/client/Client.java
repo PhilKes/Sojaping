@@ -15,6 +15,7 @@ import common.data.Message;
 import common.data.Packet;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -48,6 +49,7 @@ public class Client {
     private int loadingCount;
     private AtomicBoolean loading;
     private Stage loadingStage;
+    private String theme = "Default";
 
     /**
      * Storing all Controllers of open FXMLs, top of stack = current active Controller
@@ -165,6 +167,7 @@ public class Client {
                         stage.setY(currStage.getY() + currStage.getHeight() / 2 - stage.getHeight() / 2);
                     }
                 });
+
                 if(show) {
                     stage.show();
                 }
@@ -172,6 +175,7 @@ public class Client {
 
                 if(controller!=null) {
                     pushController(controller);
+                    changeTheme(theme);
                 }
             }
             catch(IOException e) {
@@ -361,5 +365,25 @@ public class Client {
             loadingCount=0;
         }
     }
+
+    public void changeTheme(String newTheme){
+        String def = getClass().getResource("./presentation/resources/main.css").toExternalForm();
+        String ocean = getClass().getResource("./presentation/resources/BlueTheme.css").toExternalForm();
+        theme = newTheme;
+        if(newTheme.equals("Default")){
+            for(UIController controller : controllerStack){
+                Parent parent = controller.getStage().getScene().getRoot();
+                parent.getStylesheets().clear();
+                parent.getStylesheets().add(def);
+            }
+        }else if(newTheme.equals("Ocean")){
+            for(UIController controller : controllerStack){
+                Parent parent = controller.getStage().getScene().getRoot();
+                parent.getStylesheets().clear();
+                parent.getStylesheets().add(ocean);
+            }
+        }
+    }
+
 }
 

@@ -637,7 +637,7 @@ public class GUIController extends UIControllerWithInfo {
 
         VBox wrapBox=new VBox();
         wrapBox.setId("window-wrapper");
-        wrapBox.getStylesheets().add(getClass().getResource("../resources/main.css").toExternalForm());
+        wrapBox.getStylesheets().add(getClass().getResource("../resources/BlueTheme.css").toExternalForm());
         FXMLLoader titleBarLoader=new FXMLLoader(getClass().getResource("../TitleBar.fxml"));
         TitleBarController titleBarController=new TitleBarController();
         titleBarController.setStage(window);

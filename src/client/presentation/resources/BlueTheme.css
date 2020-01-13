@@ -9,9 +9,9 @@
     -fx-font: 9pt Roboto;
 }*/
 .root > *{
-    -fx-bgrnd-darker: #0B0B3B;
-    -fx-bgrnd-dark: #0B0B61;
-    -fx-bgrnd: #5858FA;
+    -fx-bgrnd-darker: #0A0A2A;
+    -fx-bgrnd-dark: #0B0B3B;
+    -fx-bgrnd: #0B0B61;
     -fx-bgrnd-light: #8181F7;
     -fx-fgrnd: #c7cbc9;
     -fx-green: #6fea1b;

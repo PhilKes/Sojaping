@@ -9,6 +9,7 @@ import org.fxmisc.richtext.TextExt;
 import org.fxmisc.richtext.model.*;
 import org.reactfx.util.Either;
 
+import java.net.URISyntaxException;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
@@ -18,11 +19,11 @@ import java.util.function.BiConsumer;
  */
 public class RichTextArea {
 
-    private final TextOps<String, TextStyle> styledTextOps = SegmentOps.styledTextOps();
-    private final LinkedImageOps<TextStyle> linkedImageOps = new LinkedImageOps<>();
-    private final TextStyle defaultTextStyle = TextStyle.EMPTY.updateFontSize(10).updateFontFamily("Arial").updateTextColor(Color.WHITE);
+    private final TextOps<String, TextStyle> styledTextOps=SegmentOps.styledTextOps();
+    private final LinkedImageOps<TextStyle> linkedImageOps=new LinkedImageOps<>();
+    private final TextStyle defaultTextStyle=TextStyle.EMPTY.updateFontSize(10).updateFontFamily("Arial").updateTextColor(Color.WHITE);
 
-    private final GenericStyledArea<ParStyle, Either<String, LinkedImage>, TextStyle> area =
+    private final GenericStyledArea<ParStyle, Either<String, LinkedImage>, TextStyle> area=
             new GenericStyledArea<>(
                     ParStyle.EMPTY,                                                 // default paragraph style
                     (paragraph, style) -> paragraph.setStyle(style.toCss()),        // paragraph style setter
@@ -54,12 +55,36 @@ public class RichTextArea {
      * Action listener which inserts a new image at the current caret position.
      */
     public void insertImage(String imagePath) {
-        imagePath = imagePath.replace('\\', '/');
-        RealLinkedImage img = new RealLinkedImage(imagePath);
-        ReadOnlyStyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle> ros =
+        imagePath=imagePath.replace('\\', '/');
+        RealLinkedImage img=null;
+        //try {
+           /* String path=UIController.class.getResource(imagePath).toURI().toString().substring(6);
+            if(FXUtil.onJar) {
+                path=path.substring(4);
+            }
+            System.out.println("Image: " + path);*/
+        if(FXUtil.onJar) {
+            img=new RealLinkedImage(imagePath.substring(1));
+        }
+        else {
+            String path=null;
+            try {
+                path=UIController.class.getResource(imagePath).toURI().toString().substring(6);
+                img=new RealLinkedImage(path);
+            }
+            catch(URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+
+        ReadOnlyStyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle> ros=
                 ReadOnlyStyledDocument.fromSegment(Either.right(img),
                         ParStyle.EMPTY, defaultTextStyle, area.getSegOps());
         area.replaceSelection(ros);
+        /*}
+        catch(URISyntaxException e) {
+            e.printStackTrace();
+        }*/
     }
 
 }

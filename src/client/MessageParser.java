@@ -6,7 +6,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.io.File;
 import java.io.InputStream;
 
 /**
@@ -34,6 +33,7 @@ public class MessageParser {
         MessageStore store=null;
         InputStream in=FXUtil.getMessageStoreFileStream(userName);
         if(in==null) {
+            System.out.println("Empty MessageStore");
             return new MessageStore();
         }
         try {
@@ -47,10 +47,13 @@ public class MessageParser {
         return store;
     }
 
-    public boolean storeMessageStore(MessageStore store) {
+    public boolean storeMessageStore(MessageStore store, boolean merge) {
         System.out.println("Storing MessageStore of " + store.getUserName());
-        MessageStore fileStore=getMessageStore(store.getUserName());
-        fileStore.getMessages().addAll(store.getMessages());
+        MessageStore fileStore=store;
+        if(merge) {
+            fileStore=getMessageStore(store.getUserName());
+            fileStore.getMessages().addAll(store.getMessages());
+        }
         try {
             jaxbMarshaller.marshal(fileStore, FXUtil.getMessageStoreFileOutStream(store.getUserName()));
             //jaxbMarshaller.marshal(fileStore, System.out);
@@ -63,15 +66,9 @@ public class MessageParser {
     }
 
     public boolean resetMessageStore(String userName) {
-        File store = FXUtil.getMessageStoreFile(userName);
-        if (store.exists()) {
-            if (store.delete()) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return true;
-        }
+        MessageStore store=new MessageStore();
+        store.setUserName(userName);
+        storeMessageStore(store, false);
+        return true;
     }
 }

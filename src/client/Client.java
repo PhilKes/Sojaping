@@ -49,7 +49,7 @@ public class Client {
     private int loadingCount;
     private AtomicBoolean loading;
     private Stage loadingStage;
-    private String theme = "Default";
+    private String theme="Default";
 
     /**
      * Storing all Controllers of open FXMLs, top of stack = current active Controller
@@ -274,7 +274,7 @@ public class Client {
      */
     private void storeMessageStore() {
         System.out.println("Storing local messages");
-        new MessageParser().storeMessageStore(messageStore);
+        new MessageParser().storeMessageStore(messageStore, true);
         messageStore.getMessages().clear();
     }
 
@@ -293,6 +293,7 @@ public class Client {
     }
 
     public void resetLocalMessageStore() {
+        messageStore.getMessages().clear();
         if(new MessageParser().resetMessageStore(getAccount().getUserName())) {
             ((UIControllerWithInfo) peekController()).showInfo("MessageStore has been reset", UIControllerWithInfo.InfoType.SUCCESS);
         }
@@ -366,19 +367,20 @@ public class Client {
         }
     }
 
-    public void changeTheme(String newTheme){
-        String def = getClass().getResource("./presentation/resources/main.css").toExternalForm();
-        String ocean = getClass().getResource("./presentation/resources/BlueTheme.css").toExternalForm();
-        theme = newTheme;
-        if(newTheme.equals("Default")){
-            for(UIController controller : controllerStack){
-                Parent parent = controller.getStage().getScene().getRoot();
+    public void changeTheme(String newTheme) {
+        String def=getClass().getResource("presentation/resources/main.css").toExternalForm();
+        String ocean=getClass().getResource("presentation/resources/BlueTheme.css").toExternalForm();
+        theme=newTheme;
+        if(newTheme.equals("Default")) {
+            for(UIController controller : controllerStack) {
+                Parent parent=controller.getStage().getScene().getRoot();
                 parent.getStylesheets().clear();
                 parent.getStylesheets().add(def);
             }
-        }else if(newTheme.equals("Ocean")){
-            for(UIController controller : controllerStack){
-                Parent parent = controller.getStage().getScene().getRoot();
+        }
+        else if(newTheme.equals("Ocean")) {
+            for(UIController controller : controllerStack) {
+                Parent parent=controller.getStage().getScene().getRoot();
                 parent.getStylesheets().clear();
                 parent.getStylesheets().add(ocean);
             }

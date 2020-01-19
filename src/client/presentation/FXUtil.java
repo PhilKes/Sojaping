@@ -20,21 +20,28 @@ import javafx.util.Duration;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * JavaFX Util Class for external resoruces,...
  */
 public class FXUtil {
+    public static boolean onJar=false;
     private static final Image DEFAULT_AVATAR_MIN=new Image(UIController.class.getResourceAsStream("resources/default_avatar_min.png"));
     private static final Image DEFAULT_AVATAR=new Image(UIController.class.getResourceAsStream("resources/default_avatar.png"));
     private static final Image DEFAULT_ICON=new Image(UIController.class.getResourceAsStream("resources/icon.png"));
     public static final Image DEFAULT_GROUP_PIC=new Image(UIController.class.getResourceAsStream("resources/icon.png"));
-    public static final double SMILEY_BAR_HEIGHT = 46.0, SMILEY_BAR_WIDTH = 687.0;
-    private static final File SMILEY_PATH = getSmileyDirFile();
+    public static final double SMILEY_BAR_HEIGHT=46.0, SMILEY_BAR_WIDTH=687.0;
+    public static final List<String> SMILEY_PATHS=getSmileyImagePaths();
 
     public static Image getDefaultAvatarMin() {
         return DEFAULT_AVATAR_MIN;
@@ -123,15 +130,24 @@ public class FXUtil {
     public static OutputStream getMessageStoreFileOutStream(String userName) {
         File file=null;
         try {
-            String resourceUrl=UIController.class.getResource("resources/").getPath();
+            String resourceUrl=null;
+            if(onJar) {
+                resourceUrl="client/";
+            }
+            else {
+                resourceUrl=UIController.class.getResource("resources/").getPath();
+            }
             resourceUrl+="messageStore_" + userName + ".xml";
+            System.out.println("ResourceURL: " + resourceUrl);
             file=new File(resourceUrl);
             file.createNewFile();
             OutputStream output=new FileOutputStream(file);
             return output;
-        } catch(FileNotFoundException e) {
+        }
+        catch(FileNotFoundException e) {
             e.printStackTrace();
-        } catch(IOException e) {
+        }
+        catch(IOException e) {
             e.printStackTrace();
         }
 
@@ -139,58 +155,120 @@ public class FXUtil {
     }
 
     public static InputStream getMessageStoreFileStream(String userName) {
-        return UIController.class.getResourceAsStream("resources/messageStore_" + userName + ".xml");
+        if(onJar) {
+            final URI url;
+            try {
+                return new FileInputStream("client/messageStore_" + userName + ".xml");
+            }
+
+            catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            return UIController.class.getResourceAsStream("resources/messageStore_" + userName + ".xml");
+        }
+        return null;
     }
 
     public static File getMessageStoreFile(String userName) {
-        return new File(UIController.class.getResource("resources/").getPath() + "messageStore_" + userName + ".xml");
+        if(onJar) {
+            return new File("client/messageStore_" + userName + ".xml");
+        }
+        else {
+            return new File(UIController.class.getResource("resources/").getPath() + "messageStore_" + userName + ".xml");
+        }
     }
 
     public static File getSmileyDirFile() {
-        return new File(UIController.class.getResource("resources/smileys/").getPath());
+        File f=new File(FXUtil.class.getResource("resources/smileys/").getPath());
+        System.out.println("Smiley path :" + f.getPath());
+        return f;
     }
 
+    /* public static Image getSmileyImage(int i) {
+         File smileyDir = SMILEY_PATH;
+
+         File[] smileys = null;
+
+         smileys= smileyDir.listFiles();
+
+         if(smileys.length<i || i<0) {
+             return null;
+         }
+         File smiley = smileys[i];
+         return new Image(smiley.toURI().toString());
+     }*/
     public static Image getSmileyImage(int i) {
-        File smileyDir = SMILEY_PATH;
-        File[] smileys = smileyDir.listFiles();
-        if(smileys.length<i || i<0) {
-            return null;
-        }
-        File smiley = smileys[i];
-        return new Image(smiley.toURI().toString());
-    }
-
-    public static String getSmileyImagePath(int i) {
-        File smileyDir = SMILEY_PATH;
-        File[] smileys = smileyDir.listFiles();
-        if (smileys.length < i) {
-            return null;
-        }
-        File smiley = smileys[i];
-        return smiley.getPath();
+        return new Image(UIController.class.getResourceAsStream(SMILEY_PATHS.get(i)));
     }
 
     public static List<String> getSmileyImagePaths() {
-        File smileyDir = SMILEY_PATH;
-        File[] smileys = smileyDir.listFiles();
-        return Arrays.stream(smileys).map(f -> f.getPath()).collect(Collectors.toList());
+        try {
+            return getPaths("resources/smileys/");
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
-    public static String convertFileToBase64(String filePath){
-        byte[] fileContent = new byte[0];
+    public static List<String> getPaths(String folderPath) throws IOException {
+        final File jarFile=new File(FXUtil.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        List<String> filePaths=new ArrayList<>();
+        if(jarFile.isFile()) {  // Run with JAR file
+            System.out.println("JAR File: " + jarFile.getPath());
+            onJar=true;
+            try {
+                final URI url=FXUtil.class.getResource(folderPath).toURI();
+                FileSystem fileSystem=FileSystems.newFileSystem(url, Collections.<String, Object>emptyMap());
+                Path path=fileSystem.getPath("/client/presentation/resources/smileys");
+                Stream<Path> walk=Files.walk(path, 1);
+                for(Iterator<Path> it=walk.iterator(); it.hasNext(); ) {
+                    Path next=it.next();
+                    filePaths.add("/client/presentation/resources/smileys/" + next.getFileName().toString());
+                }
+                filePaths.remove(0); //Folder entry
+                Collections.sort(filePaths);
+            }
+            catch(URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+        else { // Run with IDE
+            final URL url=FXUtil.class.getResource(folderPath);
+            if(url!=null) {
+                try {
+                    final File apps=new File(url.toURI());
+                    for(File app : apps.listFiles()) {
+                        filePaths.add(folderPath + "/" + app.getName());
+                    }
+                }
+                catch(URISyntaxException ex) {
+                    // never happens
+                }
+            }
+        }
+        return filePaths;
+    }
+
+    public static String convertFileToBase64(String filePath) {
+        byte[] fileContent=new byte[0];
         try {
-            fileContent = FileUtils.readFileToByteArray(new File(filePath));
-        } catch (IOException e) {
+            fileContent=FileUtils.readFileToByteArray(new File(filePath));
+        }
+        catch(IOException e) {
             e.printStackTrace();
         }
         return Base64.getEncoder().encodeToString(fileContent);
     }
 
-    public static Image convertBase64ToImage(String base64Picture){
-        byte[] imageBytes= new byte[0];
+    public static Image convertBase64ToImage(String base64Picture) {
+        byte[] imageBytes=new byte[0];
         try {
-            imageBytes = com.sun.org.apache.xml.internal.security.utils.Base64.decode(base64Picture.getBytes());
-        } catch (Base64DecodingException e) {
+            imageBytes=com.sun.org.apache.xml.internal.security.utils.Base64.decode(base64Picture.getBytes());
+        }
+        catch(Base64DecodingException e) {
             e.printStackTrace();
         }
         ByteArrayInputStream is=new ByteArrayInputStream(imageBytes);
@@ -216,7 +294,7 @@ public class FXUtil {
      * Sets cropped Image into imageview or loads default image if no image available
      */
     public static void setBase64PicInImageView(ImageView imgView, String base64Picture) {
-      setBase64PicInImageView(imgView, base64Picture, false);
+        setBase64PicInImageView(imgView, base64Picture, false);
     }
 
     public static void setBase64PicInImageView(ImageView imgView, String profilePicture, boolean isGroupPicture) {
@@ -226,14 +304,14 @@ public class FXUtil {
             imgView.setViewport(FXUtil.getImageCropBounds(image));
         }
         else {/** Default Avatar */
-            Image img = isGroupPicture ? FXUtil.DEFAULT_GROUP_PIC : FXUtil.getDefaultAvatar();
+            Image img=isGroupPicture ? FXUtil.DEFAULT_GROUP_PIC : FXUtil.getDefaultAvatar();
             imgView.setImage(img);
             imgView.setViewport(new Rectangle2D(0, 0, img.getWidth(), img.getHeight()));
         }
     }
 
     public static String uploadPictureViaFileChooser(Stage stage, ImageView image) throws Exception {
-        String base64ProfilePic = "";
+        String base64ProfilePic="";
         FileChooser fileChooser=new FileChooser();
         fileChooser.setTitle("Choose profile picture");
 
@@ -241,7 +319,7 @@ public class FXUtil {
 
         File file=fileChooser.showOpenDialog(stage);
         if(file!=null && file.length()>3000000) {
-                    throw new Exception("Image file is too large. Please, upload a picture < 3 MB");
+            throw new Exception("Image file is too large. Please, upload a picture < 3 MB");
 
         }
         else if(file!=null) {

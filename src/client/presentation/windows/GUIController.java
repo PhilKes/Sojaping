@@ -236,7 +236,7 @@ public class GUIController extends UIControllerWithInfo {
             columnConstraints.setPercentWidth(100.0 / columns);
             smileyGrid.getColumnConstraints().add(columnConstraints);
         }
-        List<String> smileyPaths=FXUtil.getSmileyImagePaths();
+        List<String> smileyPaths=FXUtil.SMILEY_PATHS;
         for(int y=0; y<(smileyPaths.size() / columns) + (smileyPaths.size() % columns>0 ? 1 : 0); y++) {
             RowConstraints rowConstraints=new RowConstraints();
             rowConstraints.setMinHeight(22);
@@ -249,8 +249,11 @@ public class GUIController extends UIControllerWithInfo {
                 ImageView imgSmiley=new ImageView(FXUtil.getSmileyImage(y * columns + x));
                 int finalI=y * columns + x;
                 imgSmiley.setOnMouseClicked(ev -> {
-                    textAreaSend.insertImage(smileyPaths.get(finalI));
-                    Platform.runLater(() -> richTextArea.getArea().requestFocus());
+
+                    Platform.runLater(() -> {
+                        textAreaSend.insertImage(smileyPaths.get(finalI));
+                        richTextArea.getArea().requestFocus();
+                    });
                 });
                 smileyGrid.add(imgSmiley, x, y);
             }
